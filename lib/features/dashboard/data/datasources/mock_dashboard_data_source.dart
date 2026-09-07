@@ -36,6 +36,9 @@ class MockDashboardDataSource {
         time: '10:00 AM',
         status: AppointmentStatus.confirmed,
         doctorName: 'Dr. Reyes',
+        type: 'Check-up',
+        clinic: 'TMC Student Health Clinic',
+        requestedOn: now.subtract(const Duration(days: 5)),
       ),
       Appointment(
         id: 'apt-2',
@@ -45,6 +48,9 @@ class MockDashboardDataSource {
         time: '2:30 PM',
         status: AppointmentStatus.pending,
         doctorName: 'Dr. Cruz',
+        type: 'Dental',
+        clinic: 'TMC Dental Clinic',
+        requestedOn: now.subtract(const Duration(days: 2)),
       ),
       Appointment(
         id: 'apt-3',
@@ -54,6 +60,11 @@ class MockDashboardDataSource {
         time: '9:00 AM',
         status: AppointmentStatus.completed,
         doctorName: 'Dr. Santos',
+        type: 'Follow-up',
+        clinic: 'TMC Student Health Clinic',
+        notes: 'Patient responded well to treatment.',
+        requestedOn: now.subtract(const Duration(days: 12)),
+        updatedAt: now.subtract(const Duration(days: 5)),
       ),
       Appointment(
         id: 'apt-4',
@@ -63,6 +74,11 @@ class MockDashboardDataSource {
         time: '11:00 AM',
         status: AppointmentStatus.cancelled,
         doctorName: 'Dr. Lim',
+        type: 'Vision',
+        clinic: 'TMC Eye Clinic',
+        cancelReason: 'Schedule conflict',
+        requestedOn: now.subtract(const Duration(days: 20)),
+        updatedAt: now.subtract(const Duration(days: 15)),
       ),
       Appointment(
         id: 'apt-5',
@@ -72,6 +88,11 @@ class MockDashboardDataSource {
         time: '3:00 PM',
         status: AppointmentStatus.completed,
         doctorName: 'Dr. Reyes',
+        type: 'Vaccination',
+        clinic: 'TMC Student Health Clinic',
+        notes: 'Influenza vaccine administered.',
+        requestedOn: now.subtract(const Duration(days: 25)),
+        updatedAt: now.subtract(const Duration(days: 20)),
       ),
       Appointment(
         id: 'apt-6',
@@ -81,6 +102,9 @@ class MockDashboardDataSource {
         time: '8:30 AM',
         status: AppointmentStatus.pending,
         doctorName: 'Dr. Santos',
+        type: 'Laboratory',
+        clinic: 'TMC Laboratory',
+        requestedOn: now.subtract(const Duration(days: 1)),
       ),
     ];
 

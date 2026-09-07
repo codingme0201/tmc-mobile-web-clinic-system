@@ -11,6 +11,8 @@ import '../features/clinic_information/presentation/screens/clinic_information_s
 import '../features/clinic_information/presentation/screens/clinic_schedule_screen.dart';
 import '../features/clinic_information/presentation/screens/staff_schedule_screen.dart';
 import '../features/clinic_information/presentation/screens/clinic_activities_screen.dart';
+import '../features/appointments/presentation/screens/appointments_screen.dart';
+import '../features/appointments/presentation/screens/appointment_detail_screen.dart';
 import '../core/widgets/main_shell.dart';
 
 class AppRouter {
@@ -25,6 +27,8 @@ class AppRouter {
   static const String clinicSchedule = '/clinic-schedule';
   static const String staffSchedule = '/staff-schedule';
   static const String clinicActivities = '/clinic-activities';
+  static const String appointments = '/appointments';
+  static const String appointmentDetail = '/appointment-detail';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -50,6 +54,15 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const AuthGuard(child: StaffScheduleScreen()));
       case clinicActivities:
         return MaterialPageRoute(builder: (_) => const AuthGuard(child: ClinicActivitiesScreen()));
+      case appointments:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: AppointmentsScreen()));
+      case appointmentDetail:
+        final appointmentId = settings.arguments as String? ?? '';
+        return MaterialPageRoute(
+          builder: (_) => AuthGuard(
+            child: AppointmentDetailScreen(appointmentId: appointmentId),
+          ),
+        );
       default:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
     }

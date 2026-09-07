@@ -208,7 +208,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildQuickActions(BuildContext context) {
     final actions = [
-      _QuickAction(Icons.calendar_today, 'Appointments', () {}),
+      _QuickAction(Icons.calendar_today, 'Appointments', () => Navigator.pushNamed(context, '/appointments')),
       _QuickAction(Icons.medical_information, 'Medical Records', () {}),
       _QuickAction(Icons.description, 'Prescriptions', () {}),
       _QuickAction(Icons.notifications, 'Notifications', () {}),

@@ -138,7 +138,7 @@ class _MainShellState extends State<MainShell> {
                   _DrawerItem(
                     icon: Icons.calendar_today_outlined,
                     title: 'Appointments',
-                    onTap: () {},
+                    onTap: () => _onDrawerItemTapped('/appointments'),
                   ),
                   _DrawerItem(
                     icon: Icons.chat_bubble_outline,
