@@ -5,6 +5,7 @@ import 'app/router.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'features/profile/presentation/controllers/profile_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,8 +36,11 @@ class _CareLinkAppState extends State<CareLinkApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: _authController,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: _authController),
+        ChangeNotifierProvider(create: (_) => ProfileController()),
+      ],
       child: MaterialApp(
         title: 'TMC CareLink',
         debugShowCheckedModeBanner: false,

@@ -7,6 +7,7 @@ import '../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../features/auth/presentation/screens/change_password_screen.dart';
 import '../features/auth/presentation/screens/account_security_screen.dart';
 import '../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../features/profile/presentation/screens/profile_screen.dart';
 
 class AppRouter {
   static const String login = '/login';
@@ -32,7 +33,7 @@ class AppRouter {
       case accountSecurity:
         return MaterialPageRoute(builder: (_) => const AuthGuard(child: AccountSecurityScreen()));
       case profile:
-        return MaterialPageRoute(builder: (_) => const AuthGuard(child: AccountSecurityScreen()));
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: ProfileScreen()));
       default:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
     }
