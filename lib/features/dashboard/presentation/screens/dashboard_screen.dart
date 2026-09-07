@@ -142,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 12),
             ClinicActivityCard(
               activities: data.clinicActivities,
-              onTap: () {},
+              onTap: () => Navigator.pushNamed(context, '/clinic-information'),
             ),
             const SizedBox(height: 32),
           ],

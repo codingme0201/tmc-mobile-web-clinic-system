@@ -8,6 +8,10 @@ import '../features/auth/presentation/screens/change_password_screen.dart';
 import '../features/auth/presentation/screens/account_security_screen.dart';
 import '../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
+import '../features/clinic_information/presentation/screens/clinic_information_screen.dart';
+import '../features/clinic_information/presentation/screens/clinic_schedule_screen.dart';
+import '../features/clinic_information/presentation/screens/staff_schedule_screen.dart';
+import '../features/clinic_information/presentation/screens/clinic_activities_screen.dart';
 
 class AppRouter {
   static const String login = '/login';
@@ -17,6 +21,10 @@ class AppRouter {
   static const String changePassword = '/change-password';
   static const String accountSecurity = '/account-security';
   static const String profile = '/profile';
+  static const String clinicInformation = '/clinic-information';
+  static const String clinicSchedule = '/clinic-schedule';
+  static const String staffSchedule = '/staff-schedule';
+  static const String clinicActivities = '/clinic-activities';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -34,6 +42,14 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const AuthGuard(child: AccountSecurityScreen()));
       case profile:
         return MaterialPageRoute(builder: (_) => const AuthGuard(child: ProfileScreen()));
+      case clinicInformation:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: ClinicInformationScreen()));
+      case clinicSchedule:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: ClinicScheduleScreen()));
+      case staffSchedule:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: StaffScheduleScreen()));
+      case clinicActivities:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: ClinicActivitiesScreen()));
       default:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
     }
