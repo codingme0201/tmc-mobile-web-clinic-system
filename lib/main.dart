@@ -4,7 +4,7 @@ import 'app/theme.dart';
 import 'app/router.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
-import 'features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'core/widgets/main_shell.dart';
 import 'features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'features/profile/presentation/controllers/profile_controller.dart';
 import 'features/clinic_information/presentation/controllers/clinic_information_controller.dart';
@@ -70,7 +70,7 @@ class AuthGate extends StatelessWidget {
         }
 
         if (auth.isAuthenticated) {
-          return const AuthGuard(child: DashboardScreen());
+          return const AuthGuard(child: MainShell());
         }
 
         return const LoginScreen();

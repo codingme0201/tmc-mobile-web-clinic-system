@@ -6,18 +6,18 @@ import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../features/auth/presentation/screens/change_password_screen.dart';
 import '../features/auth/presentation/screens/account_security_screen.dart';
-import '../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/clinic_information/presentation/screens/clinic_information_screen.dart';
 import '../features/clinic_information/presentation/screens/clinic_schedule_screen.dart';
 import '../features/clinic_information/presentation/screens/staff_schedule_screen.dart';
 import '../features/clinic_information/presentation/screens/clinic_activities_screen.dart';
+import '../core/widgets/main_shell.dart';
 
 class AppRouter {
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
-  static const String dashboard = '/dashboard';
+  static const String mainShell = '/main';
   static const String changePassword = '/change-password';
   static const String accountSecurity = '/account-security';
   static const String profile = '/profile';
@@ -34,8 +34,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case forgotPassword:
         return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
-      case dashboard:
-        return MaterialPageRoute(builder: (_) => const AuthGuard(child: DashboardScreen()));
+      case mainShell:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: MainShell()));
       case changePassword:
         return MaterialPageRoute(builder: (_) => const AuthGuard(child: ChangePasswordScreen()));
       case accountSecurity:

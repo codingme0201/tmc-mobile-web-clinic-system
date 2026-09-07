@@ -27,28 +27,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('TMC CareLink'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline),
-            onPressed: () => Navigator.pushNamed(context, '/profile'),
-          ),
-        ],
-      ),
-      body: Consumer2<AuthController, DashboardController>(
-        builder: (context, auth, dashboard, _) {
-          final user = auth.session?.user;
+    return Consumer2<AuthController, DashboardController>(
+      builder: (context, auth, dashboard, _) {
+        final user = auth.session?.user;
 
-          return RefreshIndicator(
-            onRefresh: () => dashboard.loadDashboard(),
-            color: AppTheme.primary,
-            child: _buildBody(context, dashboard, user?.name ?? 'User'),
-          );
-        },
-      ),
+        return RefreshIndicator(
+          onRefresh: () => dashboard.loadDashboard(),
+          color: AppTheme.primary,
+          child: _buildBody(context, dashboard, user?.name ?? 'User'),
+        );
+      },
     );
   }
 
