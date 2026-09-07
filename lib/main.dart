@@ -5,6 +5,7 @@ import 'app/router.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'features/profile/presentation/controllers/profile_controller.dart';
 
 void main() {
@@ -39,6 +40,7 @@ class _CareLinkAppState extends State<CareLinkApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _authController),
+        ChangeNotifierProvider(create: (_) => DashboardController()),
         ChangeNotifierProvider(create: (_) => ProfileController()),
       ],
       child: MaterialApp(
