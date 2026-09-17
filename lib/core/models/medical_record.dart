@@ -25,11 +25,11 @@ class MedicalRecord {
 
   factory MedicalRecord.fromJson(Map<String, dynamic> json) {
     return MedicalRecord(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      date: DateTime.parse(json['date'] as String),
-      type: json['type'] as String,
-      summary: json['summary'] as String?,
+      id: json['id']?.toString() ?? '',
+      title: (json['title'] ?? json['name'] ?? 'Medical Record').toString(),
+      date: DateTime.tryParse(json['date']?.toString() ?? json['lastUpdated']?.toString() ?? '') ?? DateTime.now(),
+      type: (json['type'] ?? 'Record').toString(),
+      summary: json['summary']?.toString() ?? json['status']?.toString(),
     );
   }
 }

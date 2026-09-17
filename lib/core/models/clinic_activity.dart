@@ -25,11 +25,11 @@ class ClinicActivity {
 
   factory ClinicActivity.fromJson(Map<String, dynamic> json) {
     return ClinicActivity(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      date: DateTime.parse(json['date'] as String),
-      type: json['type'] as String,
+      id: json['id']?.toString() ?? '',
+      title: (json['title'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      date: DateTime.tryParse(json['date']?.toString() ?? json['startDate']?.toString() ?? json['start_date']?.toString() ?? '') ?? DateTime.now(),
+      type: (json['type'] ?? 'Activity').toString(),
     );
   }
 }

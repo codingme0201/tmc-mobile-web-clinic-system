@@ -13,6 +13,11 @@ import '../features/clinic_information/presentation/screens/staff_schedule_scree
 import '../features/clinic_information/presentation/screens/clinic_activities_screen.dart';
 import '../features/appointments/presentation/screens/appointments_screen.dart';
 import '../features/appointments/presentation/screens/appointment_detail_screen.dart';
+import '../features/consultations/presentation/screens/consultations_screen.dart';
+import '../features/consultations/presentation/screens/consultation_detail_screen.dart';
+import '../features/medical_records/presentation/screens/medical_records_screen.dart';
+import '../features/medical_certificates/presentation/screens/medical_certificates_screen.dart';
+import '../features/prescriptions/presentation/screens/prescriptions_screen.dart';
 import '../core/widgets/main_shell.dart';
 
 class AppRouter {
@@ -29,6 +34,11 @@ class AppRouter {
   static const String clinicActivities = '/clinic-activities';
   static const String appointments = '/appointments';
   static const String appointmentDetail = '/appointment-detail';
+  static const String consultations = '/consultations';
+  static const String consultationDetail = '/consultation-detail';
+  static const String medicalRecords = '/medical-records';
+  static const String medicalCertificates = '/medical-certificates';
+  static const String prescriptions = '/prescriptions';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -63,6 +73,21 @@ class AppRouter {
             child: AppointmentDetailScreen(appointmentId: appointmentId),
           ),
         );
+      case consultations:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: ConsultationsScreen()));
+      case consultationDetail:
+        final consultationId = settings.arguments as String? ?? '';
+        return MaterialPageRoute(
+          builder: (_) => AuthGuard(
+            child: ConsultationDetailScreen(consultationId: consultationId),
+          ),
+        );
+      case medicalRecords:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: MedicalRecordsScreen()));
+      case medicalCertificates:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: MedicalCertificatesScreen()));
+      case prescriptions:
+        return MaterialPageRoute(builder: (_) => const AuthGuard(child: PrescriptionsScreen()));
       default:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
     }

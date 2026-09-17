@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme.dart';
 import '../controllers/clinic_information_controller.dart';
-import '../../data/datasources/mock_clinic_information_data_source.dart';
+import '../../domain/models/clinic_information.dart';
 import '../../domain/models/clinic_schedule.dart';
 
 class ClinicInformationScreen extends StatefulWidget {
@@ -66,9 +66,9 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
     );
   }
 
-  Widget _buildContent(BuildContext context, ClinicInformationData data) {
-    final info = data.clinicInfo;
-    final schedule = data.clinicSchedule;
+  Widget _buildContent(BuildContext context, ClinicInformation data) {
+    final info = data;
+    final schedule = data.schedule;
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -240,7 +240,12 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
     );
   }
 
-  Widget _buildSchedulePreview(ClinicSchedule schedule) {
+  Widget _buildSchedulePreview(ClinicSchedule? schedule) {
+    if (schedule == null) {
+      return const Center(
+        child: Text('No schedule available.', style: TextStyle(fontSize: 13, color: AppTheme.muted)),
+      );
+    }
     final now = DateTime.now().weekday;
     final dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 

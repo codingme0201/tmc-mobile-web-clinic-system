@@ -81,28 +81,43 @@ class Appointment {
     };
   }
 
+  static AppointmentStatus _parseStatus(String? status) {
+    if (status == null) return AppointmentStatus.pending;
+    final normalized = status.toLowerCase().replaceAll('-', '').replaceAll(' ', '').replaceAll('_', '');
+    if (normalized.contains('confirm') || normalized.contains('approved')) {
+      return AppointmentStatus.confirmed;
+    }
+    if (normalized.contains('complete')) {
+      return AppointmentStatus.completed;
+    }
+    if (normalized.contains('cancel')) {
+      return AppointmentStatus.cancelled;
+    }
+    if (normalized.contains('noshow')) {
+      return AppointmentStatus.noShow;
+    }
+    return AppointmentStatus.pending;
+  }
+
   factory Appointment.fromJson(Map<String, dynamic> json) {
     return Appointment(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      reason: json['reason'] as String,
-      date: DateTime.parse(json['date'] as String),
-      time: json['time'] as String,
-      status: AppointmentStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => AppointmentStatus.pending,
-      ),
-      doctorName: json['doctorName'] as String,
-      type: json['type'] as String? ?? 'Check-up',
-      clinic: json['clinic'] as String? ?? 'TMC Student Health Clinic',
-      notes: json['notes'] as String?,
+      id: json['id']?.toString() ?? '',
+      title: (json['reference'] ?? json['title'] ?? '').toString(),
+      reason: (json['reason'] ?? '').toString(),
+      date: DateTime.tryParse(json['date']?.toString() ?? '') ?? DateTime.now(),
+      time: (json['time'] ?? '').toString(),
+      status: _parseStatus(json['status']?.toString()),
+      doctorName: (json['staff'] ?? json['doctorName'] ?? 'TMC Medical Staff').toString(),
+      type: (json['type'] ?? 'Check-up').toString(),
+      clinic: (json['clinic'] ?? 'TMC Student Health Clinic').toString(),
+      notes: json['notes']?.toString(),
       requestedOn: json['requestedOn'] != null
-          ? DateTime.parse(json['requestedOn'] as String)
+          ? DateTime.tryParse(json['requestedOn'].toString())
           : null,
       updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'] as String)
+          ? DateTime.tryParse(json['updatedAt'].toString())
           : null,
-      cancelReason: json['cancelReason'] as String?,
+      cancelReason: json['cancelReason']?.toString(),
     );
   }
 }

@@ -32,17 +32,32 @@ class ClinicActivityDetail {
   }
 
   factory ClinicActivityDetail.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate;
+    try {
+      final rawDate = (json['date'] ?? json['start_date'] ?? json['startDate'] ?? '').toString();
+      parsedDate = rawDate.isNotEmpty ? DateTime.parse(rawDate) : DateTime.now();
+    } catch (_) {
+      parsedDate = DateTime.now();
+    }
+
+    final rawStatus = (json['status'] ?? 'upcoming').toString().toLowerCase();
+    ActivityStatus resolvedStatus;
+    if (rawStatus.contains('ongoing') || rawStatus.contains('active')) {
+      resolvedStatus = ActivityStatus.ongoing;
+    } else if (rawStatus.contains('complete') || rawStatus.contains('done')) {
+      resolvedStatus = ActivityStatus.completed;
+    } else {
+      resolvedStatus = ActivityStatus.upcoming;
+    }
+
     return ClinicActivityDetail(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      date: DateTime.parse(json['date'] as String),
-      time: json['time'] as String?,
-      location: json['location'] as String?,
-      status: ActivityStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => ActivityStatus.upcoming,
-      ),
+      id: json['id']?.toString() ?? '',
+      title: (json['title'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      date: parsedDate,
+      time: json['time']?.toString() ?? json['start_time']?.toString(),
+      location: json['location']?.toString() ?? 'Main Clinic',
+      status: resolvedStatus,
     );
   }
 }

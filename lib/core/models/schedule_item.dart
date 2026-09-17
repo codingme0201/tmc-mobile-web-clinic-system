@@ -28,17 +28,26 @@ class ScheduleItem {
     };
   }
 
+  static ScheduleType _parseType(String? type) {
+    if (type == null) return ScheduleType.appointment;
+    final normalized = type.toLowerCase();
+    if (normalized.contains('activit') || normalized.contains('event')) {
+      return ScheduleType.clinicActivity;
+    }
+    if (normalized.contains('clinic') || normalized.contains('staff') || normalized.contains('duty')) {
+      return ScheduleType.clinicSchedule;
+    }
+    return ScheduleType.appointment;
+  }
+
   factory ScheduleItem.fromJson(Map<String, dynamic> json) {
     return ScheduleItem(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      date: DateTime.parse(json['date'] as String),
-      time: json['time'] as String?,
-      type: ScheduleType.values.firstWhere(
-        (e) => e.name == json['type'],
-        orElse: () => ScheduleType.appointment,
-      ),
-      description: json['description'] as String?,
+      id: json['id']?.toString() ?? '',
+      title: (json['title'] ?? json['reference'] ?? 'Schedule Item').toString(),
+      date: DateTime.tryParse(json['date']?.toString() ?? json['startDate']?.toString() ?? '') ?? DateTime.now(),
+      time: json['time']?.toString() ?? json['startTime']?.toString(),
+      type: _parseType(json['type']?.toString()),
+      description: json['description']?.toString() ?? json['reason']?.toString(),
     );
   }
 }

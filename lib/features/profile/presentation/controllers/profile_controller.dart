@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/profile.dart';
 import '../../domain/repositories/profile_repository.dart';
-import '../../data/repositories/mock_profile_repository.dart';
+import '../../data/repositories/profile_api_repository.dart';
 
 enum ProfileStatus { initial, loading, loaded, updating, error }
 
 class ProfileController extends ChangeNotifier {
-  final ProfileRepository _repository = MockProfileRepository();
+  final ProfileRepository _repository = ProfileApiRepository();
 
   Profile? _profile;
   ProfileStatus _status = ProfileStatus.initial;

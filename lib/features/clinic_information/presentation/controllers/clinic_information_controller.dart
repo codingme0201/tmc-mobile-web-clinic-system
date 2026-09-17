@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import '../../data/repositories/clinic_information_repository.dart';
-import '../../data/datasources/mock_clinic_information_data_source.dart';
+import '../../domain/repositories/clinic_information_repository.dart';
+import '../../data/repositories/clinic_info_api_repository.dart';
+import '../../domain/models/clinic_information.dart';
 
 enum ClinicInfoStatus { initial, loading, loaded, error }
 
 class ClinicInformationController extends ChangeNotifier {
-  final ClinicInformationRepository _repository = ClinicInformationRepository();
+  final ClinicInformationRepository _repository = ClinicInfoApiRepository();
 
-  ClinicInformationData? _data;
+  ClinicInformation? _data;
   ClinicInfoStatus _status = ClinicInfoStatus.initial;
   String? _error;
 
-  ClinicInformationData? get data => _data;
+  ClinicInformation? get data => _data;
   ClinicInfoStatus get status => _status;
   String? get error => _error;
   bool get isLoading => _status == ClinicInfoStatus.loading;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/session.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../../data/repositories/mock_auth_repository.dart';
+import '../../data/repositories/auth_api_repository.dart';
 
 class AuthController extends ChangeNotifier {
-  final AuthRepository _repository = MockAuthRepository();
+  final AuthRepository _repository = AuthApiRepository();
 
   Session? _session;
   bool _isLoading = false;

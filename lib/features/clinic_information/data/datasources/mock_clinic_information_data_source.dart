@@ -168,4 +168,20 @@ class MockClinicInformationDataSource {
       activities: activities,
     );
   }
+
+  ClinicInformation getClinicInformation() {
+    final data = getData();
+    return ClinicInformation(
+      name: data.clinicInfo.name,
+      description: data.clinicInfo.description,
+      address: data.clinicInfo.address,
+      contactNumber: data.clinicInfo.contactNumber,
+      email: data.clinicInfo.email,
+      services: data.clinicInfo.services,
+      schedule: data.clinicSchedule,
+      staffSchedules: data.staffSchedules,
+      activities: data.activities,
+      operatingHours: '8:00 AM - 5:00 PM',
+    );
+  }
 }

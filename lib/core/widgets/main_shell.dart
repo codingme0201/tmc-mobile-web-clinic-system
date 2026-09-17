@@ -143,33 +143,39 @@ class _MainShellState extends State<MainShell> {
                   _DrawerItem(
                     icon: Icons.chat_bubble_outline,
                     title: 'Consultations',
-                    onTap: () {},
+                    onTap: () => _onDrawerItemTapped('/consultations'),
                   ),
                   _DrawerItem(
                     icon: Icons.folder_open_outlined,
                     title: 'Medical Records',
-                    onTap: () {},
+                    onTap: () => _onDrawerItemTapped('/medical-records'),
                   ),
                   _DrawerItem(
                     icon: Icons.description_outlined,
                     title: 'Prescriptions',
-                    onTap: () {},
+                    onTap: () => _onDrawerItemTapped('/prescriptions'),
                   ),
                   _DrawerItem(
                     icon: Icons.article_outlined,
                     title: 'Medical Certificates',
-                    onTap: () {},
+                    onTap: () => _onDrawerItemTapped('/medical-certificates'),
                   ),
                   _DrawerItem(
                     icon: Icons.notifications_outlined,
                     title: 'Notifications',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pop(context);
+                      setState(() => _currentTabIndex = 3);
+                    },
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   _DrawerItem(
                     icon: Icons.help_outline,
                     title: 'Help & Support',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pop(context);
+                      setState(() => _currentTabIndex = 4);
+                    },
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   _DrawerItem(

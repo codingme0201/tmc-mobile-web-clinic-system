@@ -1,0 +1,127 @@
+import 'dart:convert';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+class ApiClient {
+  static String? _configuredBaseUrl;
+
+  static void setBaseUrl(String url) {
+    _configuredBaseUrl = url;
+  }
+
+  static String get defaultBaseUrl {
+    if (_configuredBaseUrl != null && _configuredBaseUrl!.isNotEmpty) {
+      return _configuredBaseUrl!;
+    }
+    if (kIsWeb) {
+      return 'http://127.0.0.1:8000/api';
+    }
+    try {
+      if (Platform.isAndroid) {
+        return 'http://10.0.2.2:8000/api';
+      }
+    } catch (_) {}
+    return 'http://127.0.0.1:8000/api';
+  }
+
+  Future<String> getBaseUrl() async {
+    if (_configuredBaseUrl != null && _configuredBaseUrl!.isNotEmpty) {
+      return _configuredBaseUrl!;
+    }
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('api_base_url');
+    if (saved != null && saved.isNotEmpty) {
+      return saved;
+    }
+    return defaultBaseUrl;
+  }
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final directToken = prefs.getString('auth_token');
+    if (directToken != null && directToken.isNotEmpty) {
+      return directToken;
+    }
+    final sessionJson = prefs.getString('carelink_session');
+    if (sessionJson != null) {
+      try {
+        final decoded = jsonDecode(sessionJson);
+        if (decoded is Map && decoded['token'] != null) {
+          final token = decoded['token'].toString();
+          await prefs.setString('auth_token', token);
+          return token;
+        }
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  Map<String, String> _buildHeaders(String? token, {bool isJson = false}) {
+    final headers = <String, String>{
+      'Accept': 'application/json',
+    };
+    if (isJson) {
+      headers['Content-Type'] = 'application/json';
+    }
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    return headers;
+  }
+
+  Future<http.Response> get(String endpoint, {Map<String, String>? queries}) async {
+    final baseUrl = await getBaseUrl();
+    final token = await getToken();
+    final uri = Uri.parse('$baseUrl$endpoint').replace(queryParameters: queries);
+
+    return await http.get(
+      uri,
+      headers: _buildHeaders(token),
+    );
+  }
+
+  Future<http.Response> post(String endpoint, {Map<String, dynamic>? body}) async {
+    final baseUrl = await getBaseUrl();
+    final token = await getToken();
+
+    return await http.post(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: _buildHeaders(token, isJson: true),
+      body: body != null ? jsonEncode(body) : null,
+    );
+  }
+
+  Future<http.Response> put(String endpoint, {Map<String, dynamic>? body}) async {
+    final baseUrl = await getBaseUrl();
+    final token = await getToken();
+
+    return await http.put(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: _buildHeaders(token, isJson: true),
+      body: body != null ? jsonEncode(body) : null,
+    );
+  }
+
+  Future<http.Response> patch(String endpoint, {Map<String, dynamic>? body}) async {
+    final baseUrl = await getBaseUrl();
+    final token = await getToken();
+
+    return await http.patch(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: _buildHeaders(token, isJson: true),
+      body: body != null ? jsonEncode(body) : null,
+    );
+  }
+
+  Future<http.Response> delete(String endpoint) async {
+    final baseUrl = await getBaseUrl();
+    final token = await getToken();
+
+    return await http.delete(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: _buildHeaders(token),
+    );
+  }
+}

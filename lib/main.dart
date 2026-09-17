@@ -9,6 +9,11 @@ import 'features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'features/profile/presentation/controllers/profile_controller.dart';
 import 'features/clinic_information/presentation/controllers/clinic_information_controller.dart';
 import 'features/appointments/presentation/controllers/appointment_controller.dart';
+import 'features/consultations/presentation/controllers/consultation_controller.dart';
+import 'features/medical_records/presentation/controllers/medical_record_controller.dart';
+import 'features/medical_certificates/presentation/controllers/medical_certificate_controller.dart';
+import 'features/prescriptions/presentation/controllers/prescription_controller.dart';
+import 'features/notifications/presentation/controllers/notification_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +51,11 @@ class _CareLinkAppState extends State<CareLinkApp> {
         ChangeNotifierProvider(create: (_) => ProfileController()),
         ChangeNotifierProvider(create: (_) => ClinicInformationController()),
         ChangeNotifierProvider(create: (_) => AppointmentController()),
+        ChangeNotifierProvider(create: (_) => ConsultationController()),
+        ChangeNotifierProvider(create: (_) => MedicalRecordController()),
+        ChangeNotifierProvider(create: (_) => MedicalCertificateController()),
+        ChangeNotifierProvider(create: (_) => PrescriptionController()),
+        ChangeNotifierProvider(create: (_) => NotificationController()),
       ],
       child: MaterialApp(
         title: 'TMC CareLink',

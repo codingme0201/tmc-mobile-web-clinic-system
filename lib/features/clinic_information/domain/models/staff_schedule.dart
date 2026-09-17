@@ -21,9 +21,9 @@ class StaffScheduleEntry {
 
   factory StaffScheduleEntry.fromJson(Map<String, dynamic> json) {
     return StaffScheduleEntry(
-      day: json['day'] as String,
-      startTime: json['startTime'] as String,
-      endTime: json['endTime'] as String,
+      day: (json['day'] ?? json['date'] ?? '').toString(),
+      startTime: (json['startTime'] ?? json['start_time'] ?? '').toString(),
+      endTime: (json['endTime'] ?? json['end_time'] ?? '').toString(),
     );
   }
 }
@@ -54,17 +54,25 @@ class StaffSchedule {
   }
 
   factory StaffSchedule.fromJson(Map<String, dynamic> json) {
+    final rawRole = (json['role'] ?? json['user']?['role'] ?? '').toString().toLowerCase();
+    final isNurse = rawRole.contains('nurse');
+
+    List<StaffScheduleEntry> entries = [];
+    if (json['schedule'] is List) {
+      entries = (json['schedule'] as List)
+          .whereType<Map<String, dynamic>>()
+          .map((s) => StaffScheduleEntry.fromJson(s))
+          .toList();
+    } else if (json['startTime'] != null || json['start_time'] != null) {
+      entries = [StaffScheduleEntry.fromJson(json)];
+    }
+
     return StaffSchedule(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      role: StaffRole.values.firstWhere(
-        (e) => e.name == json['role'],
-        orElse: () => StaffRole.doctor,
-      ),
-      specialty: json['specialty'] as String,
-      schedule: (json['schedule'] as List)
-          .map((s) => StaffScheduleEntry.fromJson(s as Map<String, dynamic>))
-          .toList(),
+      id: json['id']?.toString() ?? '',
+      name: (json['name'] ?? json['user']?['name'] ?? 'Medical Staff').toString(),
+      role: isNurse ? StaffRole.nurse : StaffRole.doctor,
+      specialty: (json['specialty'] ?? (isNurse ? 'Nursing Services' : 'General Medicine')).toString(),
+      schedule: entries,
     );
   }
 }

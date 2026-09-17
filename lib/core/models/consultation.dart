@@ -31,18 +31,24 @@ class Consultation {
     };
   }
 
+  static ConsultationStatus _parseStatus(String? status) {
+    if (status == null) return ConsultationStatus.completed;
+    final normalized = status.toLowerCase().replaceAll('-', '').replaceAll(' ', '').replaceAll('_', '');
+    if (normalized.contains('schedule')) return ConsultationStatus.scheduled;
+    if (normalized.contains('progress')) return ConsultationStatus.inProgress;
+    if (normalized.contains('cancel')) return ConsultationStatus.cancelled;
+    return ConsultationStatus.completed;
+  }
+
   factory Consultation.fromJson(Map<String, dynamic> json) {
     return Consultation(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      doctorName: json['doctorName'] as String,
-      date: DateTime.parse(json['date'] as String),
-      time: json['time'] as String,
-      status: ConsultationStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => ConsultationStatus.scheduled,
-      ),
-      diagnosis: json['diagnosis'] as String?,
+      id: json['id']?.toString() ?? '',
+      title: (json['reference'] ?? json['title'] ?? json['chiefComplaint'] ?? json['chief_complaint'] ?? 'Consultation').toString(),
+      doctorName: (json['staff'] ?? json['doctorName'] ?? 'TMC Medical Staff').toString(),
+      date: DateTime.tryParse(json['date']?.toString() ?? '') ?? DateTime.now(),
+      time: (json['time'] ?? '').toString(),
+      status: _parseStatus(json['status']?.toString()),
+      diagnosis: json['diagnosis']?.toString(),
     );
   }
 }

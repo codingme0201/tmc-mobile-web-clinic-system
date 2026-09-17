@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../data/repositories/appointment_repository.dart';
+import '../../data/repositories/appointment_api_repository.dart';
 import '../../../../core/models/appointment.dart';
 
 enum AppointmentListStatus { initial, loading, loaded, error }
 
 class AppointmentController extends ChangeNotifier {
-  final AppointmentRepository _repository = AppointmentRepository();
+  final AppointmentApiRepository _repository = AppointmentApiRepository();
 
   List<Appointment> _appointments = [];
   List<Appointment> _upcomingAppointments = [];

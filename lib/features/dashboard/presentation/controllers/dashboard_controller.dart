@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../data/repositories/dashboard_repository.dart';
-import '../../data/datasources/mock_dashboard_data_source.dart';
+import 'package:carelink_mobile/features/dashboard/domain/models/dashboard_data.dart';
+import 'package:carelink_mobile/features/dashboard/data/repositories/dashboard_api_repository.dart';
 
 enum DashboardStatus { initial, loading, loaded, refreshing, error }
 
 class DashboardController extends ChangeNotifier {
-  final DashboardRepository _repository = DashboardRepository();
+  final DashboardApiRepository _repository = DashboardApiRepository();
 
   DashboardData? _data;
   DashboardStatus _status = DashboardStatus.initial;
