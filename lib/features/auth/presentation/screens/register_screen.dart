@@ -65,118 +65,169 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: const Text('Create Account'),
+        title: const Text(
+          'Create Account',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: AppTheme.ink),
+        ),
         backgroundColor: Colors.transparent,
         foregroundColor: AppTheme.ink,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppTheme.line),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back_rounded, size: 18, color: AppTheme.ink),
+              padding: EdgeInsets.zero,
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary.withAlpha(16),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppTheme.primary.withAlpha(35)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.person_add_alt_1_rounded, size: 12, color: AppTheme.primary),
+                        SizedBox(width: 5),
+                        Text(
+                          'PATIENT ONBOARDING',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   const Text(
                     'Join TMC CareLink',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
                       color: AppTheme.ink,
+                      letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   const Text(
-                    'Create your patient account',
-                    style: TextStyle(fontSize: 15, color: AppTheme.muted),
-                  ),
-                  const SizedBox(height: 32),
-                  AppTextField(
-                    label: 'Full Name',
-                    controller: _nameController,
-                    hintText: 'Enter your full name',
-                    prefixIcon: Icons.person_outline,
-                    textInputAction: TextInputAction.next,
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Full name is required.';
-                      if (v.trim().length < 2) return 'Name must be at least 2 characters.';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    label: 'Email',
-                    controller: _emailController,
-                    hintText: 'Enter your email',
-                    prefixIcon: Icons.email_outlined,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Email is required.';
-                      if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v.trim())) {
-                        return 'Please enter a valid email address.';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    label: 'Password',
-                    controller: _passwordController,
-                    hintText: 'Create a password',
-                    prefixIcon: Icons.lock_outline,
-                    obscureText: _obscurePassword,
-                    textInputAction: TextInputAction.next,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: AppTheme.muted,
-                        size: 20,
-                      ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Password is required.';
-                      if (v.length < 6) return 'Password must be at least 6 characters.';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    label: 'Confirm Password',
-                    controller: _confirmPasswordController,
-                    hintText: 'Confirm your password',
-                    prefixIcon: Icons.lock_outline,
-                    obscureText: _obscureConfirm,
-                    textInputAction: TextInputAction.done,
-                    onEditingComplete: _handleRegister,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                        color: AppTheme.muted,
-                        size: 20,
-                      ),
-                      onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Please confirm your password.';
-                      if (v != _passwordController.text) return 'Passwords do not match.';
-                      return null;
-                    },
+                    'Create your confidential patient account',
+                    style: TextStyle(fontSize: 14, color: AppTheme.muted),
                   ),
                   const SizedBox(height: 24),
-                  AppButton(
-                    label: 'Create Account',
-                    onPressed: _handleRegister,
-                    isLoading: _busy,
-                    icon: Icons.person_add,
+
+                  // Form Container
+                  Container(
+                    padding: const EdgeInsets.all(22),
+                    decoration: AppTheme.cardDecoration(borderRadius: 22),
+                    child: Column(
+                      children: [
+                        AppTextField(
+                          label: 'Full Name',
+                          controller: _nameController,
+                          hintText: 'e.g. Maria Santos',
+                          prefixIcon: Icons.person_outline_rounded,
+                          textInputAction: TextInputAction.next,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) return 'Full name is required.';
+                            if (v.trim().length < 2) return 'Name must be at least 2 characters.';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          label: 'Email Address',
+                          controller: _emailController,
+                          hintText: 'maria@example.com',
+                          prefixIcon: Icons.email_outlined,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) return 'Email is required.';
+                            if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v.trim())) {
+                              return 'Please enter a valid email address.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          label: 'Password',
+                          controller: _passwordController,
+                          hintText: 'Minimum 6 characters',
+                          prefixIcon: Icons.lock_outline_rounded,
+                          obscureText: _obscurePassword,
+                          textInputAction: TextInputAction.next,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                              color: AppTheme.muted,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Password is required.';
+                            if (v.length < 6) return 'Password must be at least 6 characters.';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          label: 'Confirm Password',
+                          controller: _confirmPasswordController,
+                          hintText: 'Re-enter your password',
+                          prefixIcon: Icons.lock_clock_outlined,
+                          obscureText: _obscureConfirm,
+                          textInputAction: TextInputAction.done,
+                          onEditingComplete: _handleRegister,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                              color: AppTheme.muted,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Please confirm your password.';
+                            if (v != _passwordController.text) return 'Passwords do not match.';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        AppButton(
+                          label: 'Create Account',
+                          onPressed: _handleRegister,
+                          isLoading: _busy,
+                          icon: Icons.person_add_rounded,
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Row(
@@ -184,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       const Text(
                         'Already have an account? ',
-                        style: TextStyle(color: AppTheme.muted),
+                        style: TextStyle(color: AppTheme.muted, fontSize: 13.5),
                       ),
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
@@ -192,7 +243,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           'Sign In',
                           style: TextStyle(
                             color: AppTheme.primary,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13.5,
                           ),
                         ),
                       ),

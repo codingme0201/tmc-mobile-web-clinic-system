@@ -98,22 +98,24 @@ class _SearchTabState extends State<SearchTab> {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: AppTheme.cardShadowSubtle,
               border: Border.all(color: AppTheme.line),
             ),
             child: Row(
               children: [
-                const Icon(Icons.search, color: AppTheme.mutedLight, size: 20),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
+                const Icon(Icons.search_rounded, color: AppTheme.primary, size: 20),
+                const SizedBox(width: 10),
                 Expanded(
                   child: TextField(
                     controller: _controller,
                     onChanged: _onQueryChanged,
                     decoration: const InputDecoration(
                       hintText: 'Search appointments, records, doctors...',
+                      hintStyle: TextStyle(fontSize: 13.5, color: AppTheme.mutedLight),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -121,7 +123,7 @@ class _SearchTabState extends State<SearchTab> {
                 ),
                 if (_controller.text.isNotEmpty)
                   IconButton(
-                    icon: const Icon(Icons.close, size: 18, color: AppTheme.muted),
+                    icon: const Icon(Icons.close_rounded, size: 18, color: AppTheme.muted),
                     onPressed: () {
                       _controller.clear();
                       _onQueryChanged('');
@@ -231,17 +233,42 @@ class _SearchTabState extends State<SearchTab> {
 
   Widget _buildSectionHeader(String title, int count) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8, top: 4),
+      padding: const EdgeInsets.only(bottom: 10, top: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
+          Row(
+            children: [
+              Container(
+                width: 3.5,
+                height: 14,
+                decoration: BoxDecoration(
+                  color: AppTheme.primary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title.toUpperCase(),
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.ink,
+                  letterSpacing: 0.7,
+                ),
+              ),
+            ],
           ),
-          Text(
-            '$count found',
-            style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: AppTheme.primary.withAlpha(15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '$count found',
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.primary),
+            ),
           ),
         ],
       ),
@@ -256,22 +283,18 @@ class _SearchTabState extends State<SearchTab> {
     final ref = (item['reference'] ?? '').toString();
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.line),
-      ),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cardDecoration(borderRadius: 14),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppTheme.primary.withAlpha(20),
-              borderRadius: BorderRadius.circular(8),
+              color: AppTheme.primaryLight.withAlpha(20),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.calendar_today_outlined, size: 18, color: AppTheme.primary),
+            child: const Icon(Icons.calendar_month_rounded, size: 18, color: AppTheme.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -281,11 +304,18 @@ class _SearchTabState extends State<SearchTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.ink)),
-                    Text(status, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.primary)),
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.ink)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withAlpha(16),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(status, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppTheme.primary)),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text('$ref · $staff · $date', style: const TextStyle(fontSize: 12, color: AppTheme.muted)),
               ],
             ),
@@ -302,30 +332,26 @@ class _SearchTabState extends State<SearchTab> {
     final meds = (item['medications'] as List? ?? []);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.line),
-      ),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cardDecoration(borderRadius: 14),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppTheme.primary.withAlpha(20),
-              borderRadius: BorderRadius.circular(8),
+              color: AppTheme.primaryLight.withAlpha(20),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.medication_outlined, size: 18, color: AppTheme.primary),
+            child: const Icon(Icons.medication_liquid_rounded, size: 18, color: AppTheme.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(ref, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.ink)),
-                const SizedBox(height: 2),
+                Text(ref, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.ink)),
+                const SizedBox(height: 3),
                 Text('$doctor · $date · ${meds.length} item(s)', style: const TextStyle(fontSize: 12, color: AppTheme.muted)),
               ],
             ),
@@ -342,22 +368,18 @@ class _SearchTabState extends State<SearchTab> {
     final date = (item['issueDate'] ?? item['issue_date'] ?? '').toString();
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.line),
-      ),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cardDecoration(borderRadius: 14),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppTheme.primary.withAlpha(20),
-              borderRadius: BorderRadius.circular(8),
+              color: AppTheme.primaryLight.withAlpha(20),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.article_outlined, size: 18, color: AppTheme.primary),
+            child: const Icon(Icons.assignment_outlined, size: 18, color: AppTheme.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -367,11 +389,18 @@ class _SearchTabState extends State<SearchTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(ref, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.ink)),
-                    Text(status, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.primary)),
+                    Text(ref, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.ink)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withAlpha(16),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(status, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppTheme.primary)),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text('$purpose · $date', style: const TextStyle(fontSize: 12, color: AppTheme.muted)),
               ],
             ),
@@ -387,30 +416,26 @@ class _SearchTabState extends State<SearchTab> {
     final allergies = (record['allergies'] as List? ?? []);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.line),
-      ),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cardDecoration(borderRadius: 14),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppTheme.primary.withAlpha(20),
-              borderRadius: BorderRadius.circular(8),
+              color: AppTheme.primaryLight.withAlpha(20),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.folder_outlined, size: 18, color: AppTheme.primary),
+            child: const Icon(Icons.folder_shared_rounded, size: 18, color: AppTheme.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.ink)),
-                const SizedBox(height: 2),
+                Text(name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.ink)),
+                const SizedBox(height: 3),
                 Text(
                   '${conditions.length} Condition(s) · ${allergies.length} Allergie(s)',
                   style: const TextStyle(fontSize: 12, color: AppTheme.muted),

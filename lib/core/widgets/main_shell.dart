@@ -46,18 +46,66 @@ class _MainShellState extends State<MainShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_tabTitles[_currentTabIndex]),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppTheme.heroGradient,
+          ),
+        ),
+        title: Column(
+          children: [
+            Text(
+              _tabTitles[_currentTabIndex],
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(height: 1),
+            const Text(
+              'TMC CareLink Clinic',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFFBBE5DE),
+                letterSpacing: 0.2,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
+        elevation: 0,
         leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
+          builder: (context) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Material(
+              color: Colors.white.withAlpha(30),
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => Scaffold.of(context).openDrawer(),
+                child: const Icon(Icons.menu, color: Colors.white, size: 22),
+              ),
+            ),
           ),
         ),
         actions: [
           if (_currentTabIndex == 0)
-            IconButton(
-              icon: const Icon(Icons.person_outline),
-              onPressed: () => Navigator.pushNamed(context, '/profile'),
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Material(
+                color: Colors.white.withAlpha(30),
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => Navigator.pushNamed(context, '/profile'),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Icons.person_outline, color: Colors.white, size: 22),
+                  ),
+                ),
+              ),
             ),
         ],
       ),
@@ -82,45 +130,102 @@ class _MainShellState extends State<MainShell> {
     final userEmail = auth.session?.user.email ?? '';
 
     return Drawer(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.horizontal(right: Radius.circular(28)),
+      ),
       child: SafeArea(
+        top: false,
         child: Column(
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              padding: const EdgeInsets.fromLTRB(22, 54, 22, 24),
               decoration: const BoxDecoration(
-                color: AppTheme.primary,
+                gradient: AppTheme.heroGradient,
+                borderRadius: BorderRadius.only(topRight: Radius.circular(28)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white.withAlpha(51),
-                    child: Text(
-                      userName.isNotEmpty ? userName[0].toUpperCase() : '?',
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppTheme.gold, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.gold.withAlpha(50),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 28,
+                          backgroundColor: Colors.white.withAlpha(45),
+                          child: Text(
+                            userName.isNotEmpty ? userName[0].toUpperCase() : '?',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userName,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              userEmail,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white.withAlpha(200),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    userName,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.success.withAlpha(40),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppTheme.success.withAlpha(80)),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    userEmail,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white.withAlpha(204),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.verified, color: Color(0xFF6DE3A7), size: 13),
+                        SizedBox(width: 5),
+                        Text(
+                          'Active Patient Account',
+                          style: TextStyle(
+                            color: Color(0xFFE8F7F0),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -128,8 +233,20 @@ class _MainShellState extends State<MainShell> {
             ),
             Expanded(
               child: ListView(
-                padding: EdgeInsets.zero,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: Text(
+                      'CLINICAL SERVICES',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.muted,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ),
                   _DrawerItem(
                     icon: Icons.local_hospital_outlined,
                     title: 'Clinic Information',
@@ -168,7 +285,27 @@ class _MainShellState extends State<MainShell> {
                       setState(() => _currentTabIndex = 3);
                     },
                   ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Divider(height: 1, color: AppTheme.line),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: Text(
+                      'ACCOUNT & SUPPORT',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.muted,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ),
+                  _DrawerItem(
+                    icon: Icons.person_outline,
+                    title: 'My Profile',
+                    onTap: () => _onDrawerItemTapped('/profile'),
+                  ),
                   _DrawerItem(
                     icon: Icons.help_outline,
                     title: 'Help & Support',
@@ -177,10 +314,13 @@ class _MainShellState extends State<MainShell> {
                       setState(() => _currentTabIndex = 4);
                     },
                   ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Divider(height: 1, color: AppTheme.line),
+                  ),
                   _DrawerItem(
                     icon: Icons.logout,
-                    title: 'Log Out',
+                    title: 'Sign Out',
                     color: AppTheme.danger,
                     onTap: _onLogout,
                   ),
@@ -195,49 +335,58 @@ class _MainShellState extends State<MainShell> {
 
   Widget _buildBottomNavBar() {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: AppTheme.line, width: 0.5)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+        boxShadow: AppTheme.cardShadow,
+        border: const Border(top: BorderSide(color: AppTheme.line, width: 0.8)),
       ),
-      child: BottomNavigationBar(
-        currentIndex: _currentTabIndex,
-        onTap: _onTabTapped,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: AppTheme.primary,
-        unselectedItemColor: AppTheme.mutedLight,
-        selectedFontSize: 11,
-        unselectedFontSize: 11,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-        elevation: 0,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          child: BottomNavigationBar(
+            currentIndex: _currentTabIndex,
+            onTap: _onTabTapped,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.transparent,
+            selectedItemColor: AppTheme.primary,
+            unselectedItemColor: AppTheme.mutedLight,
+            selectedFontSize: 11.5,
+            unselectedFontSize: 11.5,
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+            elevation: 0,
+            items: [
+              _buildNavItem(Icons.home_outlined, Icons.home, 'Home', 0),
+              _buildNavItem(Icons.folder_outlined, Icons.folder, 'Records', 1),
+              _buildNavItem(Icons.search, Icons.search, 'Search', 2),
+              _buildNavItem(Icons.notifications_outlined, Icons.notifications, 'Alerts', 3),
+              _buildNavItem(Icons.help_outline, Icons.help, 'Help', 4),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.folder_outlined),
-            activeIcon: Icon(Icons.folder),
-            label: 'Records',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            activeIcon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_outlined),
-            activeIcon: Icon(Icons.notifications),
-            label: 'Alerts',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.help_outline),
-            activeIcon: Icon(Icons.help),
-            label: 'Help',
-          ),
-        ],
+        ),
       ),
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(
+    IconData icon,
+    IconData activeIcon,
+    String label,
+    int index,
+  ) {
+    final isSelected = _currentTabIndex == index;
+    return BottomNavigationBarItem(
+      icon: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.primary.withAlpha(22) : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Icon(isSelected ? activeIcon : icon, size: 22),
+      ),
+      label: label,
     );
   }
 }
@@ -258,20 +407,41 @@ class _DrawerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final itemColor = color ?? AppTheme.ink;
+    final isDanger = color == AppTheme.danger;
 
-    return ListTile(
-      leading: Icon(icon, color: itemColor, size: 22),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: itemColor,
-        ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      decoration: BoxDecoration(
+        color: isDanger ? AppTheme.dangerLight.withAlpha(120) : Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
       ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-      visualDensity: const VisualDensity(vertical: -1),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: (color ?? AppTheme.primary).withAlpha(isDanger ? 25 : 18),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: itemColor, size: 19),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 13.5,
+            fontWeight: isDanger ? FontWeight.w700 : FontWeight.w600,
+            color: itemColor,
+          ),
+        ),
+        trailing: Icon(
+          Icons.chevron_right,
+          color: isDanger ? AppTheme.danger.withAlpha(150) : AppTheme.mutedLight,
+          size: 18,
+        ),
+        onTap: onTap,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        visualDensity: const VisualDensity(vertical: -1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
     );
   }
 }

@@ -87,27 +87,94 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
 
   Widget _buildProfileHeader(MedicalRecord record) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: AppTheme.primary,
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppTheme.heroGradient,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppTheme.primaryGlow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(record.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
-          const SizedBox(height: 8),
           Row(
             children: [
-              Text('${record.age} yrs · ${record.sex}', style: const TextStyle(fontSize: 14, color: Colors.white70)),
-              const SizedBox(width: 12),
-              Text(record.type, style: const TextStyle(fontSize: 14, color: Colors.white70)),
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppTheme.gold, width: 2),
+                  color: Colors.white.withAlpha(40),
+                ),
+                child: Center(
+                  child: Text(
+                    record.name.isNotEmpty ? record.name[0].toUpperCase() : 'P',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      record.name,
+                      style: const TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppTheme.gold.withAlpha(45),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppTheme.gold.withAlpha(90)),
+                      ),
+                      child: Text(
+                        record.type.toUpperCase(),
+                        style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: AppTheme.goldLight),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text('Dept: ${record.courseDept}', style: const TextStyle(fontSize: 13, color: Colors.white70)),
-          const Divider(color: Colors.white24, height: 24),
-          Text('Last Updated: ${record.lastUpdated}', style: const TextStyle(fontSize: 12, color: Colors.white60)),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(35),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${record.age} yrs · ${record.sex}',
+                  style: const TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  record.courseDept,
+                  style: TextStyle(fontSize: 12, color: Colors.white.withAlpha(200)),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Last Updated: ${record.lastUpdated}',
+            style: TextStyle(fontSize: 11, color: Colors.white.withAlpha(160)),
+          ),
         ],
       ),
     );
@@ -116,9 +183,27 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.ink),
+      child: Row(
+        children: [
+          Container(
+            width: 3.5,
+            height: 14,
+            decoration: BoxDecoration(
+              color: AppTheme.primary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            title.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.ink,
+              letterSpacing: 0.7,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -169,13 +254,9 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
 
   Widget _buildItemCard({required String title, required String subtitle, String? trailing}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      decoration: AppTheme.cardDecoration(borderRadius: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -183,16 +264,29 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-                const SizedBox(height: 4),
-                Text(subtitle, style: const TextStyle(fontSize: 13, color: AppTheme.muted)),
+                Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5, color: AppTheme.ink),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.3),
+                ),
               ],
             ),
           ),
           if (trailing != null)
-            Text(
-              trailing,
-              style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withAlpha(15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                trailing,
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.primary),
+              ),
             ),
         ],
       ),

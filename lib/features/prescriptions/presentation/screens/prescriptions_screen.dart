@@ -230,57 +230,73 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
               final rx = controller.prescriptions[index];
               return InkWell(
                 onTap: () => _showPrescriptionDetails(context, rx),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.line),
-                  ),
+                  padding: const EdgeInsets.all(18),
+                  decoration: AppTheme.cardDecoration(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            rx.reference,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: AppTheme.primary,
-                            ),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryLight.withAlpha(20),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(Icons.medication_liquid_rounded, size: 16, color: AppTheme.primary),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                rx.reference,
+                                style: const TextStyle(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.ink,
+                                ),
+                              ),
+                            ],
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppTheme.primary.withAlpha(15),
-                              borderRadius: BorderRadius.circular(6),
+                              color: AppTheme.primary.withAlpha(16),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: AppTheme.primary.withAlpha(35)),
                             ),
                             child: Text(
                               '${rx.medications.length} item${rx.medications.length == 1 ? '' : 's'}',
                               style: const TextStyle(
                                 fontSize: 11,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                                 color: AppTheme.primary,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      ...rx.medications.take(2).map((m) => Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
+                      const SizedBox(height: 12),
+                      ...rx.medications.take(2).map((m) => Container(
+                        margin: const EdgeInsets.only(bottom: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.surfaceSubtle,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppTheme.line),
+                        ),
                         child: Row(
                           children: [
-                            const Icon(Icons.medication_outlined, size: 16, color: AppTheme.muted),
+                            const Icon(Icons.medication_outlined, size: 15, color: AppTheme.primary),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 '${m.medicineName} ${m.dosage}'.trim(),
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                   color: AppTheme.ink,
                                 ),
@@ -290,27 +306,30 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                         ),
                       )),
                       if (rx.medications.length > 2)
-                        Text(
-                          '+ ${rx.medications.length - 2} more medications',
-                          style: const TextStyle(fontSize: 12, color: AppTheme.muted, fontStyle: FontStyle.italic),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2, bottom: 4),
+                          child: Text(
+                            '+ ${rx.medications.length - 2} more medications',
+                            style: const TextStyle(fontSize: 11.5, color: AppTheme.muted, fontStyle: FontStyle.italic),
+                          ),
                         ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
-                          const Icon(Icons.calendar_today_outlined, size: 13, color: AppTheme.mutedLight),
-                          const SizedBox(width: 4),
+                          const Icon(Icons.calendar_today_rounded, size: 12.5, color: AppTheme.mutedLight),
+                          const SizedBox(width: 5),
                           Text(
                             rx.date,
-                            style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                            style: const TextStyle(fontSize: 12, color: AppTheme.muted, fontWeight: FontWeight.w500),
                           ),
-                          const SizedBox(width: 12),
-                          const Icon(Icons.person_outline, size: 13, color: AppTheme.mutedLight),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 14),
+                          const Icon(Icons.person_outline_rounded, size: 12.5, color: AppTheme.mutedLight),
+                          const SizedBox(width: 5),
                           Expanded(
                             child: Text(
                               rx.prescribedBy.isNotEmpty ? rx.prescribedBy : 'Attending Doctor',
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                              style: const TextStyle(fontSize: 12, color: AppTheme.muted, fontWeight: FontWeight.w500),
                             ),
                           ),
                         ],

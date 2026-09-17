@@ -96,7 +96,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const Divider(height: 1),
               _buildInfoRow(Icons.email_outlined, 'Email', profile.email),
               const Divider(height: 1),
-              _buildInfoRow(Icons.phone_outlined, 'Phone', profile.phone ?? 'Not provided'),
+              _buildInfoRow(Icons.phone_android_rounded, 'Mobile Number', profile.phone ?? 'Not provided'),
+              const Divider(height: 1),
+              _buildInfoRow(Icons.phone_outlined, 'Telephone', profile.telephone ?? 'Not provided'),
               const Divider(height: 1),
               _buildInfoRow(Icons.home_outlined, 'Address', profile.address ?? 'Not provided'),
               const Divider(height: 1),
@@ -144,22 +146,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildProfileHeader(Profile profile) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: AppTheme.primary,
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppTheme.heroGradient,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: AppTheme.primaryGlow,
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 32,
-            backgroundColor: Colors.white.withAlpha(51),
-            child: Text(
-              profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.gold, width: 2),
+              color: Colors.white.withAlpha(35),
+            ),
+            child: Center(
+              child: Text(
+                profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -171,20 +181,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   profile.name,
                   style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
                     color: Colors.white,
+                    letterSpacing: -0.3,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   profile.email,
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.white.withAlpha(204),
+                    color: Colors.white.withAlpha(210),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 _buildStatusChip(profile.accountStatus),
               ],
             ),
@@ -195,65 +206,84 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildStatusChip(AccountStatus status) {
-    Color bgColor;
-    Color textColor;
+    Color color;
     String label;
 
     switch (status) {
       case AccountStatus.active:
-        bgColor = AppTheme.success.withAlpha(40);
-        textColor = AppTheme.success;
-        label = 'Active';
+        color = AppTheme.success;
+        label = 'Active Account';
       case AccountStatus.inactive:
-        bgColor = AppTheme.muted.withAlpha(30);
-        textColor = AppTheme.muted;
+        color = AppTheme.muted;
         label = 'Inactive';
       case AccountStatus.pending:
-        bgColor = AppTheme.gold.withAlpha(40);
-        textColor = AppTheme.warning;
-        label = 'Pending';
+        color = AppTheme.warning;
+        label = 'Pending Verification';
       case AccountStatus.suspended:
-        bgColor = AppTheme.danger.withAlpha(30);
-        textColor = AppTheme.danger;
+        color = AppTheme.danger;
         label = 'Suspended';
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.black.withAlpha(30),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withAlpha(120)),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: textColor,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: AppTheme.muted,
-        letterSpacing: 0.5,
-      ),
+    return Row(
+      children: [
+        Container(
+          width: 3.5,
+          height: 14,
+          decoration: BoxDecoration(
+            color: AppTheme.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.ink,
+            letterSpacing: 0.7,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildInfoCard(List<Widget> children) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      decoration: AppTheme.cardDecoration(borderRadius: 16),
       child: Column(children: children),
     );
   }
@@ -323,7 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       const Divider(height: 1),
       _buildInfoRow(Icons.calendar_today, 'Year Level', info.yearLevel),
       const Divider(height: 1),
-      _buildInfoRow(Icons.group_outlined, 'Section', info.section),
+      _buildInfoRow(Icons.grid_view_rounded, 'Block', info.block),
       const Divider(height: 1),
       _buildInfoRow(Icons.how_to_reg, 'Status', info.enrollmentStatus),
     ]);
@@ -350,7 +380,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
       if (info.emergencyContactNumber != null) ...[
         const Divider(height: 1),
-        _buildInfoRow(Icons.phone_outlined, 'Emergency Number', info.emergencyContactNumber!),
+        _buildInfoRow(Icons.phone_android_rounded, 'Emergency Mobile', info.emergencyContactNumber!),
       ],
     ]);
   }

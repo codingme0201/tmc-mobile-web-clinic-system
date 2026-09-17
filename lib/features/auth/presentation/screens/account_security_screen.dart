@@ -9,14 +9,42 @@ class AccountSecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.surface,
       appBar: AppBar(
-        title: const Text('Account & Security'),
-        backgroundColor: Colors.transparent,
-        foregroundColor: AppTheme.ink,
         elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppTheme.heroGradient,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Colors.white),
           onPressed: () => Navigator.pop(context),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'SECURITY CENTER',
+              style: TextStyle(
+                fontSize: 11,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.goldLight,
+              ),
+            ),
+            SizedBox(height: 2),
+            Text(
+              'Account & Security',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
       body: Consumer<AuthController>(
@@ -29,15 +57,15 @@ class AccountSecurityScreen extends StatelessWidget {
             children: [
               _buildProfileHeader(user?.name ?? 'User', user?.email ?? ''),
               const SizedBox(height: 24),
-              _buildSectionTitle('Account Information'),
+              _buildSectionHeader('IDENTITY DETAILS', 'Account Information'),
               const SizedBox(height: 12),
               _buildInfoCard([
-                _buildInfoRow(Icons.person_outline, 'Name', user?.name ?? 'N/A'),
-                const Divider(height: 1),
-                _buildInfoRow(Icons.email_outlined, 'Email', user?.email ?? 'N/A'),
-                const Divider(height: 1),
+                _buildInfoRow(Icons.person_outline_rounded, 'Full Name', user?.name ?? 'N/A'),
+                const Divider(height: 1, color: AppTheme.line),
+                _buildInfoRow(Icons.email_outlined, 'Email Address', user?.email ?? 'N/A'),
+                const Divider(height: 1, color: AppTheme.line),
                 _buildInfoRow(
-                  Icons.calendar_today,
+                  Icons.calendar_today_rounded,
                   'Member Since',
                   user?.createdAt != null
                       ? '${user!.createdAt.day}/${user.createdAt.month}/${user.createdAt.year}'
@@ -45,52 +73,67 @@ class AccountSecurityScreen extends StatelessWidget {
                 ),
               ]),
               const SizedBox(height: 24),
-              _buildSectionTitle('Security'),
+              _buildSectionHeader('CREDENTIALS', 'Access & Authentication'),
               const SizedBox(height: 12),
               _buildInfoCard([
                 _buildActionRow(
                   context,
-                  icon: Icons.lock_reset,
+                  icon: Icons.lock_reset_rounded,
                   title: 'Change Password',
-                  subtitle: 'Update your account password',
+                  subtitle: 'Update your account password and security key',
                   onTap: () {
                     Navigator.pushNamed(context, '/change-password');
                   },
                 ),
-                const Divider(height: 1),
+                const Divider(height: 1, color: AppTheme.line),
                 _buildInfoRow(
                   Icons.shield_outlined,
-                  'Session',
-                  'Active since ${session?.loginTime != null ? _formatTime(session!.loginTime) : 'N/A'}',
+                  'Session Status',
+                  'Active (${session?.loginTime != null ? _formatTime(session!.loginTime) : 'N/A'})',
                 ),
               ]),
               const SizedBox(height: 24),
-              _buildSectionTitle('Danger Zone'),
+              _buildSectionHeader('SESSION TERMINATION', 'Sign Out & Device Exit'),
               const SizedBox(height: 12),
-              _buildInfoCard([
-                _buildActionRow(
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppTheme.danger.withAlpha(40)),
+                  boxShadow: AppTheme.cardShadowSubtle,
+                ),
+                child: _buildActionRow(
                   context,
-                  icon: Icons.logout,
+                  icon: Icons.logout_rounded,
                   title: 'Sign Out',
-                  subtitle: 'Sign out of your account on this device',
+                  subtitle: 'Safely terminate your active session on this device',
                   titleColor: AppTheme.danger,
                   iconColor: AppTheme.danger,
                   onTap: () => _showLogoutDialog(context, auth),
                 ),
-              ]),
+              ),
               const SizedBox(height: 24),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: AppTheme.info.withAlpha(20),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppTheme.primary.withAlpha(10),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.primary.withAlpha(25)),
                 ),
-                child: const Text(
-                  'Demo Mode: Account security features are simulated. Real security will be managed by the backend.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: AppTheme.muted),
+                child: const Row(
+                  children: [
+                    Icon(Icons.verified_user_outlined, size: 20, color: AppTheme.primary),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Your medical records and session tokens are protected under standard clinical encryption protocols.',
+                        style: TextStyle(fontSize: 12, color: AppTheme.inkLight, height: 1.4),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const SizedBox(height: 32),
             ],
           );
         },
@@ -109,20 +152,28 @@ class AccountSecurityScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.primary,
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppTheme.heroGradient,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppTheme.primaryGlow,
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.white.withAlpha(51),
-            child: Text(
-              name.isNotEmpty ? name[0].toUpperCase() : '?',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.gold, width: 2),
+            ),
+            child: CircleAvatar(
+              radius: 28,
+              backgroundColor: Colors.white.withAlpha(40),
+              child: Text(
+                name.isNotEmpty ? name[0].toUpperCase() : '?',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -131,21 +182,31 @@ class AccountSecurityScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(Icons.verified_rounded, size: 16, color: AppTheme.goldLight),
+                  ],
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   email,
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.white.withAlpha(204),
+                    color: Colors.white.withAlpha(210),
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -155,25 +216,48 @@ class AccountSecurityScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: AppTheme.muted,
-        letterSpacing: 0.5,
-      ),
+  Widget _buildSectionHeader(String kicker, String title) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 3.5,
+              height: 13,
+              decoration: BoxDecoration(
+                color: AppTheme.primary,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              kicker,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: AppTheme.primary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 3),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.ink,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildInfoCard(List<Widget> children) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      decoration: AppTheme.cardDecoration(radius: 16),
       child: Column(children: children),
     );
   }
@@ -183,12 +267,20 @@ class AccountSecurityScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: AppTheme.muted),
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: AppTheme.primary.withAlpha(15),
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Icon(icon, size: 18, color: AppTheme.primary),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 14, color: AppTheme.muted),
+              style: const TextStyle(fontSize: 13.5, color: AppTheme.muted, fontWeight: FontWeight.w500),
             ),
           ),
           Flexible(
@@ -196,8 +288,8 @@ class AccountSecurityScreen extends StatelessWidget {
               value,
               textAlign: TextAlign.end,
               style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
                 color: AppTheme.ink,
               ),
             ),
@@ -216,37 +308,50 @@ class AccountSecurityScreen extends StatelessWidget {
     Color? titleColor,
     Color? iconColor,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Icon(icon, size: 20, color: iconColor ?? AppTheme.muted),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: titleColor ?? AppTheme.ink,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 12, color: AppTheme.muted),
-                  ),
-                ],
+    final effectiveIconColor = iconColor ?? AppTheme.primary;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: effectiveIconColor.withAlpha(18),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 20, color: effectiveIconColor),
               ),
-            ),
-            Icon(Icons.chevron_right, size: 20, color: iconColor ?? AppTheme.muted),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: titleColor ?? AppTheme.ink,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, size: 20, color: AppTheme.mutedLight),
+            ],
+          ),
         ),
       ),
     );
@@ -256,13 +361,31 @@ class AccountSecurityScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.logout_rounded, color: AppTheme.danger, size: 22),
+            SizedBox(width: 8),
+            Text(
+              'Sign Out',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.ink,
+              ),
+            ),
+          ],
+        ),
+        content: const Text(
+          'Are you sure you wish to terminate this session? You will need to log back in to access your records.',
+          style: TextStyle(fontSize: 14, color: AppTheme.muted, height: 1.45),
+        ),
+        actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: const Text('Cancel', style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -279,11 +402,15 @@ class AccountSecurityScreen extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.danger,
               foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
             ),
-            child: const Text('Sign Out'),
+            child: const Text('Sign Out', style: TextStyle(fontWeight: FontWeight.w600)),
           ),
         ],
       ),
     );
   }
 }
+

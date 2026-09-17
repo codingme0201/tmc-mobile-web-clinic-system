@@ -50,7 +50,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           content: const Text('Password changed successfully.'),
           backgroundColor: AppTheme.success,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
       Navigator.pop(context);
@@ -60,7 +60,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           content: Text(auth.error ?? 'Failed to change password. Please try again.'),
           backgroundColor: AppTheme.danger,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
     }
@@ -71,124 +71,168 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.surface,
       appBar: AppBar(
-        title: const Text('Change Password'),
-        backgroundColor: Colors.transparent,
-        foregroundColor: AppTheme.ink,
         elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppTheme.heroGradient,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Colors.white),
           onPressed: () => Navigator.pop(context),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'SECURITY CREDENTIALS',
+              style: TextStyle(
+                fontSize: 11,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.goldLight,
+              ),
+            ),
+            SizedBox(height: 2),
+            Text(
+              'Change Password',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 72,
-                    height: 72,
+                    width: 76,
+                    height: 76,
                     decoration: BoxDecoration(
-                      color: AppTheme.primary.withAlpha(30),
+                      gradient: const RadialGradient(
+                        colors: [Colors.white, Color(0xFFF0F5F3)],
+                        radius: 0.85,
+                      ),
                       shape: BoxShape.circle,
+                      border: Border.all(color: AppTheme.gold, width: 2),
+                      boxShadow: AppTheme.cardShadow,
                     ),
-                    child: const Icon(Icons.lock_reset, color: AppTheme.primary, size: 36),
+                    child: const Center(
+                      child: Icon(Icons.lock_outline_rounded, color: AppTheme.primary, size: 34),
+                    ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
                   const Text(
-                    'Change Password',
+                    'Update Access Key',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                       color: AppTheme.ink,
+                      letterSpacing: -0.3,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   const Text(
-                    'Update your password to keep your account secure.',
+                    'Ensure your account remains safe with a strong clinical credential.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: AppTheme.muted),
+                    style: TextStyle(fontSize: 13.5, color: AppTheme.muted, height: 1.4),
                   ),
-                  const SizedBox(height: 32),
-                  AppTextField(
-                    label: 'Current Password',
-                    controller: _currentPasswordController,
-                    hintText: 'Enter current password',
-                    prefixIcon: Icons.lock_outline,
-                    obscureText: _obscureCurrent,
-                    textInputAction: TextInputAction.next,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureCurrent ? Icons.visibility_off : Icons.visibility,
-                        color: AppTheme.muted,
-                        size: 20,
-                      ),
-                      onPressed: () => setState(() => _obscureCurrent = !_obscureCurrent),
+                  const SizedBox(height: 26),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: AppTheme.cardDecoration(radius: 20),
+                    child: Column(
+                      children: [
+                        AppTextField(
+                          label: 'Current Password',
+                          controller: _currentPasswordController,
+                          hintText: 'Enter current password',
+                          prefixIcon: Icons.lock_outline_rounded,
+                          obscureText: _obscureCurrent,
+                          textInputAction: TextInputAction.next,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureCurrent ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                              color: AppTheme.muted,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(() => _obscureCurrent = !_obscureCurrent),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Current password is required.';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 18),
+                        AppTextField(
+                          label: 'New Password',
+                          controller: _newPasswordController,
+                          hintText: 'Enter new password',
+                          prefixIcon: Icons.lock_reset_rounded,
+                          obscureText: _obscureNew,
+                          textInputAction: TextInputAction.next,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureNew ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                              color: AppTheme.muted,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(() => _obscureNew = !_obscureNew),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'New password is required.';
+                            if (v.length < 6) return 'Password must be at least 6 characters.';
+                            if (v == _currentPasswordController.text) {
+                              return 'New password must be different from current password.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 18),
+                        AppTextField(
+                          label: 'Confirm New Password',
+                          controller: _confirmPasswordController,
+                          hintText: 'Confirm new password',
+                          prefixIcon: Icons.verified_user_outlined,
+                          obscureText: _obscureConfirm,
+                          textInputAction: TextInputAction.done,
+                          onEditingComplete: _handleChangePassword,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                              color: AppTheme.muted,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Please confirm your new password.';
+                            if (v != _newPasswordController.text) return 'Passwords do not match.';
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Current password is required.';
-                      return null;
-                    },
                   ),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    label: 'New Password',
-                    controller: _newPasswordController,
-                    hintText: 'Enter new password',
-                    prefixIcon: Icons.lock_outline,
-                    obscureText: _obscureNew,
-                    textInputAction: TextInputAction.next,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureNew ? Icons.visibility_off : Icons.visibility,
-                        color: AppTheme.muted,
-                        size: 20,
-                      ),
-                      onPressed: () => setState(() => _obscureNew = !_obscureNew),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'New password is required.';
-                      if (v.length < 6) return 'Password must be at least 6 characters.';
-                      if (v == _currentPasswordController.text) {
-                        return 'New password must be different from current password.';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    label: 'Confirm New Password',
-                    controller: _confirmPasswordController,
-                    hintText: 'Confirm new password',
-                    prefixIcon: Icons.lock_outline,
-                    obscureText: _obscureConfirm,
-                    textInputAction: TextInputAction.done,
-                    onEditingComplete: _handleChangePassword,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                        color: AppTheme.muted,
-                        size: 20,
-                      ),
-                      onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Please confirm your new password.';
-                      if (v != _newPasswordController.text) return 'Passwords do not match.';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 24),
                   AppButton(
                     label: 'Update Password',
                     onPressed: _handleChangePassword,
                     isLoading: _busy,
-                    icon: Icons.check_circle_outline,
+                    icon: Icons.check_circle_outline_rounded,
                   ),
                 ],
               ),
@@ -199,3 +243,4 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 }
+

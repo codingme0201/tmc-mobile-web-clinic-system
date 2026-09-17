@@ -18,34 +18,45 @@ class ConsultationSummaryCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.line),
-        ),
+        padding: const EdgeInsets.all(18),
+        decoration: AppTheme.cardDecoration(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const Icon(Icons.medical_information_outlined, color: AppTheme.primary, size: 20),
-                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: AppTheme.info.withAlpha(20),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.medical_information_rounded, color: AppTheme.info, size: 18),
+                ),
+                const SizedBox(width: 10),
                 const Expanded(
                   child: Text(
                     'Consultations',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
                   ),
                 ),
-                Icon(Icons.chevron_right, color: AppTheme.mutedLight, size: 20),
+                Container(
+                  width: 26,
+                  height: 26,
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceSubtle,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.muted, size: 11),
+                ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             Row(
               children: [
-                _buildStat('Scheduled', scheduled, AppTheme.primary),
-                const SizedBox(width: 24),
-                _buildStat('Completed', completed, AppTheme.success),
+                _buildStat('Scheduled', scheduled, AppTheme.primary, Icons.schedule_rounded),
+                const SizedBox(width: 12),
+                _buildStat('Completed', completed, AppTheme.success, Icons.check_circle_outline_rounded),
               ],
             ),
           ],
@@ -54,25 +65,52 @@ class ConsultationSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStat(String label, int count, Color color) {
+  Widget _buildStat(String label, int count, Color color, IconData icon) {
     return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$count',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: color,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withAlpha(14),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withAlpha(35)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: color.withAlpha(25),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, size: 16, color: color),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 11, color: AppTheme.muted),
-          ),
-        ],
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$count',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: color,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: color.withAlpha(200),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

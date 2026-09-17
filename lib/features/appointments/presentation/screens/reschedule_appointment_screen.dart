@@ -36,22 +36,69 @@ class _RescheduleAppointmentScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Reschedule Appointment')),
+      backgroundColor: AppTheme.surface,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppTheme.heroGradient,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'SCHEDULE REVISION',
+              style: TextStyle(
+                fontSize: 11,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.goldLight,
+              ),
+            ),
+            SizedBox(height: 2),
+            Text(
+              'Reschedule Visit',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           _buildCurrentAppointmentCard(),
           const SizedBox(height: 24),
-          _buildSectionTitle('New Date'),
-          const SizedBox(height: 12),
-          _buildDatePicker(),
-          const SizedBox(height: 20),
-          _buildSectionTitle('New Time'),
-          const SizedBox(height: 12),
-          _buildTimeSlotGrid(),
-          const SizedBox(height: 32),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: AppTheme.cardDecoration(radius: 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionHeader('SELECT NEW DATE', 'Choose Rescheduled Date'),
+                const SizedBox(height: 12),
+                _buildDatePicker(),
+                const SizedBox(height: 22),
+                _buildSectionHeader('SELECT NEW TIME', 'Choose Available Window'),
+                const SizedBox(height: 12),
+                _buildTimeSlotGrid(),
+              ],
+            ),
+          ),
+          const SizedBox(height: 28),
           AppButton(
             label: 'Confirm Reschedule',
+            icon: Icons.event_repeat_rounded,
             isLoading: _isSubmitting,
             onPressed: _rescheduleAppointment,
           ),
@@ -63,40 +110,66 @@ class _RescheduleAppointmentScreenState
 
   Widget _buildCurrentAppointmentCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.muted.withAlpha(10),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      decoration: AppTheme.cardDecoration(radius: 16),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Current Appointment',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.muted,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppTheme.primary.withAlpha(12),
+              border: const Border(bottom: BorderSide(color: AppTheme.line)),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.event_note_rounded, size: 18, color: AppTheme.primary),
+                SizedBox(width: 8),
+                Text(
+                  'CURRENT SCHEDULED VISIT',
+                  style: TextStyle(
+                    fontSize: 11,
+                    letterSpacing: 0.9,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.primary,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          _buildInfoRow(
-            Icons.calendar_today_outlined,
-            'Date',
-            DateFormat('MMM d, yyyy').format(widget.appointment.date),
-          ),
-          const SizedBox(height: 8),
-          _buildInfoRow(
-            Icons.access_time_outlined,
-            'Time',
-            widget.appointment.time,
-          ),
-          const SizedBox(height: 8),
-          _buildInfoRow(
-            Icons.person_outline,
-            'Doctor',
-            widget.appointment.doctorName,
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.appointment.title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.ink,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildInfoRow(
+                  Icons.calendar_month_outlined,
+                  'Date',
+                  DateFormat('EEEE, MMM d, yyyy').format(widget.appointment.date),
+                ),
+                const SizedBox(height: 8),
+                _buildInfoRow(
+                  Icons.schedule_rounded,
+                  'Time',
+                  widget.appointment.time,
+                ),
+                const SizedBox(height: 8),
+                _buildInfoRow(
+                  Icons.person_outline_rounded,
+                  'Doctor',
+                  widget.appointment.doctorName,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -106,32 +179,62 @@ class _RescheduleAppointmentScreenState
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppTheme.muted),
+        Icon(icon, size: 16, color: AppTheme.primary),
         const SizedBox(width: 8),
         Text(
           '$label: ',
-          style: const TextStyle(fontSize: 13, color: AppTheme.muted),
+          style: const TextStyle(fontSize: 13, color: AppTheme.muted, fontWeight: FontWeight.w500),
         ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: AppTheme.ink,
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.ink,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: AppTheme.ink,
-      ),
+  Widget _buildSectionHeader(String kicker, String title) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 3.5,
+              height: 13,
+              decoration: BoxDecoration(
+                color: AppTheme.primary,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              kicker,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: AppTheme.primary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 3),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.ink,
+          ),
+        ),
+      ],
     );
   }
 
@@ -150,6 +253,8 @@ class _RescheduleAppointmentScreenState
                 colorScheme: const ColorScheme.light(
                   primary: AppTheme.primary,
                   onPrimary: Colors.white,
+                  surface: Colors.white,
+                  onSurface: AppTheme.ink,
                 ),
               ),
               child: child!,
@@ -165,26 +270,35 @@ class _RescheduleAppointmentScreenState
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppTheme.line),
+          color: const Color(0xFFFCFDFD),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: _newDate == null ? AppTheme.line : AppTheme.primary,
+            width: _newDate == null ? 1 : 1.5,
+          ),
+          boxShadow: AppTheme.cardShadowSubtle,
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_outlined, color: AppTheme.muted, size: 20),
+            Icon(
+              Icons.calendar_month_outlined,
+              color: _newDate != null ? AppTheme.primary : AppTheme.muted,
+              size: 20,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 _newDate != null
                     ? DateFormat('EEEE, MMMM d, yyyy').format(_newDate!)
-                    : 'Select new date',
+                    : 'Select new date...',
                 style: TextStyle(
                   fontSize: 14,
-                  color: _newDate != null ? AppTheme.ink : AppTheme.muted,
+                  fontWeight: _newDate != null ? FontWeight.w600 : FontWeight.normal,
+                  color: _newDate != null ? AppTheme.ink : AppTheme.mutedLight,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppTheme.muted),
+            const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
           ],
         ),
       ),
@@ -203,22 +317,36 @@ class _RescheduleAppointmentScreenState
               _newTime = slot;
             });
           },
-          child: Container(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? AppTheme.primary : Colors.white,
-              borderRadius: BorderRadius.circular(8),
+              gradient: isSelected ? AppTheme.primaryGradient : null,
+              color: isSelected ? null : const Color(0xFFF7FAF9),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppTheme.primary : AppTheme.line,
+                color: isSelected ? Colors.transparent : AppTheme.line,
               ),
+              boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
             ),
-            child: Text(
-              slot,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: isSelected ? Colors.white : AppTheme.ink,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.schedule_rounded,
+                  size: 14,
+                  color: isSelected ? Colors.white : AppTheme.muted,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  slot,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected ? Colors.white : AppTheme.ink,
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -283,3 +411,4 @@ class _RescheduleAppointmentScreenState
     }
   }
 }
+

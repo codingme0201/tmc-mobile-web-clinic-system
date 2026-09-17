@@ -10,32 +10,41 @@ class UpcomingScheduleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      padding: const EdgeInsets.all(18),
+      decoration: AppTheme.cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.event_note, color: AppTheme.primary, size: 20),
-              SizedBox(width: 8),
-              Text(
+              Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryLight,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.event_note_rounded, color: AppTheme.primary, size: 18),
+              ),
+              const SizedBox(width: 10),
+              const Text(
                 'Upcoming Schedule',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           if (items.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                'No upcoming schedules.',
-                style: TextStyle(fontSize: 13, color: AppTheme.muted),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  Icon(Icons.event_busy_rounded, size: 16, color: AppTheme.muted.withAlpha(150)),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'No upcoming schedules.',
+                    style: TextStyle(fontSize: 13, color: AppTheme.muted),
+                  ),
+                ],
               ),
             )
           else
@@ -53,7 +62,7 @@ class UpcomingScheduleCard extends StatelessWidget {
     if (difference == 0) {
       dateLabel = 'Today';
     } else if (difference == 1) {
-      dateLabel = 'Tomorrow';
+      dateLabel = 'Tmrw';
     } else {
       dateLabel = '${item.date.day}/${item.date.month}';
     }
@@ -62,34 +71,41 @@ class UpcomingScheduleCard extends StatelessWidget {
     Color iconColor;
     switch (item.type) {
       case ScheduleType.appointment:
-        icon = Icons.calendar_today;
+        icon = Icons.calendar_today_rounded;
         iconColor = AppTheme.primary;
       case ScheduleType.clinicActivity:
-        icon = Icons.campaign_outlined;
+        icon = Icons.campaign_rounded;
         iconColor = AppTheme.success;
       case ScheduleType.clinicSchedule:
-        icon = Icons.schedule;
+        icon = Icons.access_time_filled_rounded;
         iconColor = AppTheme.info;
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceSubtle,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.line),
+      ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            width: 44,
+            padding: const EdgeInsets.symmetric(vertical: 5),
             decoration: BoxDecoration(
-              color: iconColor.withAlpha(15),
-              borderRadius: BorderRadius.circular(8),
+              color: iconColor.withAlpha(20),
+              borderRadius: BorderRadius.circular(9),
+              border: Border.all(color: iconColor.withAlpha(40)),
             ),
             child: Column(
               children: [
-                Icon(icon, size: 14, color: iconColor),
+                Icon(icon, size: 13, color: iconColor),
                 const SizedBox(height: 2),
                 Text(
                   dateLabel,
-                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600, color: iconColor),
+                  style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: iconColor),
                 ),
               ],
             ),
@@ -101,9 +117,12 @@ class UpcomingScheduleCard extends StatelessWidget {
               children: [
                 Text(
                   item.title,
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppTheme.ink),
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                if (item.time != null || item.description != null)
+                if (item.time != null || item.description != null) ...[
+                  const SizedBox(height: 2),
                   Text(
                     [if (item.time != null) item.time, if (item.description != null) item.description]
                         .join(' · '),
@@ -111,6 +130,7 @@ class UpcomingScheduleCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                ],
               ],
             ),
           ),

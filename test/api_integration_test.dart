@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:carelink_mobile/core/utils/api_client.dart';
 import 'package:carelink_mobile/features/auth/data/datasources/auth_api_data_source.dart';
 import 'package:carelink_mobile/features/appointments/data/datasources/appointment_api_data_source.dart';
-import 'package:carelink_mobile/features/consultations/data/datasources/consultation_api_data_source.dart';
 import 'package:carelink_mobile/features/consultations/data/repositories/consultation_api_repository.dart';
 import 'package:carelink_mobile/features/medical_records/data/datasources/medical_record_api_data_source.dart';
 import 'package:carelink_mobile/features/medical_certificates/data/datasources/medical_certificate_api_data_source.dart';
@@ -54,7 +53,8 @@ void main() {
 
       expect(profile.name, 'Angela Reyes');
       expect(profile.email, 'demo@tmccarelink.com');
-      expect(profile.studentInfo?.studentId, '2023-0104');
+      expect(profile.studentInfo?.studentId, '24-021128');
+      expect(profile.studentInfo?.block, 'Block 1');
     });
 
     test('4. AppointmentApiDataSource fetches patient appointments', () async {
@@ -85,7 +85,7 @@ void main() {
 
       expect(record, isNotNull);
       expect(record!['name'], 'Angela Reyes');
-      expect(record['patientId'], '2023-0104');
+      expect(record['patientId'], '24-021128');
     });
 
     test('7. MedicalCertificateApiDataSource fetches patient certificates', () async {

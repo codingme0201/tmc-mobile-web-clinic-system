@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../app/theme.dart';
 import '../utils/api_client.dart';
+import 'app_button.dart';
 
 class HelpSupportTab extends StatelessWidget {
   const HelpSupportTab({super.key});
@@ -259,38 +260,25 @@ class HelpSupportTab extends StatelessWidget {
         _buildSectionTitle('Need Further Assistance?'),
         const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.line),
-          ),
+          padding: const EdgeInsets.all(18),
+          decoration: AppTheme.cardDecoration(borderRadius: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Have a question or clinic concern?',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Send a direct inquiry or support message to clinic administrators.',
                 style: TextStyle(fontSize: 13, color: AppTheme.muted),
               ),
-              const SizedBox(height: 14),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.send_outlined, size: 18),
-                  label: const Text('Submit Support Request'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  onPressed: () => _openSupportModal(context),
-                ),
+              const SizedBox(height: 16),
+              AppButton(
+                label: 'Submit Support Request',
+                icon: Icons.send_rounded,
+                onPressed: () => _openSupportModal(context),
               ),
             ],
           ),
@@ -299,8 +287,14 @@ class HelpSupportTab extends StatelessWidget {
         _buildSectionTitle('Clinic Contact Details'),
         const SizedBox(height: 12),
         _buildContactCard(
+          icon: Icons.phone_android_rounded,
+          title: 'Mobile Hotline',
+          subtitle: '+63 917 123 4567',
+        ),
+        const SizedBox(height: 12),
+        _buildContactCard(
           icon: Icons.phone_outlined,
-          title: 'Telephone',
+          title: 'Telephone (Landline)',
           subtitle: '+63 (02) 8123-4567',
         ),
         const SizedBox(height: 12),
@@ -322,28 +316,39 @@ class HelpSupportTab extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: AppTheme.primary.withAlpha(15),
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppTheme.heroGradient,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: AppTheme.primaryGlow,
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Icon(Icons.help_outline, size: 40, color: AppTheme.primary),
-          SizedBox(height: 12),
-          Text(
+          Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.gold, width: 2),
+              color: Colors.white.withAlpha(35),
+            ),
+            child: const Icon(Icons.support_agent_rounded, size: 28, color: Colors.white),
+          ),
+          const SizedBox(height: 12),
+          const Text(
             'How can we help you?',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.ink,
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: -0.3,
             ),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 5),
           Text(
-            'Browse FAQs, contact clinic staff, or submit a support inquiry',
+            'Browse clinic FAQs, contact medical staff, or submit a support inquiry',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: AppTheme.muted),
+            style: TextStyle(fontSize: 12.5, color: Colors.white.withAlpha(200)),
           ),
         ],
       ),
@@ -351,39 +356,64 @@ class HelpSupportTab extends StatelessWidget {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
-        color: AppTheme.ink,
-      ),
+    return Row(
+      children: [
+        Container(
+          width: 3.5,
+          height: 14,
+          decoration: BoxDecoration(
+            color: AppTheme.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.ink,
+            letterSpacing: 0.7,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildFaqItem({required String question, required String answer}) {
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.line),
-      ),
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cardDecoration(borderRadius: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            question,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.ink,
-            ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryLight.withAlpha(20),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Icon(Icons.help_outline_rounded, size: 14, color: AppTheme.primary),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  question,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.ink,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             answer,
-            style: const TextStyle(fontSize: 12, color: AppTheme.muted, height: 1.4),
+            style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.4),
           ),
         ],
       ),
@@ -396,15 +426,18 @@ class HelpSupportTab extends StatelessWidget {
     required String subtitle,
   }) {
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.line),
-      ),
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cardDecoration(borderRadius: 14),
       child: Row(
         children: [
-          Icon(icon, color: AppTheme.primary, size: 22),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryLight.withAlpha(20),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: AppTheme.primary, size: 20),
+          ),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,7 +445,7 @@ class HelpSupportTab extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 11.5,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.muted,
                 ),
@@ -420,7 +453,7 @@ class HelpSupportTab extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppTheme.ink),
+                style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppTheme.ink),
               ),
             ],
           ),

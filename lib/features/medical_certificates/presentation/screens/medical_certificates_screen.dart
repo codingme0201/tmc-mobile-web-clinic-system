@@ -251,35 +251,46 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
   }
 
   Widget _buildStatusChip(String status) {
-    Color bg;
-    Color fg;
+    Color color;
 
     switch (status.toLowerCase()) {
       case 'issued':
       case 'approved':
-        bg = AppTheme.success.withAlpha(25);
-        fg = AppTheme.success;
+        color = AppTheme.success;
         break;
       case 'rejected':
-        bg = AppTheme.danger.withAlpha(25);
-        fg = AppTheme.danger;
+        color = AppTheme.danger;
         break;
       case 'pending':
       default:
-        bg = AppTheme.warning.withAlpha(25);
-        fg = AppTheme.warning;
+        color = AppTheme.warning;
         break;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(6),
+        color: color.withAlpha(20),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withAlpha(45)),
       ),
-      child: Text(
-        status,
-        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: fg),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            status,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
+          ),
+        ],
       ),
     );
   }
@@ -361,37 +372,46 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                           final cert = filtered[index];
                           return InkWell(
                             onTap: () => _showCertificateDetails(context, cert),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                             child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: AppTheme.line),
-                              ),
+                              padding: const EdgeInsets.all(18),
+                              decoration: AppTheme.cardDecoration(),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        cert.reference,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: AppTheme.primary,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.primaryLight.withAlpha(20),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: const Icon(Icons.assignment_outlined, size: 16, color: AppTheme.primary),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            cert.reference,
+                                            style: const TextStyle(
+                                              fontSize: 14.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: AppTheme.ink,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       _buildStatusChip(cert.status),
                                     ],
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 10),
                                   Text(
                                     cert.purpose,
                                     style: const TextStyle(
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w700,
                                       color: AppTheme.ink,
                                     ),
                                   ),
@@ -401,27 +421,27 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                                       cert.diagnosis,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontSize: 13, color: AppTheme.muted),
+                                      style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.3),
                                     ),
                                   ],
                                   const SizedBox(height: 12),
                                   Row(
                                     children: [
-                                      const Icon(Icons.calendar_today_outlined, size: 14, color: AppTheme.mutedLight),
-                                      const SizedBox(width: 4),
+                                      const Icon(Icons.calendar_today_rounded, size: 12.5, color: AppTheme.mutedLight),
+                                      const SizedBox(width: 5),
                                       Text(
                                         'Issued: ${cert.issueDate}',
-                                        style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                                        style: const TextStyle(fontSize: 12, color: AppTheme.muted, fontWeight: FontWeight.w500),
                                       ),
                                       if (cert.issuedBy.isNotEmpty) ...[
-                                        const SizedBox(width: 12),
-                                        const Icon(Icons.person_outline, size: 14, color: AppTheme.mutedLight),
-                                        const SizedBox(width: 4),
+                                        const SizedBox(width: 14),
+                                        const Icon(Icons.person_outline_rounded, size: 12.5, color: AppTheme.mutedLight),
+                                        const SizedBox(width: 5),
                                         Expanded(
                                           child: Text(
                                             cert.issuedBy,
                                             overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                                            style: const TextStyle(fontSize: 12, color: AppTheme.muted, fontWeight: FontWeight.w500),
                                           ),
                                         ),
                                       ],
@@ -452,22 +472,30 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
           final isSelected = _selectedStatus == status;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(status),
-              selected: isSelected,
-              onSelected: (val) {
+            child: GestureDetector(
+              onTap: () {
                 setState(() => _selectedStatus = status);
               },
-              selectedColor: AppTheme.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : AppTheme.muted,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                fontSize: 13,
-              ),
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: isSelected ? AppTheme.primary : AppTheme.line),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                decoration: BoxDecoration(
+                  gradient: isSelected ? AppTheme.primaryGradient : null,
+                  color: isSelected ? null : Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
+                  border: Border.all(
+                    color: isSelected ? Colors.transparent : AppTheme.line,
+                  ),
+                ),
+                child: Text(
+                  status,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                    color: isSelected ? Colors.white : AppTheme.muted,
+                  ),
+                ),
               ),
             ),
           );

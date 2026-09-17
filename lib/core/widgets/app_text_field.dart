@@ -47,30 +47,48 @@ class AppTextField extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
             color: AppTheme.ink,
+            letterSpacing: 0.1,
           ),
         ),
-        const SizedBox(height: 6),
-        TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          validator: validator,
-          onChanged: onChanged,
-          inputFormatters: inputFormatters,
-          maxLines: maxLines,
-          enabled: enabled,
-          focusNode: focusNode,
-          textInputAction: textInputAction,
-          onEditingComplete: onEditingComplete,
-          decoration: InputDecoration(
-            hintText: hintText ?? label,
-            prefixIcon: prefixIcon != null
-                ? Icon(prefixIcon, color: AppTheme.muted, size: 20)
-                : null,
-            suffixIcon: suffixIcon,
+        const SizedBox(height: 7),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF12393B).withAlpha(8),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            validator: validator,
+            onChanged: onChanged,
+            inputFormatters: inputFormatters,
+            maxLines: maxLines,
+            enabled: enabled,
+            focusNode: focusNode,
+            textInputAction: textInputAction,
+            onEditingComplete: onEditingComplete,
+            style: const TextStyle(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.ink,
+            ),
+            decoration: InputDecoration(
+              hintText: hintText ?? label,
+              prefixIcon: prefixIcon != null
+                  ? Icon(prefixIcon, color: AppTheme.primary, size: 20)
+                  : null,
+              suffixIcon: suffixIcon,
+            ),
           ),
         ),
       ],

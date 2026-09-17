@@ -4,14 +4,16 @@ class StudentInfo {
   final String studentId;
   final String program;
   final String yearLevel;
-  final String section;
+  final String block;
   final String enrollmentStatus;
+
+  String get section => block;
 
   const StudentInfo({
     required this.studentId,
     required this.program,
     required this.yearLevel,
-    required this.section,
+    required this.block,
     required this.enrollmentStatus,
   });
 
@@ -20,18 +22,19 @@ class StudentInfo {
       'studentId': studentId,
       'program': program,
       'yearLevel': yearLevel,
-      'section': section,
+      'block': block,
+      'section': block,
       'enrollmentStatus': enrollmentStatus,
     };
   }
 
   factory StudentInfo.fromJson(Map<String, dynamic> json) {
     return StudentInfo(
-      studentId: json['studentId'] as String,
-      program: json['program'] as String,
-      yearLevel: json['yearLevel'] as String,
-      section: json['section'] as String,
-      enrollmentStatus: json['enrollmentStatus'] as String,
+      studentId: (json['studentId'] ?? '').toString(),
+      program: (json['program'] ?? '').toString(),
+      yearLevel: (json['yearLevel'] ?? '').toString(),
+      block: (json['block'] ?? json['section'] ?? 'Block 1').toString(),
+      enrollmentStatus: (json['enrollmentStatus'] ?? 'Enrolled').toString(),
     );
   }
 }
@@ -81,6 +84,7 @@ class Profile {
   final String name;
   final String email;
   final String? phone;
+  final String? telephone;
   final String? address;
   final DateTime dateOfBirth;
   final String? gender;
@@ -93,6 +97,7 @@ class Profile {
     required this.name,
     required this.email,
     this.phone,
+    this.telephone,
     this.address,
     required this.dateOfBirth,
     this.gender,
@@ -105,21 +110,26 @@ class Profile {
     String? name,
     String? email,
     String? phone,
+    String? telephone,
     String? address,
     DateTime? dateOfBirth,
     String? gender,
+    AccountStatus? accountStatus,
+    StudentInfo? studentInfo,
+    MedicalInfo? medicalInfo,
   }) {
     return Profile(
       id: id,
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
+      telephone: telephone ?? this.telephone,
       address: address ?? this.address,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       gender: gender ?? this.gender,
-      accountStatus: accountStatus,
-      studentInfo: studentInfo,
-      medicalInfo: medicalInfo,
+      accountStatus: accountStatus ?? this.accountStatus,
+      studentInfo: studentInfo ?? this.studentInfo,
+      medicalInfo: medicalInfo ?? this.medicalInfo,
     );
   }
 
@@ -129,6 +139,7 @@ class Profile {
       'name': name,
       'email': email,
       'phone': phone,
+      'telephone': telephone,
       'address': address,
       'dateOfBirth': dateOfBirth.toIso8601String(),
       'gender': gender,
@@ -144,6 +155,7 @@ class Profile {
       name: json['name'] as String,
       email: json['email'] as String,
       phone: json['phone'] as String?,
+      telephone: (json['telephone'] ?? json['telephoneNumber'] ?? json['landline']) as String?,
       address: json['address'] as String?,
       dateOfBirth: DateTime.parse(json['dateOfBirth'] as String),
       gender: json['gender'] as String?,

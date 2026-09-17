@@ -154,25 +154,25 @@ class _NotificationsTabState extends State<NotificationsTab> {
                           controller.markAsRead(notif.id);
                         }
                       },
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       child: Container(
                         padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: notif.isRead ? Colors.white : AppTheme.primary.withAlpha(8),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: notif.isRead ? AppTheme.line : AppTheme.primary.withAlpha(40),
-                          ),
+                        decoration: AppTheme.cardDecoration(
+                          color: notif.isRead ? Colors.white : const Color(0xFFF2FAF8),
+                          borderRadius: 16,
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              width: 40,
-                              height: 40,
+                              width: 44,
+                              height: 44,
                               decoration: BoxDecoration(
-                                color: notif.isRead ? AppTheme.background : AppTheme.primary.withAlpha(20),
-                                borderRadius: BorderRadius.circular(10),
+                                color: notif.isRead ? AppTheme.surfaceSubtle : AppTheme.primaryLight.withAlpha(22),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: notif.isRead ? AppTheme.line : AppTheme.primaryLight.withAlpha(50),
+                                ),
                               ),
                               child: Icon(
                                 _getNotificationIcon(notif),
@@ -191,16 +191,16 @@ class _NotificationsTabState extends State<NotificationsTab> {
                                         child: Text(
                                           notif.title,
                                           style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: notif.isRead ? FontWeight.w600 : FontWeight.w700,
+                                            fontSize: 14.5,
+                                            fontWeight: notif.isRead ? FontWeight.w600 : FontWeight.w800,
                                             color: AppTheme.ink,
                                           ),
                                         ),
                                       ),
                                       if (!notif.isRead)
                                         Container(
-                                          width: 8,
-                                          height: 8,
+                                          width: 7,
+                                          height: 7,
                                           margin: const EdgeInsets.only(left: 6),
                                           decoration: const BoxDecoration(
                                             color: AppTheme.primary,
@@ -209,23 +209,30 @@ class _NotificationsTabState extends State<NotificationsTab> {
                                         ),
                                     ],
                                   ),
-                                  const SizedBox(height: 6),
+                                  const SizedBox(height: 4),
                                   Text(
                                     notif.message,
-                                    style: const TextStyle(fontSize: 12, color: AppTheme.muted, height: 1.4),
+                                    style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.4),
                                   ),
-                                  const SizedBox(height: 6),
+                                  const SizedBox(height: 8),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         _formatDate(notif.createdAt),
-                                        style: const TextStyle(fontSize: 11, color: AppTheme.mutedLight),
+                                        style: const TextStyle(fontSize: 11, color: AppTheme.mutedLight, fontWeight: FontWeight.w500),
                                       ),
                                       if (notif.source.isNotEmpty)
-                                        Text(
-                                          notif.source,
-                                          style: const TextStyle(fontSize: 11, color: AppTheme.mutedLight),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.primary.withAlpha(12),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Text(
+                                            notif.source,
+                                            style: const TextStyle(fontSize: 10, color: AppTheme.primary, fontWeight: FontWeight.w600),
+                                          ),
                                         ),
                                     ],
                                   ),

@@ -77,38 +77,46 @@ class _ConsultationsScreenState extends State<ConsultationsScreen> {
       onTap: () => Navigator.pushNamed(
         context,
         '/consultation-detail',
-        arguments: consultation.id
+        arguments: consultation.id,
       ),
       child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.line),
-        ),
+        padding: const EdgeInsets.all(18),
+        decoration: AppTheme.cardDecoration(),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                color: AppTheme.primary.withAlpha(15),
-                borderRadius: BorderRadius.circular(8),
+                color: AppTheme.info.withAlpha(20),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.info.withAlpha(45)),
               ),
-              child: const Icon(Icons.medical_services_outlined, color: AppTheme.primary),
+              child: const Icon(Icons.medical_services_rounded, color: AppTheme.info, size: 22),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     consultation.reference,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: AppTheme.ink,
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${consultation.date} · ${consultation.time}',
-                    style: const TextStyle(fontSize: 13, color: AppTheme.muted),
+                  const SizedBox(height: 3),
+                  Row(
+                    children: [
+                      const Icon(Icons.schedule_rounded, size: 12.5, color: AppTheme.primary),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${consultation.date} · ${consultation.time}',
+                        style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, fontWeight: FontWeight.w500),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -133,7 +141,7 @@ class _ConsultationsScreenState extends State<ConsultationsScreen> {
         label = 'Scheduled';
         break;
       case ConsultationStatus.inProgress:
-        color = Colors.orange;
+        color = AppTheme.warning;
         label = 'In Progress';
         break;
       case ConsultationStatus.cancelled:
@@ -142,14 +150,29 @@ class _ConsultationsScreenState extends State<ConsultationsScreen> {
         break;
     }
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withAlpha(15),
-        borderRadius: BorderRadius.circular(6),
+        color: color.withAlpha(20),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withAlpha(45)),
       ),
-      child: Text(
-        label,
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
+          ),
+        ],
       ),
     );
   }

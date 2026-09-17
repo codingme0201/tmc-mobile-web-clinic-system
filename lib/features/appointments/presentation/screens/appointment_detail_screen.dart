@@ -165,47 +165,50 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   }
 
   Widget _buildStatusHeader(Appointment appointment) {
-    Color backgroundColor;
-    Color textColor;
+    Color color;
     IconData icon;
 
     switch (appointment.status) {
       case AppointmentStatus.pending:
-        backgroundColor = AppTheme.gold.withAlpha(30);
-        textColor = const Color(0xFFB8860B);
-        icon = Icons.schedule;
+        color = AppTheme.warning;
+        icon = Icons.schedule_rounded;
         break;
       case AppointmentStatus.confirmed:
-        backgroundColor = AppTheme.info.withAlpha(20);
-        textColor = AppTheme.info;
-        icon = Icons.check_circle_outline;
+        color = AppTheme.info;
+        icon = Icons.check_circle_outline_rounded;
         break;
       case AppointmentStatus.completed:
-        backgroundColor = AppTheme.success.withAlpha(20);
-        textColor = AppTheme.success;
-        icon = Icons.check_circle;
+        color = AppTheme.success;
+        icon = Icons.check_circle_rounded;
         break;
       case AppointmentStatus.cancelled:
-        backgroundColor = AppTheme.danger.withAlpha(20);
-        textColor = AppTheme.danger;
+        color = AppTheme.danger;
         icon = Icons.cancel_outlined;
         break;
       case AppointmentStatus.noShow:
-        backgroundColor = AppTheme.muted.withAlpha(20);
-        textColor = AppTheme.muted;
+        color = AppTheme.muted;
         icon = Icons.person_off_outlined;
         break;
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        color: color.withAlpha(15),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withAlpha(45)),
+        boxShadow: AppTheme.cardShadowSubtle,
       ),
       child: Row(
         children: [
-          Icon(icon, color: textColor, size: 28),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withAlpha(25),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -215,16 +218,18 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                   appointment.status.label,
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
+                    fontWeight: FontWeight.w800,
+                    color: color,
+                    letterSpacing: -0.2,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(
                   appointment.status.description,
                   style: TextStyle(
-                    fontSize: 13,
-                    color: textColor.withAlpha(200),
+                    fontSize: 12.5,
+                    color: AppTheme.ink.withAlpha(180),
+                    height: 1.3,
                   ),
                 ),
               ],
@@ -236,24 +241,33 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: AppTheme.muted,
-        letterSpacing: 0.5,
-      ),
+    return Row(
+      children: [
+        Container(
+          width: 3.5,
+          height: 14,
+          decoration: BoxDecoration(
+            color: AppTheme.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.ink,
+            letterSpacing: 0.7,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildInfoCard(List<Widget> children) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      decoration: AppTheme.cardDecoration(borderRadius: 16),
       child: Column(children: children),
     );
   }
@@ -263,12 +277,12 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: AppTheme.primary),
+          Icon(icon, size: 18, color: AppTheme.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 14, color: AppTheme.muted),
+              style: const TextStyle(fontSize: 13.5, color: AppTheme.muted),
             ),
           ),
           Flexible(
@@ -276,8 +290,8 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
               value,
               textAlign: TextAlign.end,
               style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
                 color: AppTheme.ink,
               ),
             ),
@@ -291,15 +305,11 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      decoration: AppTheme.cardDecoration(borderRadius: 14),
       child: Text(
         reason,
         style: const TextStyle(
-          fontSize: 14,
+          fontSize: 13.5,
           color: AppTheme.ink,
           height: 1.5,
         ),

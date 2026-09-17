@@ -110,49 +110,86 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
 
   Widget _buildPatientCard(MedicalRecord record) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: AppTheme.primary,
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppTheme.heroGradient,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: AppTheme.primaryGlow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                record.name,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
-              ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                width: 50,
+                height: 50,
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(50),
-                  borderRadius: BorderRadius.circular(6),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppTheme.gold, width: 2),
+                  color: Colors.white.withAlpha(35),
                 ),
-                child: Text(
-                  record.status,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white),
+                child: Center(
+                  child: Text(
+                    record.name.isNotEmpty ? record.name[0].toUpperCase() : 'P',
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      record.name,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white),
+                    ),
+                    const SizedBox(height: 3),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppTheme.gold.withAlpha(45),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppTheme.gold.withAlpha(90)),
+                      ),
+                      child: Text(
+                        record.status.toUpperCase(),
+                        style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: AppTheme.goldLight),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            '${record.type} · ${record.courseDept}',
-            style: const TextStyle(fontSize: 13, color: Colors.white70),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            'ID: ${record.patientId} · ${record.age} yrs · ${record.sex}',
-            style: const TextStyle(fontSize: 12, color: Colors.white60),
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(35),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${record.type} · ${record.courseDept}',
+                  style: const TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'ID: ${record.patientId} · ${record.age} yrs · ${record.sex}',
+                  style: TextStyle(fontSize: 12, color: Colors.white.withAlpha(190)),
+                ),
+              ],
+            ),
           ),
           if (record.lastUpdated.isNotEmpty) ...[
-            const Divider(color: Colors.white24, height: 18),
+            const SizedBox(height: 10),
             Text(
               'Last Updated: ${record.lastUpdated}',
-              style: const TextStyle(fontSize: 11, color: Colors.white60),
+              style: TextStyle(fontSize: 11, color: Colors.white.withAlpha(160)),
             ),
           ],
         ],
@@ -162,10 +199,10 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
 
   Widget _buildSearchBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: AppTheme.cardShadowSubtle,
         border: Border.all(color: AppTheme.line),
       ),
       child: TextField(
@@ -173,10 +210,11 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
         onChanged: (val) => setState(() => _searchQuery = val.trim().toLowerCase()),
         decoration: InputDecoration(
           hintText: 'Search within medical records...',
-          prefixIcon: const Icon(Icons.search, color: AppTheme.mutedLight, size: 20),
+          hintStyle: const TextStyle(fontSize: 13.5, color: AppTheme.mutedLight),
+          prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primary, size: 20),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.close, size: 18, color: AppTheme.muted),
+                  icon: const Icon(Icons.clear_rounded, size: 18, color: AppTheme.muted),
                   onPressed: () {
                     _searchController.clear();
                     setState(() => _searchQuery = '');
@@ -184,7 +222,7 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
     );
@@ -200,20 +238,28 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
           final isSelected = _selectedCategory == cat;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(cat),
-              selected: isSelected,
-              onSelected: (val) => setState(() => _selectedCategory = cat),
-              selectedColor: AppTheme.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : AppTheme.muted,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                fontSize: 12,
-              ),
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: isSelected ? AppTheme.primary : AppTheme.line),
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedCategory = cat),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                decoration: BoxDecoration(
+                  gradient: isSelected ? AppTheme.primaryGradient : null,
+                  color: isSelected ? null : Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
+                  border: Border.all(
+                    color: isSelected ? Colors.transparent : AppTheme.line,
+                  ),
+                ),
+                child: Text(
+                  cat,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                    color: isSelected ? Colors.white : AppTheme.muted,
+                  ),
+                ),
               ),
             ),
           );
@@ -224,19 +270,38 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
 
   Widget _buildSectionHeader(String title, int count) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
+          Row(
+            children: [
+              Container(
+                width: 3.5,
+                height: 14,
+                decoration: BoxDecoration(
+                  color: AppTheme.primary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title.toUpperCase(),
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.ink,
+                  letterSpacing: 0.7,
+                ),
+              ),
+            ],
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
             decoration: BoxDecoration(
-              color: AppTheme.primary.withAlpha(20),
-              borderRadius: BorderRadius.circular(10),
+              color: AppTheme.primary.withAlpha(16),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppTheme.primary.withAlpha(35)),
             ),
             child: Text(
               '$count',
@@ -330,12 +395,8 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cardDecoration(borderRadius: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -343,23 +404,23 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: isWarning ? AppTheme.warning.withAlpha(20) : AppTheme.primary.withAlpha(20),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, size: 20, color: isWarning ? AppTheme.warning : AppTheme.primary),
+            child: Icon(icon, size: 18, color: isWarning ? AppTheme.warning : AppTheme.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.ink)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(fontSize: 12, color: AppTheme.muted)),
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5, color: AppTheme.ink)),
+                const SizedBox(height: 3),
+                Text(subtitle, style: const TextStyle(fontSize: 12.5, color: AppTheme.muted)),
                 if (trailing != null) ...[
                   const SizedBox(height: 4),
                   Text(
                     trailing,
-                    style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: AppTheme.mutedLight),
+                    style: const TextStyle(fontSize: 11.5, fontStyle: FontStyle.italic, color: AppTheme.mutedLight),
                   ),
                 ],
               ],

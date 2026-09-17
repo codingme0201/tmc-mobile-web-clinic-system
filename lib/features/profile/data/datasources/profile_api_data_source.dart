@@ -30,24 +30,27 @@ class ProfileApiDataSource {
         id: p['id'].toString(),
         name: (p['name'] ?? '').toString(),
         email: userEmail.isNotEmpty ? userEmail : 'patient@tmccarelink.com',
+        phone: (p['contact'] ?? '+63 912 345 6789').toString(),
+        telephone: (p['telephone'] ?? '+63 (02) 8123-4567').toString(),
+        address: (p['address'] ?? 'Health Sciences Bldg, Main Campus, Trinidad, Bohol').toString(),
         dateOfBirth: DateTime(2003, 5, 15),
         accountStatus: AccountStatus.values.firstWhere(
           (e) => e.name.toLowerCase() == (p['status'] ?? '').toString().toLowerCase(),
           orElse: () => AccountStatus.active,
         ),
         studentInfo: StudentInfo(
-          studentId: (p['patientId'] ?? '').toString(),
-          program: (p['courseDept'] ?? 'General').toString(),
+          studentId: (p['patientId'] ?? '24-021128').toString(),
+          program: (p['courseDept'] ?? 'Bachelor of Science in Information Technology').toString(),
           yearLevel: '3rd Year',
-          section: 'Section A',
+          block: (p['block'] ?? 'Block 1').toString(),
           enrollmentStatus: 'Enrolled',
         ),
         medicalInfo: MedicalInfo(
-          bloodType: 'O+',
+          bloodType: (p['bloodType'] ?? 'O+').toString(),
           allergies: (p['allergies'] ?? 'None').toString(),
           conditions: (p['history'] ?? 'None').toString(),
           emergencyContact: (p['emergencyContact'] ?? '').toString(),
-          emergencyContactNumber: (p['contact'] ?? '').toString(),
+          emergencyContactNumber: (p['contact'] ?? '+63 912 345 6789').toString(),
         ),
       );
     } else {
@@ -57,7 +60,7 @@ class ProfileApiDataSource {
 
   Future<Profile> updateProfile(Profile profile) async {
     final response = await _apiClient.put('/me/profile', body: {
-      'contact': profile.medicalInfo?.emergencyContactNumber ?? '',
+      'contact': profile.phone ?? profile.medicalInfo?.emergencyContactNumber ?? '',
       'emergencyContact': profile.medicalInfo?.emergencyContact ?? '',
     });
 

@@ -138,44 +138,46 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
 
   Widget _buildSearchAndFilter() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
       child: Column(
         children: [
-          TextField(
-            controller: _searchController,
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value.toLowerCase();
-              });
-            },
-            decoration: InputDecoration(
-              hintText: 'Search appointments...',
-              prefixIcon: const Icon(Icons.search, color: AppTheme.mutedLight, size: 20),
-              suffixIcon: _searchQuery.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, size: 18),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {
-                          _searchQuery = '';
-                        });
-                      },
-                    )
-                  : null,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppTheme.line),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: AppTheme.cardShadowSubtle,
+              border: Border.all(color: AppTheme.line),
+            ),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.toLowerCase();
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Search appointments, doctors...',
+                hintStyle: const TextStyle(fontSize: 13.5, color: AppTheme.mutedLight),
+                prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primary, size: 20),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear_rounded, size: 18, color: AppTheme.muted),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      )
+                    : null,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppTheme.line),
-              ),
-              filled: true,
-              fillColor: Colors.white,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           _buildStatusFilter(),
         ],
       ),
@@ -192,7 +194,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
     ];
 
     return SizedBox(
-      height: 32,
+      height: 34,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: statuses.length,
@@ -206,20 +208,23 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
                 _selectedStatus = status['value']!;
               });
             },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                color: isSelected ? AppTheme.primary : Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                gradient: isSelected ? AppTheme.primaryGradient : null,
+                color: isSelected ? null : Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
                 border: Border.all(
-                  color: isSelected ? AppTheme.primary : AppTheme.line,
+                  color: isSelected ? Colors.transparent : AppTheme.line,
                 ),
               ),
               child: Text(
                 status['label']!,
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                   color: isSelected ? Colors.white : AppTheme.muted,
                 ),
               ),
@@ -331,13 +336,9 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.line),
-        ),
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.all(18),
+        decoration: AppTheme.cardDecoration(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -347,10 +348,11 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: AppTheme.primary.withAlpha(15),
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppTheme.primaryLight.withAlpha(22),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.primaryLight.withAlpha(50)),
                   ),
-                  child: const Icon(Icons.calendar_today, color: AppTheme.primary, size: 22),
+                  child: const Icon(Icons.calendar_month_rounded, color: AppTheme.primary, size: 22),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -361,14 +363,23 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
                         appointment.title,
                         style: const TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                           color: AppTheme.ink,
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        appointment.doctorName,
-                        style: const TextStyle(fontSize: 13, color: AppTheme.muted),
+                      const SizedBox(height: 3),
+                      Row(
+                        children: [
+                          const Icon(Icons.person_pin_circle_outlined, size: 13, color: AppTheme.primary),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              appointment.doctorName,
+                              style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, fontWeight: FontWeight.w500),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -376,40 +387,48 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
                 _buildStatusBadge(appointment.status),
               ],
             ),
-            const SizedBox(height: 12),
-            const Divider(height: 1, color: AppTheme.line),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                const Icon(Icons.calendar_today_outlined, size: 14, color: AppTheme.muted),
-                const SizedBox(width: 6),
-                Text(
-                  DateFormat('MMM d, yyyy').format(appointment.date),
-                  style: const TextStyle(fontSize: 13, color: AppTheme.muted),
-                ),
-                const SizedBox(width: 16),
-                const Icon(Icons.access_time_outlined, size: 14, color: AppTheme.muted),
-                const SizedBox(width: 6),
-                Text(
-                  appointment.time,
-                  style: const TextStyle(fontSize: 13, color: AppTheme.muted),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.local_hospital_outlined, size: 14, color: AppTheme.muted),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    appointment.type,
-                    style: const TextStyle(fontSize: 13, color: AppTheme.muted),
-                    overflow: TextOverflow.ellipsis,
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceSubtle,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppTheme.line),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.calendar_today_rounded, size: 13, color: AppTheme.primary),
+                  const SizedBox(width: 6),
+                  Text(
+                    DateFormat('MMM d, yyyy').format(appointment.date),
+                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.ink),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 14),
+                  const Icon(Icons.access_time_rounded, size: 13, color: AppTheme.primary),
+                  const SizedBox(width: 6),
+                  Text(
+                    appointment.time,
+                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                  ),
+                ],
+              ),
             ),
+            if (appointment.type.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Icon(Icons.medical_services_outlined, size: 13, color: AppTheme.mutedLight),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      appointment.type,
+                      style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -417,45 +436,54 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
   }
 
   Widget _buildStatusBadge(AppointmentStatus status) {
-    Color backgroundColor;
-    Color textColor;
+    Color color;
 
     switch (status) {
       case AppointmentStatus.pending:
-        backgroundColor = AppTheme.gold.withAlpha(30);
-        textColor = const Color(0xFFB8860B);
+        color = AppTheme.warning;
         break;
       case AppointmentStatus.confirmed:
-        backgroundColor = AppTheme.info.withAlpha(20);
-        textColor = AppTheme.info;
+        color = AppTheme.info;
         break;
       case AppointmentStatus.completed:
-        backgroundColor = AppTheme.success.withAlpha(20);
-        textColor = AppTheme.success;
+        color = AppTheme.success;
         break;
       case AppointmentStatus.cancelled:
-        backgroundColor = AppTheme.danger.withAlpha(20);
-        textColor = AppTheme.danger;
+        color = AppTheme.danger;
         break;
       case AppointmentStatus.noShow:
-        backgroundColor = AppTheme.muted.withAlpha(20);
-        textColor = AppTheme.muted;
+        color = AppTheme.muted;
         break;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        color: color.withAlpha(20),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withAlpha(45)),
       ),
-      child: Text(
-        status.label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: textColor,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            status.label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+        ],
       ),
     );
   }

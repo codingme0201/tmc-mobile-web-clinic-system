@@ -148,42 +148,80 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.primary,
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppTheme.heroGradient,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryDark.withAlpha(50),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: Colors.white.withAlpha(51),
-            child: Text(
-              name.isNotEmpty ? name[0].toUpperCase() : '?',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.gold, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.gold.withAlpha(40),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            child: CircleAvatar(
+              radius: 26,
+              backgroundColor: Colors.white.withAlpha(40),
+              child: Text(
+                name.isNotEmpty ? name[0].toUpperCase() : '?',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(25),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    'TMC CARELINK PORTAL',
+                    style: TextStyle(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFC4EAE3),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
                 Text(
                   'Welcome, $name',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
+                    letterSpacing: -0.2,
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  'TMC CareLink Patient Portal',
+                const Text(
+                  'Your health records are up to date',
                   style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.white.withAlpha(204),
+                    fontSize: 12,
+                    color: Color(0xFFBBE5DE),
                   ),
                 ),
               ],
@@ -195,23 +233,56 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: AppTheme.muted,
-        letterSpacing: 0.5,
-      ),
+    return Row(
+      children: [
+        Container(
+          width: 3.5,
+          height: 14,
+          decoration: BoxDecoration(
+            color: AppTheme.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.ink,
+            letterSpacing: 0.2,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildQuickActions(BuildContext context) {
     final actions = [
-      _QuickAction(Icons.calendar_today, 'Appointments', () => Navigator.pushNamed(context, '/appointments')),
-      _QuickAction(Icons.medical_information, 'Medical Records', () {}),
-      _QuickAction(Icons.description, 'Prescriptions', () {}),
-      _QuickAction(Icons.notifications, 'Notifications', () {}),
+      _QuickAction(
+        Icons.calendar_today_rounded,
+        'Appointments',
+        AppTheme.primary,
+        () => Navigator.pushNamed(context, '/appointments'),
+      ),
+      _QuickAction(
+        Icons.folder_open_rounded,
+        'Records',
+        AppTheme.info,
+        () => Navigator.pushNamed(context, '/medical-records'),
+      ),
+      _QuickAction(
+        Icons.description_rounded,
+        'Prescriptions',
+        AppTheme.accent,
+        () => Navigator.pushNamed(context, '/prescriptions'),
+      ),
+      _QuickAction(
+        Icons.article_rounded,
+        'Certificates',
+        AppTheme.gold,
+        () => Navigator.pushNamed(context, '/medical-certificates'),
+      ),
     ];
 
     return Row(
@@ -230,20 +301,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return GestureDetector(
       onTap: action.onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.line),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+        decoration: AppTheme.cardDecoration(
+          borderRadius: 16,
+          shadow: AppTheme.cardShadowSubtle,
         ),
         child: Column(
           children: [
-            Icon(action.icon, color: AppTheme.primary, size: 28),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: action.color.withAlpha(20),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(action.icon, color: action.color, size: 22),
+            ),
             const SizedBox(height: 8),
             Text(
               action.label,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppTheme.ink),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.ink,
+                letterSpacing: -0.1,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -255,7 +339,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 class _QuickAction {
   final IconData icon;
   final String label;
+  final Color color;
   final VoidCallback onTap;
 
-  const _QuickAction(this.icon, this.label, this.onTap);
+  const _QuickAction(this.icon, this.label, this.color, this.onTap);
 }

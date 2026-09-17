@@ -6,6 +6,7 @@ import 'package:carelink_mobile/features/medical_certificates/domain/models/medi
 import 'package:carelink_mobile/features/prescriptions/domain/models/prescription.dart';
 import 'package:carelink_mobile/features/notifications/domain/models/patient_notification.dart';
 import 'package:carelink_mobile/features/clinic_information/domain/models/clinic_information.dart';
+import 'package:carelink_mobile/features/profile/domain/models/profile.dart';
 
 void main() {
   group('Backend JSON Model Deserialization Tests', () {
@@ -245,6 +246,41 @@ void main() {
       expect(info.activities.first.title, 'Blood Donation Drive');
       expect(info.staffSchedules.length, 1);
       expect(info.staffSchedules.first.name, 'Dr. Maria Santos');
+    });
+
+    test('StudentInfo and Profile handle Block, Philippine Mobile, and Telephone correctly', () {
+      final studentJson = {
+        'studentId': '24-021128',
+        'program': 'BS Information Technology',
+        'yearLevel': '3rd Year',
+        'block': 'Block 1',
+        'enrollmentStatus': 'Enrolled',
+      };
+
+      final student = StudentInfo.fromJson(studentJson);
+      expect(student.studentId, '24-021128');
+      expect(student.block, 'Block 1');
+      expect(student.section, 'Block 1'); // Backwards compatibility check
+      expect(student.toJson()['block'], 'Block 1');
+      expect(student.toJson()['section'], 'Block 1');
+
+      final profileJson = {
+        'id': '101',
+        'name': 'Angela Reyes',
+        'email': 'angela.reyes@tmc.edu.ph',
+        'phone': '+63 917 123 4567',
+        'telephone': '+63 (02) 8123-4567',
+        'address': 'Trinidad, Bohol',
+        'dateOfBirth': '2003-05-15T00:00:00.000',
+        'accountStatus': 'active',
+        'studentInfo': studentJson,
+      };
+
+      final profile = Profile.fromJson(profileJson);
+      expect(profile.phone, '+63 917 123 4567');
+      expect(profile.telephone, '+63 (02) 8123-4567');
+      expect(profile.studentInfo?.studentId, '24-021128');
+      expect(profile.studentInfo?.block, 'Block 1');
     });
   });
 }
