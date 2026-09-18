@@ -4,7 +4,6 @@ import '../../../../app/theme.dart';
 import '../../../../app/theme_controller.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
-import '../../../../core/utils/api_client.dart';
 import '../controllers/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -141,132 +140,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _showServerSettingsDialog() async {
-    final currentUrl = await ApiClient().getBaseUrl();
-    final urlController = TextEditingController(text: currentUrl);
-
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        final line = AppTheme.getLine(ctx);
-        final ink = AppTheme.getInk(ctx);
-        final muted = AppTheme.getMuted(ctx);
-        final surface = AppTheme.getSurface(ctx);
-
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22),
-            side: BorderSide(color: line),
-          ),
-          backgroundColor: surface,
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppTheme.primary.withAlpha(25),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(Icons.dns_rounded, color: AppTheme.primary, size: 22),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Server Network Setup',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 17,
-                    color: ink,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Connect to your computer running the Laravel backend on the same local Wi-Fi network.',
-                  style: TextStyle(fontSize: 13, color: muted, height: 1.45),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: urlController,
-                  style: TextStyle(fontSize: 13.5, color: ink),
-                  decoration: InputDecoration(
-                    labelText: 'API Base URL',
-                    hintText: 'http://192.168.8.56:8000/api',
-                    prefixIcon: const Icon(Icons.link_rounded, size: 20),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                const Text(
-                  'QUICK PRESETS',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.primary, letterSpacing: 0.8),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    ActionChip(
-                      label: const Text('Wi-Fi PC (192.168.8.56)', style: TextStyle(fontSize: 11)),
-                      onPressed: () => urlController.text = 'http://192.168.8.56:8000/api',
-                    ),
-                    ActionChip(
-                      label: const Text('Emulator (10.0.2.2)', style: TextStyle(fontSize: 11)),
-                      onPressed: () => urlController.text = 'http://10.0.2.2:8000/api',
-                    ),
-                    ActionChip(
-                      label: const Text('Localhost (127.0.0.1)', style: TextStyle(fontSize: 11)),
-                      onPressed: () => urlController.text = 'http://127.0.0.1:8000/api',
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text('Cancel', style: TextStyle(color: muted, fontWeight: FontWeight.w600)),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final newUrl = urlController.text.trim();
-                if (newUrl.isNotEmpty) {
-                  await ApiClient.saveBaseUrl(newUrl);
-                  if (ctx.mounted) Navigator.pop(ctx);
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Server URL set to: $newUrl'),
-                        backgroundColor: AppTheme.primary,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    );
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text('Save & Connect', style: TextStyle(fontWeight: FontWeight.w700)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = AppTheme.isDark(context);
@@ -305,55 +178,29 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
 
-            // Top Quick Controls (Server setup & Theme Switcher)
+            // Top Quick Theme Switcher
             Positioned(
               top: 12,
               right: 16,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Material(
-                    color: isDark ? AppTheme.darkSurfaceSubtle : Colors.white,
+              child: Material(
+                color: isDark ? AppTheme.darkSurfaceSubtle : Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                elevation: 0,
+                child: Container(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
-                    elevation: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppTheme.getLine(context)),
-                      ),
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.dns_rounded,
-                          color: AppTheme.getInk(context),
-                          size: 19,
-                        ),
-                        tooltip: 'Server Connection Settings',
-                        onPressed: _showServerSettingsDialog,
-                      ),
-                    ),
+                    border: Border.all(color: AppTheme.getLine(context)),
                   ),
-                  const SizedBox(width: 8),
-                  Material(
-                    color: isDark ? AppTheme.darkSurfaceSubtle : Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    elevation: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppTheme.getLine(context)),
-                      ),
-                      child: IconButton(
-                        icon: Icon(
-                          themeController.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                          color: themeController.isDarkMode ? AppTheme.gold : AppTheme.primary,
-                          size: 20,
-                        ),
-                        tooltip: themeController.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
-                        onPressed: () => themeController.toggleTheme(),
-                      ),
+                  child: IconButton(
+                    icon: Icon(
+                      themeController.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                      color: themeController.isDarkMode ? AppTheme.gold : AppTheme.primary,
+                      size: 20,
                     ),
+                    tooltip: themeController.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+                    onPressed: () => themeController.toggleTheme(),
                   ),
-                ],
+                ),
               ),
             ),
 

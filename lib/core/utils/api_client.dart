@@ -26,7 +26,8 @@ class ApiClient {
       return _configuredBaseUrl!;
     }
     if (kIsWeb) {
-      return 'http://127.0.0.1:8000/api';
+      final host = Uri.base.host.isNotEmpty ? Uri.base.host : '127.0.0.1';
+      return 'http://$host:8000/api';
     }
     try {
       if (Platform.isAndroid) {
