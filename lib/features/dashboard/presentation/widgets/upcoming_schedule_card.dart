@@ -9,9 +9,10 @@ class UpcomingScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppTheme.isDark(context);
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: AppTheme.cardDecoration(),
+      decoration: AppTheme.cardDecoration(context: context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -20,15 +21,19 @@ class UpcomingScheduleCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryLight,
+                  color: isDark ? AppTheme.primary.withAlpha(45) : AppTheme.primaryLight,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(Icons.event_note_rounded, color: AppTheme.primary, size: 18),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 'Upcoming Schedule',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.getInk(context),
+                ),
               ),
             ],
           ),
@@ -38,23 +43,23 @@ class UpcomingScheduleCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Row(
                 children: [
-                  Icon(Icons.event_busy_rounded, size: 16, color: AppTheme.muted.withAlpha(150)),
+                  Icon(Icons.event_busy_rounded, size: 16, color: AppTheme.getMuted(context).withAlpha(150)),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'No upcoming schedules.',
-                    style: TextStyle(fontSize: 13, color: AppTheme.muted),
+                    style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context)),
                   ),
                 ],
               ),
             )
           else
-            ...items.take(5).map((item) => _buildScheduleItem(item)),
+            ...items.take(5).map((item) => _buildScheduleItem(context, item)),
         ],
       ),
     );
   }
 
-  Widget _buildScheduleItem(ScheduleItem item) {
+  Widget _buildScheduleItem(BuildContext context, ScheduleItem item) {
     final now = DateTime.now();
     final difference = item.date.difference(now).inDays;
 
@@ -85,9 +90,9 @@ class UpcomingScheduleCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceSubtle,
+        color: AppTheme.getSurfaceSubtle(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
+        border: Border.all(color: AppTheme.getLine(context)),
       ),
       child: Row(
         children: [
@@ -117,7 +122,7 @@ class UpcomingScheduleCard extends StatelessWidget {
               children: [
                 Text(
                   item.title,
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -126,7 +131,7 @@ class UpcomingScheduleCard extends StatelessWidget {
                   Text(
                     [if (item.time != null) item.time, if (item.description != null) item.description]
                         .join(' · '),
-                    style: const TextStyle(fontSize: 11, color: AppTheme.muted),
+                    style: TextStyle(fontSize: 11, color: AppTheme.getMuted(context)),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

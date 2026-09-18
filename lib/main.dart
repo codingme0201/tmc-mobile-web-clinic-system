@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app/theme.dart';
+import 'app/theme_controller.dart';
 import 'app/router.dart';
 import 'features/auth/presentation/controllers/auth_controller.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
@@ -47,6 +48,7 @@ class _CareLinkAppState extends State<CareLinkApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _authController),
+        ChangeNotifierProvider(create: (_) => ThemeController()),
         ChangeNotifierProvider(create: (_) => DashboardController()),
         ChangeNotifierProvider(create: (_) => ProfileController()),
         ChangeNotifierProvider(create: (_) => ClinicInformationController()),
@@ -57,12 +59,18 @@ class _CareLinkAppState extends State<CareLinkApp> {
         ChangeNotifierProvider(create: (_) => PrescriptionController()),
         ChangeNotifierProvider(create: (_) => NotificationController()),
       ],
-      child: MaterialApp(
-        title: 'TMC CareLink',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        home: const AuthGate(),
-        onGenerateRoute: AppRouter.generateRoute,
+      child: Consumer<ThemeController>(
+        builder: (context, themeController, _) {
+          return MaterialApp(
+            title: 'TMC CareLink',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: themeController.themeMode,
+            home: const AuthGate(),
+            onGenerateRoute: AppRouter.generateRoute,
+          );
+        },
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme.dart';
+import '../../../../app/theme_controller.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/profile_controller.dart';
 import '../../domain/models/profile.dart';
@@ -87,49 +88,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            _buildProfileHeader(profile),
+            _buildProfileHeader(context, profile),
             const SizedBox(height: 24),
-            _buildSectionTitle('Personal Information'),
+            _buildSectionTitle(context, 'Appearance & Theme'),
             const SizedBox(height: 12),
-            _buildInfoCard([
-              _buildInfoRow(Icons.person_outline, 'Full Name', profile.name),
-              const Divider(height: 1),
-              _buildInfoRow(Icons.email_outlined, 'Email', profile.email),
-              const Divider(height: 1),
-              _buildInfoRow(Icons.phone_android_rounded, 'Mobile Number', profile.phone ?? 'Not provided'),
-              const Divider(height: 1),
-              _buildInfoRow(Icons.phone_outlined, 'Telephone', profile.telephone ?? 'Not provided'),
-              const Divider(height: 1),
-              _buildInfoRow(Icons.home_outlined, 'Address', profile.address ?? 'Not provided'),
-              const Divider(height: 1),
+            _buildThemeSelector(context),
+            const SizedBox(height: 24),
+            _buildSectionTitle(context, 'Personal Information'),
+            const SizedBox(height: 12),
+            _buildInfoCard(context, [
+              _buildInfoRow(context, Icons.person_outline, 'Full Name', profile.name),
+              Divider(height: 1, color: AppTheme.getLine(context)),
+              _buildInfoRow(context, Icons.email_outlined, 'Email', profile.email),
+              Divider(height: 1, color: AppTheme.getLine(context)),
+              _buildInfoRow(context, Icons.phone_android_rounded, 'Mobile Number', profile.phone ?? 'Not provided'),
+              Divider(height: 1, color: AppTheme.getLine(context)),
+              _buildInfoRow(context, Icons.phone_outlined, 'Telephone', profile.telephone ?? 'Not provided'),
+              Divider(height: 1, color: AppTheme.getLine(context)),
+              _buildInfoRow(context, Icons.home_outlined, 'Address', profile.address ?? 'Not provided'),
+              Divider(height: 1, color: AppTheme.getLine(context)),
               _buildInfoRow(
+                context,
                 Icons.cake_outlined,
                 'Date of Birth',
                 '${profile.dateOfBirth.day}/${profile.dateOfBirth.month}/${profile.dateOfBirth.year}',
               ),
-              const Divider(height: 1),
-              _buildInfoRow(Icons.wc_outlined, 'Gender', profile.gender ?? 'Not specified'),
+              Divider(height: 1, color: AppTheme.getLine(context)),
+              _buildInfoRow(context, Icons.wc_outlined, 'Gender', profile.gender ?? 'Not specified'),
             ]),
             const SizedBox(height: 16),
             _buildEditButton(context, profile),
             const SizedBox(height: 24),
-            _buildSectionTitle('Student Information'),
+            _buildSectionTitle(context, 'Student Information'),
             const SizedBox(height: 12),
             profile.studentInfo != null
-                ? _buildStudentInfo(profile.studentInfo!)
-                : _buildEmptyCard('Student information is not available.'),
+                ? _buildStudentInfo(context, profile.studentInfo!)
+                : _buildEmptyCard(context, 'Student information is not available.'),
             const SizedBox(height: 24),
-            _buildSectionTitle('Patient Medical Information'),
+            _buildSectionTitle(context, 'Patient Medical Information'),
             const SizedBox(height: 12),
             profile.medicalInfo != null
-                ? _buildMedicalInfo(profile.medicalInfo!)
-                : _buildEmptyCard('No medical information is currently available.'),
+                ? _buildMedicalInfo(context, profile.medicalInfo!)
+                : _buildEmptyCard(context, 'No medical information is currently available.'),
             const SizedBox(height: 24),
-            _buildSectionTitle('Account Status'),
+            _buildSectionTitle(context, 'Account Status'),
             const SizedBox(height: 12),
-            _buildAccountStatus(profile.accountStatus),
+            _buildAccountStatus(context, profile.accountStatus),
             const SizedBox(height: 24),
-            _buildSectionTitle('Security'),
+            _buildSectionTitle(context, 'Security'),
             const SizedBox(height: 12),
             _buildSecurityTile(context),
             const SizedBox(height: 32),
@@ -144,13 +150,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileHeader(Profile profile) {
+  Widget _buildProfileHeader(BuildContext context, Profile profile) {
+    final isDark = AppTheme.isDark(context);
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: AppTheme.heroGradient,
+        gradient: isDark ? AppTheme.heroGradientDark : AppTheme.heroGradient,
         borderRadius: BorderRadius.circular(22),
-        boxShadow: AppTheme.primaryGlow,
+        border: Border.all(
+          color: isDark ? AppTheme.primaryLight.withAlpha(50) : Colors.white.withAlpha(40),
+          width: 1,
+        ),
+        boxShadow: isDark ? AppTheme.cardShadowDark : AppTheme.primaryGlow,
       ),
       child: Row(
         children: [
@@ -160,7 +171,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: AppTheme.gold, width: 2),
-              color: Colors.white.withAlpha(35),
+              color: isDark ? AppTheme.darkSurface : Colors.white.withAlpha(35),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.gold.withAlpha(45),
+                  blurRadius: 10,
+                ),
+              ],
             ),
             child: Center(
               child: Text(
@@ -205,6 +222,121 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildThemeSelector(BuildContext context) {
+    final themeController = context.watch<ThemeController>();
+    final currentMode = themeController.themeMode;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Color Palette & Ambience',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.getInk(context),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Choose your preferred visual theme for TMC CareLink',
+            style: TextStyle(
+              fontSize: 11.5,
+              color: AppTheme.getMuted(context),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              _buildThemeOption(
+                context,
+                title: 'Light',
+                icon: Icons.light_mode_rounded,
+                selected: currentMode == ThemeMode.light,
+                onTap: () => themeController.setThemeMode(ThemeMode.light),
+              ),
+              const SizedBox(width: 8),
+              _buildThemeOption(
+                context,
+                title: 'Dark',
+                icon: Icons.dark_mode_rounded,
+                selected: currentMode == ThemeMode.dark,
+                onTap: () => themeController.setThemeMode(ThemeMode.dark),
+              ),
+              const SizedBox(width: 8),
+              _buildThemeOption(
+                context,
+                title: 'System',
+                icon: Icons.brightness_auto_rounded,
+                selected: currentMode == ThemeMode.system,
+                onTap: () => themeController.setThemeMode(ThemeMode.system),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemeOption(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    final isDark = AppTheme.isDark(context);
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          decoration: BoxDecoration(
+            color: selected
+                ? (isDark ? AppTheme.primary.withAlpha(45) : AppTheme.primaryLight)
+                : AppTheme.getSurfaceSubtle(context),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected ? AppTheme.primary : AppTheme.getLine(context),
+              width: selected ? 1.6 : 1,
+            ),
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: AppTheme.primary.withAlpha(selected ? 35 : 0),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: selected ? AppTheme.primary : AppTheme.getMuted(context),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                  color: selected ? AppTheme.primary : AppTheme.getInk(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildStatusChip(AccountStatus status) {
     Color color;
     String label;
@@ -245,7 +377,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(width: 5),
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 10.5,
               fontWeight: FontWeight.w700,
               color: Colors.white,
@@ -256,7 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Row(
       children: [
         Container(
@@ -270,10 +402,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(width: 8),
         Text(
           title.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: AppTheme.getInk(context),
             letterSpacing: 0.7,
           ),
         ),
@@ -281,34 +413,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildInfoCard(List<Widget> children) {
+  Widget _buildInfoCard(BuildContext context, List<Widget> children) {
     return Container(
-      decoration: AppTheme.cardDecoration(borderRadius: 16),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 16),
       child: Column(children: children),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: AppTheme.muted),
+          Icon(icon, size: 20, color: AppTheme.getMuted(context)),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 14, color: AppTheme.muted),
+              style: TextStyle(fontSize: 14, color: AppTheme.getMuted(context)),
             ),
           ),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppTheme.ink,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.getInk(context),
               ),
             ),
           ),
@@ -339,53 +471,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
           foregroundColor: AppTheme.primary,
           side: const BorderSide(color: AppTheme.primary),
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
   }
 
-  Widget _buildStudentInfo(StudentInfo info) {
-    return _buildInfoCard([
-      _buildInfoRow(Icons.badge_outlined, 'Student ID', info.studentId),
-      const Divider(height: 1),
-      _buildInfoRow(Icons.school_outlined, 'Program', info.program),
-      const Divider(height: 1),
-      _buildInfoRow(Icons.calendar_today, 'Year Level', info.yearLevel),
-      const Divider(height: 1),
-      _buildInfoRow(Icons.grid_view_rounded, 'Block', info.block),
-      const Divider(height: 1),
-      _buildInfoRow(Icons.how_to_reg, 'Status', info.enrollmentStatus),
+  Widget _buildStudentInfo(BuildContext context, StudentInfo info) {
+    return _buildInfoCard(context, [
+      _buildInfoRow(context, Icons.badge_outlined, 'Student ID', info.studentId),
+      Divider(height: 1, color: AppTheme.getLine(context)),
+      _buildInfoRow(context, Icons.school_outlined, 'Program', info.program),
+      Divider(height: 1, color: AppTheme.getLine(context)),
+      _buildInfoRow(context, Icons.calendar_today, 'Year Level', info.yearLevel),
+      Divider(height: 1, color: AppTheme.getLine(context)),
+      _buildInfoRow(context, Icons.grid_view_rounded, 'Block', info.block),
+      Divider(height: 1, color: AppTheme.getLine(context)),
+      _buildInfoRow(context, Icons.how_to_reg, 'Status', info.enrollmentStatus),
     ]);
   }
 
-  Widget _buildMedicalInfo(MedicalInfo info) {
-    return _buildInfoCard([
-      _buildInfoRow(Icons.bloodtype_outlined, 'Blood Type', info.bloodType),
+  Widget _buildMedicalInfo(BuildContext context, MedicalInfo info) {
+    return _buildInfoCard(context, [
+      _buildInfoRow(context, Icons.bloodtype_outlined, 'Blood Type', info.bloodType),
       if (info.allergies != null) ...[
-        const Divider(height: 1),
-        _buildInfoRow(Icons.warning_amber_outlined, 'Allergies', info.allergies!),
+        Divider(height: 1, color: AppTheme.getLine(context)),
+        _buildInfoRow(context, Icons.warning_amber_outlined, 'Allergies', info.allergies!),
       ],
       if (info.conditions != null) ...[
-        const Divider(height: 1),
-        _buildInfoRow(Icons.medical_services_outlined, 'Conditions', info.conditions!),
+        Divider(height: 1, color: AppTheme.getLine(context)),
+        _buildInfoRow(context, Icons.medical_services_outlined, 'Conditions', info.conditions!),
       ],
       if (info.medications != null) ...[
-        const Divider(height: 1),
-        _buildInfoRow(Icons.medication_outlined, 'Medications', info.medications!),
+        Divider(height: 1, color: AppTheme.getLine(context)),
+        _buildInfoRow(context, Icons.medication_outlined, 'Medications', info.medications!),
       ],
       if (info.emergencyContact != null) ...[
-        const Divider(height: 1),
-        _buildInfoRow(Icons.contact_phone_outlined, 'Emergency Contact', info.emergencyContact!),
+        Divider(height: 1, color: AppTheme.getLine(context)),
+        _buildInfoRow(context, Icons.contact_phone_outlined, 'Emergency Contact', info.emergencyContact!),
       ],
       if (info.emergencyContactNumber != null) ...[
-        const Divider(height: 1),
-        _buildInfoRow(Icons.phone_android_rounded, 'Emergency Mobile', info.emergencyContactNumber!),
+        Divider(height: 1, color: AppTheme.getLine(context)),
+        _buildInfoRow(context, Icons.phone_android_rounded, 'Emergency Mobile', info.emergencyContactNumber!),
       ],
     ]);
   }
 
-  Widget _buildAccountStatus(AccountStatus status) {
+  Widget _buildAccountStatus(BuildContext context, AccountStatus status) {
     String label;
     Color color;
     IconData icon;
@@ -397,7 +529,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         icon = Icons.check_circle_outline;
       case AccountStatus.inactive:
         label = 'Your account is currently inactive.';
-        color = AppTheme.muted;
+        color = AppTheme.getMuted(context);
         icon = Icons.pause_circle_outline;
       case AccountStatus.pending:
         label = 'Your account is pending verification.';
@@ -411,11 +543,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Row(
         children: [
           Icon(icon, color: color, size: 24),
@@ -428,14 +556,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   status.name[0].toUpperCase() + status.name.substring(1),
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: color,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   label,
-                  style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                  style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context)),
                 ),
               ],
             ),
@@ -450,54 +578,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onTap: () => Navigator.pushNamed(context, '/account-security'),
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.line),
-        ),
-        child: const Row(
+        decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
+        child: Row(
           children: [
-            Icon(Icons.shield_outlined, color: AppTheme.primary, size: 24),
-            SizedBox(width: 12),
+            const Icon(Icons.shield_outlined, color: AppTheme.primary, size: 24),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Account & Security',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.getInk(context)),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     'Manage password and security settings',
-                    style: TextStyle(fontSize: 12, color: AppTheme.muted),
+                    style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context)),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: AppTheme.muted),
+            Icon(Icons.chevron_right, color: AppTheme.getMuted(context)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildEmptyCard(String message) {
+  Widget _buildEmptyCard(BuildContext context, String message) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
-      ),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Row(
         children: [
-          const Icon(Icons.info_outline, color: AppTheme.mutedLight, size: 20),
+          Icon(Icons.info_outline, color: AppTheme.getMutedLight(context), size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(fontSize: 13, color: AppTheme.muted),
+              style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context)),
             ),
           ),
         ],

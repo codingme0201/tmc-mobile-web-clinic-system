@@ -8,15 +8,16 @@ class AccountSecurityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppTheme.isDark(context);
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppTheme.heroGradient,
+          decoration: BoxDecoration(
+            gradient: isDark ? AppTheme.heroGradientDark : AppTheme.heroGradient,
           ),
         ),
         leading: IconButton(
@@ -55,16 +56,17 @@ class AccountSecurityScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              _buildProfileHeader(user?.name ?? 'User', user?.email ?? ''),
+              _buildProfileHeader(context, user?.name ?? 'User', user?.email ?? ''),
               const SizedBox(height: 24),
-              _buildSectionHeader('IDENTITY DETAILS', 'Account Information'),
+              _buildSectionHeader(context, 'IDENTITY DETAILS', 'Account Information'),
               const SizedBox(height: 12),
-              _buildInfoCard([
-                _buildInfoRow(Icons.person_outline_rounded, 'Full Name', user?.name ?? 'N/A'),
-                const Divider(height: 1, color: AppTheme.line),
-                _buildInfoRow(Icons.email_outlined, 'Email Address', user?.email ?? 'N/A'),
-                const Divider(height: 1, color: AppTheme.line),
+              _buildInfoCard(context, [
+                _buildInfoRow(context, Icons.person_outline_rounded, 'Full Name', user?.name ?? 'N/A'),
+                Divider(height: 1, color: AppTheme.getLine(context)),
+                _buildInfoRow(context, Icons.email_outlined, 'Email Address', user?.email ?? 'N/A'),
+                Divider(height: 1, color: AppTheme.getLine(context)),
                 _buildInfoRow(
+                  context,
                   Icons.calendar_today_rounded,
                   'Member Since',
                   user?.createdAt != null
@@ -73,9 +75,9 @@ class AccountSecurityScreen extends StatelessWidget {
                 ),
               ]),
               const SizedBox(height: 24),
-              _buildSectionHeader('CREDENTIALS', 'Access & Authentication'),
+              _buildSectionHeader(context, 'CREDENTIALS', 'Access & Authentication'),
               const SizedBox(height: 12),
-              _buildInfoCard([
+              _buildInfoCard(context, [
                 _buildActionRow(
                   context,
                   icon: Icons.lock_reset_rounded,
@@ -85,22 +87,23 @@ class AccountSecurityScreen extends StatelessWidget {
                     Navigator.pushNamed(context, '/change-password');
                   },
                 ),
-                const Divider(height: 1, color: AppTheme.line),
+                Divider(height: 1, color: AppTheme.getLine(context)),
                 _buildInfoRow(
+                  context,
                   Icons.shield_outlined,
                   'Session Status',
                   'Active (${session?.loginTime != null ? _formatTime(session!.loginTime) : 'N/A'})',
                 ),
               ]),
               const SizedBox(height: 24),
-              _buildSectionHeader('SESSION TERMINATION', 'Sign Out & Device Exit'),
+              _buildSectionHeader(context, 'SESSION TERMINATION', 'Sign Out & Device Exit'),
               const SizedBox(height: 12),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? AppTheme.darkSurface : Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.danger.withAlpha(40)),
-                  boxShadow: AppTheme.cardShadowSubtle,
+                  border: Border.all(color: AppTheme.danger.withAlpha(isDark ? 80 : 40)),
+                  boxShadow: isDark ? AppTheme.cardShadowDark : AppTheme.cardShadowSubtle,
                 ),
                 child: _buildActionRow(
                   context,
@@ -116,18 +119,22 @@ class AccountSecurityScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: AppTheme.primary.withAlpha(10),
+                  color: isDark ? AppTheme.primary.withAlpha(25) : AppTheme.primary.withAlpha(10),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.primary.withAlpha(25)),
+                  border: Border.all(color: AppTheme.primary.withAlpha(isDark ? 50 : 25)),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.verified_user_outlined, size: 20, color: AppTheme.primary),
-                    SizedBox(width: 12),
+                    const Icon(Icons.verified_user_outlined, size: 20, color: AppTheme.primary),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Your medical records and session tokens are protected under standard clinical encryption protocols.',
-                        style: TextStyle(fontSize: 12, color: AppTheme.inkLight, height: 1.4),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? AppTheme.darkMuted : AppTheme.inkLight,
+                          height: 1.4,
+                        ),
                       ),
                     ),
                   ],
@@ -148,13 +155,17 @@ class AccountSecurityScreen extends StatelessWidget {
     return '${h == 0 ? 12 : h}:$m $period';
   }
 
-  Widget _buildProfileHeader(String name, String email) {
+  Widget _buildProfileHeader(BuildContext context, String name, String email) {
+    final isDark = AppTheme.isDark(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: AppTheme.heroGradient,
+        gradient: isDark ? AppTheme.heroGradientDark : AppTheme.heroGradient,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: AppTheme.primaryGlow,
+        border: Border.all(
+          color: isDark ? AppTheme.primaryLight.withAlpha(50) : Colors.white.withAlpha(40),
+        ),
+        boxShadow: isDark ? AppTheme.cardShadowDark : AppTheme.primaryGlow,
       ),
       child: Row(
         children: [
@@ -166,7 +177,7 @@ class AccountSecurityScreen extends StatelessWidget {
             ),
             child: CircleAvatar(
               radius: 28,
-              backgroundColor: Colors.white.withAlpha(40),
+              backgroundColor: isDark ? AppTheme.darkSurface : Colors.white.withAlpha(40),
               child: Text(
                 name.isNotEmpty ? name[0].toUpperCase() : '?',
                 style: const TextStyle(
@@ -216,7 +227,7 @@ class AccountSecurityScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String kicker, String title) {
+  Widget _buildSectionHeader(BuildContext context, String kicker, String title) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -245,24 +256,24 @@ class AccountSecurityScreen extends StatelessWidget {
         const SizedBox(height: 3),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: AppTheme.getInk(context),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildInfoCard(List<Widget> children) {
+  Widget _buildInfoCard(BuildContext context, List<Widget> children) {
     return Container(
-      decoration: AppTheme.cardDecoration(radius: 16),
+      decoration: AppTheme.cardDecoration(context: context, radius: 16),
       child: Column(children: children),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
@@ -280,17 +291,17 @@ class AccountSecurityScreen extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 13.5, color: AppTheme.muted, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 13.5, color: AppTheme.getMuted(context), fontWeight: FontWeight.w500),
             ),
           ),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13.5,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.ink,
+                color: AppTheme.getInk(context),
               ),
             ),
           ),
@@ -338,18 +349,18 @@ class AccountSecurityScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: titleColor ?? AppTheme.ink,
+                        color: titleColor ?? AppTheme.getInk(context),
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                      style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context)),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, size: 20, color: AppTheme.mutedLight),
+              Icon(Icons.chevron_right_rounded, size: 20, color: AppTheme.getMutedLight(context)),
             ],
           ),
         ),
@@ -361,31 +372,31 @@ class AccountSecurityScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.getSurface(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.logout_rounded, color: AppTheme.danger, size: 22),
-            SizedBox(width: 8),
+            const Icon(Icons.logout_rounded, color: AppTheme.danger, size: 22),
+            const SizedBox(width: 8),
             Text(
               'Sign Out',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.ink,
+                color: AppTheme.getInk(context),
               ),
             ),
           ],
         ),
-        content: const Text(
+        content: Text(
           'Are you sure you wish to terminate this session? You will need to log back in to access your records.',
-          style: TextStyle(fontSize: 14, color: AppTheme.muted, height: 1.45),
+          style: TextStyle(fontSize: 14, color: AppTheme.getMuted(context), height: 1.45),
         ),
         actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppTheme.muted, fontWeight: FontWeight.w600)),
+            child: Text('Cancel', style: TextStyle(color: AppTheme.getMuted(context), fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
             onPressed: () async {

@@ -15,6 +15,10 @@ class ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppTheme.isDark(context);
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
@@ -25,13 +29,15 @@ class ErrorState extends StatelessWidget {
               width: 84,
               height: 84,
               decoration: BoxDecoration(
-                gradient: const RadialGradient(
-                  colors: [Colors.white, Color(0xFFFDF2F2)],
+                gradient: RadialGradient(
+                  colors: isDark
+                      ? [AppTheme.darkSurfaceSubtle, AppTheme.darkSurface]
+                      : [Colors.white, const Color(0xFFFDF2F2)],
                   radius: 0.85,
                 ),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppTheme.danger.withAlpha(45),
+                  color: AppTheme.danger.withAlpha(isDark ? 65 : 45),
                   width: 1.5,
                 ),
                 boxShadow: [
@@ -54,8 +60,8 @@ class ErrorState extends StatelessWidget {
             Text(
               title ?? 'Something went wrong',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppTheme.ink,
+              style: TextStyle(
+                color: ink,
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.2,
@@ -65,8 +71,8 @@ class ErrorState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppTheme.muted,
+              style: TextStyle(
+                color: muted,
                 fontSize: 14,
                 height: 1.45,
               ),

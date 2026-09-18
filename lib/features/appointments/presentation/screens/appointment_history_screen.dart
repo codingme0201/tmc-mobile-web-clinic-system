@@ -31,7 +31,7 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -126,22 +126,26 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
   }
 
   Widget _buildSearchAndFilter() {
+    final surface = AppTheme.getSurface(context);
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+    final mutedLight = AppTheme.getMutedLight(context);
+
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: AppTheme.line)),
+      decoration: BoxDecoration(
+        color: surface,
+        border: Border(bottom: BorderSide(color: line)),
       ),
       child: Column(
         children: [
           Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: AppTheme.cardShadowSubtle,
-            ),
+            decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
             child: TextField(
               controller: _searchController,
+              style: TextStyle(color: ink, fontSize: 13.5),
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value.toLowerCase();
@@ -149,11 +153,11 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
               },
               decoration: InputDecoration(
                 hintText: 'Search by doctor, type, or reason...',
-                hintStyle: const TextStyle(fontSize: 13, color: AppTheme.mutedLight),
+                hintStyle: TextStyle(fontSize: 13, color: mutedLight),
                 prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primary, size: 20),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.close_rounded, size: 18, color: AppTheme.muted),
+                        icon: Icon(Icons.close_rounded, size: 18, color: muted),
                         onPressed: () {
                           _searchController.clear();
                           setState(() {
@@ -165,18 +169,18 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppTheme.line),
+                  borderSide: BorderSide(color: line),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppTheme.line),
+                  borderSide: BorderSide(color: line),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
                 ),
                 filled: true,
-                fillColor: const Color(0xFFFCFDFD),
+                fillColor: subtleBg,
               ),
             ),
           ),
@@ -194,6 +198,9 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
       {'value': 'cancelled', 'label': 'Cancelled'},
       {'value': 'noShow', 'label': 'No-Show'},
     ];
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
+    final muted = AppTheme.getMuted(context);
 
     return SizedBox(
       height: 34,
@@ -215,10 +222,10 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
                 gradient: isSelected ? AppTheme.primaryGradient : null,
-                color: isSelected ? null : const Color(0xFFF4F7F6),
+                color: isSelected ? null : subtleBg,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected ? Colors.transparent : AppTheme.line,
+                  color: isSelected ? Colors.transparent : line,
                 ),
                 boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
               ),
@@ -227,7 +234,7 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected ? Colors.white : AppTheme.muted,
+                  color: isSelected ? Colors.white : muted,
                 ),
               ),
             ),
@@ -239,10 +246,14 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
 
   Widget _buildHistoryCard(BuildContext context, Appointment appointment) {
     final statusColor = _getStatusColor(appointment.status);
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: AppTheme.cardDecoration(radius: 16),
+      decoration: AppTheme.cardDecoration(context: context, radius: 16),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -292,25 +303,25 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                         children: [
                           Text(
                             appointment.title,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: AppTheme.ink,
+                              color: ink,
                               letterSpacing: -0.2,
                             ),
                           ),
                           const SizedBox(height: 3),
                           Row(
                             children: [
-                              const Icon(Icons.person_outline_rounded, size: 13, color: AppTheme.muted),
+                              Icon(Icons.person_outline_rounded, size: 13, color: muted),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   appointment.doctorName,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
-                                    color: AppTheme.muted,
+                                    color: muted,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -327,9 +338,9 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF9FBFA),
+                    color: subtleBg,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppTheme.line),
+                    border: Border.all(color: line),
                   ),
                   child: Row(
                     children: [
@@ -337,10 +348,10 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                       const SizedBox(width: 6),
                       Text(
                         DateFormat('MMM d, yyyy').format(appointment.date),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
-                          color: AppTheme.inkLight,
+                          color: ink,
                         ),
                       ),
                       const Spacer(),
@@ -348,10 +359,10 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
                       const SizedBox(width: 6),
                       Text(
                         appointment.time,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
-                          color: AppTheme.inkLight,
+                          color: ink,
                         ),
                       ),
                     ],

@@ -12,7 +12,7 @@ class ClinicActivitiesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -72,20 +72,20 @@ class ClinicActivitiesScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             children: [
               if (upcoming.isNotEmpty) ...[
-                _buildSectionHeader('SCHEDULED CAMPAIGNS', 'Upcoming Events'),
+                _buildSectionHeader(context, 'SCHEDULED CAMPAIGNS', 'Upcoming Events'),
                 const SizedBox(height: 12),
                 ...upcoming.map((a) => Padding(
                       padding: const EdgeInsets.only(bottom: 14),
-                      child: _buildActivityCard(a),
+                      child: _buildActivityCard(context, a),
                     )),
               ],
               if (completed.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                _buildSectionHeader('PAST HIGHLIGHTS', 'Concluded Activities'),
+                _buildSectionHeader(context, 'PAST HIGHLIGHTS', 'Concluded Activities'),
                 const SizedBox(height: 12),
                 ...completed.map((a) => Padding(
                       padding: const EdgeInsets.only(bottom: 14),
-                      child: _buildActivityCard(a),
+                      child: _buildActivityCard(context, a),
                     )),
               ],
               const SizedBox(height: 32),
@@ -96,7 +96,7 @@ class ClinicActivitiesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String kicker, String title) {
+  Widget _buildSectionHeader(BuildContext context, String kicker, String title) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -125,19 +125,19 @@ class ClinicActivitiesScreen extends StatelessWidget {
         const SizedBox(height: 3),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: AppTheme.getInk(context),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildActivityCard(ClinicActivityDetail activity) {
+  Widget _buildActivityCard(BuildContext context, ClinicActivityDetail activity) {
     return Container(
-      decoration: AppTheme.cardDecoration(radius: 16),
+      decoration: AppTheme.cardDecoration(context: context, radius: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -165,17 +165,17 @@ class ClinicActivitiesScreen extends StatelessWidget {
                     children: [
                       Text(
                         activity.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppTheme.ink,
+                          color: AppTheme.getInk(context),
                           letterSpacing: -0.2,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         activity.description,
-                        style: const TextStyle(fontSize: 13, color: AppTheme.muted, height: 1.45),
+                        style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context), height: 1.45),
                       ),
                     ],
                   ),
@@ -188,9 +188,9 @@ class ClinicActivitiesScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFF9FBFA),
+                color: AppTheme.getSurfaceSubtle(context),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppTheme.line),
+                border: Border.all(color: AppTheme.getLine(context)),
               ),
               child: Row(
                 children: [
@@ -198,7 +198,7 @@ class ClinicActivitiesScreen extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text(
                     _formatDate(activity.date),
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppTheme.inkLight),
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppTheme.getInk(context)),
                   ),
                   if (activity.time != null) ...[
                     const SizedBox(width: 14),
@@ -206,7 +206,7 @@ class ClinicActivitiesScreen extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       activity.time!,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppTheme.inkLight),
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppTheme.getInk(context)),
                     ),
                   ],
                 ],
@@ -221,7 +221,7 @@ class ClinicActivitiesScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       activity.location!,
-                      style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                      style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context)),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

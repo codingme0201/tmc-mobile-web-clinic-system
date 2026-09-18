@@ -70,8 +70,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppTheme.isDark(context);
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -122,8 +126,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     width: 76,
                     height: 76,
                     decoration: BoxDecoration(
-                      gradient: const RadialGradient(
-                        colors: [Colors.white, Color(0xFFF0F5F3)],
+                      gradient: RadialGradient(
+                        colors: isDark
+                            ? [AppTheme.darkSurfaceSubtle, AppTheme.darkSurface]
+                            : const [Colors.white, Color(0xFFF0F5F3)],
                         radius: 0.85,
                       ),
                       shape: BoxShape.circle,
@@ -135,25 +141,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  const Text(
+                  Text(
                     'Update Access Key',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: AppTheme.ink,
+                      color: ink,
                       letterSpacing: -0.3,
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Ensure your account remains safe with a strong clinical credential.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13.5, color: AppTheme.muted, height: 1.4),
+                    style: TextStyle(fontSize: 13.5, color: muted, height: 1.4),
                   ),
                   const SizedBox(height: 26),
                   Container(
                     padding: const EdgeInsets.all(20),
-                    decoration: AppTheme.cardDecoration(radius: 20),
+                    decoration: AppTheme.cardDecoration(context: context, radius: 20),
                     child: Column(
                       children: [
                         AppTextField(

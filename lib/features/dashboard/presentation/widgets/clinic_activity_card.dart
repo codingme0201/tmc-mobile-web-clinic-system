@@ -18,7 +18,7 @@ class ClinicActivityCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: AppTheme.cardDecoration(),
+        decoration: AppTheme.cardDecoration(context: context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -33,20 +33,24 @@ class ClinicActivityCard extends StatelessWidget {
                   child: const Icon(Icons.campaign_rounded, color: AppTheme.success, size: 18),
                 ),
                 const SizedBox(width: 10),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Clinic Activity',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.getInk(context),
+                    ),
                   ),
                 ),
                 Container(
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: AppTheme.surfaceSubtle,
+                    color: AppTheme.getSurfaceSubtle(context),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.muted, size: 11),
+                  child: Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.getMuted(context), size: 11),
                 ),
               ],
             ),
@@ -56,31 +60,31 @@ class ClinicActivityCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Row(
                   children: [
-                    Icon(Icons.event_note_outlined, size: 16, color: AppTheme.muted.withAlpha(150)),
+                    Icon(Icons.event_note_outlined, size: 16, color: AppTheme.getMuted(context).withAlpha(150)),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       'No clinic activities available.',
-                      style: TextStyle(fontSize: 13, color: AppTheme.muted),
+                      style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context)),
                     ),
                   ],
                 ),
               )
             else
-              ...activities.take(3).map((a) => _buildActivityItem(a)),
+              ...activities.take(3).map((a) => _buildActivityItem(context, a)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildActivityItem(ClinicActivity activity) {
+  Widget _buildActivityItem(BuildContext context, ClinicActivity activity) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceSubtle,
+        color: AppTheme.getSurfaceSubtle(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.line),
+        border: Border.all(color: AppTheme.getLine(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,13 +98,13 @@ class ClinicActivityCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             activity.title,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.ink),
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
           ),
           if (activity.description.isNotEmpty) ...[
             const SizedBox(height: 3),
             Text(
               activity.description,
-              style: const TextStyle(fontSize: 11.5, color: AppTheme.muted, height: 1.35),
+              style: TextStyle(fontSize: 11.5, color: AppTheme.getMuted(context), height: 1.35),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

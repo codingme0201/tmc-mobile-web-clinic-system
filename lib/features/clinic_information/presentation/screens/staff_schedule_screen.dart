@@ -19,7 +19,7 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -105,9 +105,9 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
   Widget _buildFilterBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: AppTheme.line)),
+      decoration: BoxDecoration(
+        color: AppTheme.getSurface(context),
+        border: Border(bottom: BorderSide(color: AppTheme.getLine(context))),
       ),
       child: Row(
         children: [
@@ -130,9 +130,9 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
         decoration: BoxDecoration(
           gradient: isSelected ? AppTheme.primaryGradient : null,
-          color: isSelected ? null : const Color(0xFFF4F7F6),
+          color: isSelected ? null : AppTheme.getSurfaceSubtle(context),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? Colors.transparent : AppTheme.line),
+          border: Border.all(color: isSelected ? Colors.transparent : AppTheme.getLine(context)),
           boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
         ),
         child: Text(
@@ -140,7 +140,7 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
           style: TextStyle(
             fontSize: 12.5,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? Colors.white : AppTheme.muted,
+            color: isSelected ? Colors.white : AppTheme.getMuted(context),
           ),
         ),
       ),
@@ -152,7 +152,7 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
     final primaryColor = isDoctor ? AppTheme.primary : AppTheme.info;
 
     return Container(
-      decoration: AppTheme.cardDecoration(radius: 16),
+      decoration: AppTheme.cardDecoration(context: context, radius: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -186,17 +186,17 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
                     children: [
                       Text(
                         staff.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppTheme.ink,
+                          color: AppTheme.getInk(context),
                           letterSpacing: -0.2,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         staff.specialty,
-                        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: AppTheme.muted),
+                        style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: AppTheme.getMuted(context)),
                       ),
                     ],
                   ),
@@ -208,9 +208,9 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF9FBFA),
+                color: AppTheme.getSurfaceSubtle(context),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.line),
+                border: Border.all(color: AppTheme.getLine(context)),
               ),
               child: Column(
                 children: staff.schedule.asMap().entries.map((entry) {
@@ -228,12 +228,12 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
                           width: 86,
                           child: Text(
                             item.day,
-                            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.inkLight),
+                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
                           ),
                         ),
                         Text(
                           '${item.startTime} – ${item.endTime}',
-                          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: AppTheme.muted),
+                          style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: AppTheme.getMuted(context)),
                         ),
                       ],
                     ),

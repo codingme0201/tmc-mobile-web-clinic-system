@@ -90,15 +90,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppTheme.isDark(context);
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppTheme.heroGradient,
+          decoration: BoxDecoration(
+            gradient: isDark ? AppTheme.heroGradientDark : AppTheme.heroGradient,
           ),
         ),
         leading: IconButton(
@@ -139,7 +140,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 Container(
                   padding: const EdgeInsets.all(20),
-                  decoration: AppTheme.cardDecoration(radius: 20),
+                  decoration: AppTheme.cardDecoration(context: context, radius: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -281,42 +282,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           'Gender',
           style: TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w600,
-            color: AppTheme.ink,
+            color: AppTheme.getInk(context),
           ),
         ),
         const SizedBox(height: 6),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.getSurfaceSubtle(context),
             borderRadius: BorderRadius.circular(14),
             boxShadow: AppTheme.cardShadowSubtle,
           ),
           child: DropdownButtonFormField<String>(
             initialValue: _selectedGender.isEmpty ? null : _selectedGender,
+            dropdownColor: AppTheme.getSurface(context),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.getInk(context),
+            ),
             decoration: InputDecoration(
               hintText: 'Select gender identity',
-              hintStyle: const TextStyle(fontSize: 13.5, color: AppTheme.mutedLight),
+              hintStyle: TextStyle(fontSize: 13.5, color: AppTheme.getMutedLight(context)),
               prefixIcon: const Icon(Icons.wc_outlined, color: AppTheme.primary, size: 20),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: AppTheme.line),
+                borderSide: BorderSide(color: AppTheme.getLine(context)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: AppTheme.line),
+                borderSide: BorderSide(color: AppTheme.getLine(context)),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
+              focusedBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(14)),
+                borderSide: BorderSide(color: AppTheme.primary, width: 1.5),
               ),
               filled: true,
-              fillColor: const Color(0xFFFCFDFD),
+              fillColor: AppTheme.getSurfaceSubtle(context),
             ),
             items: const [
               DropdownMenuItem(value: 'Male', child: Text('Male')),

@@ -11,7 +11,17 @@ class ApiClient {
     _configuredBaseUrl = url;
   }
 
+  static Future<void> saveBaseUrl(String url) async {
+    _configuredBaseUrl = url;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('api_base_url', url);
+  }
+
   static String get defaultBaseUrl {
+    const envUrl = String.fromEnvironment('API_BASE_URL');
+    if (envUrl.isNotEmpty) {
+      return envUrl;
+    }
     if (_configuredBaseUrl != null && _configuredBaseUrl!.isNotEmpty) {
       return _configuredBaseUrl!;
     }
@@ -27,13 +37,13 @@ class ApiClient {
   }
 
   Future<String> getBaseUrl() async {
-    if (_configuredBaseUrl != null && _configuredBaseUrl!.isNotEmpty) {
-      return _configuredBaseUrl!;
-    }
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString('api_base_url');
     if (saved != null && saved.isNotEmpty) {
       return saved;
+    }
+    if (_configuredBaseUrl != null && _configuredBaseUrl!.isNotEmpty) {
+      return _configuredBaseUrl!;
     }
     return defaultBaseUrl;
   }

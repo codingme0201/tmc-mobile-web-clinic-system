@@ -46,7 +46,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -104,7 +104,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(18),
-            decoration: AppTheme.cardDecoration(radius: 18),
+            decoration: AppTheme.cardDecoration(context: context, radius: 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -163,7 +163,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
       padding: const EdgeInsets.all(20),
       children: [
         Container(
-          decoration: AppTheme.cardDecoration(radius: 20),
+          decoration: AppTheme.cardDecoration(context: context, radius: 20),
           clipBehavior: Clip.antiAlias,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,15 +208,15 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
                 child: Column(
                   children: [
                     _buildReviewRow('Type', _selectedType ?? '', Icons.medical_services_outlined),
-                    const Divider(height: 24, color: AppTheme.line),
+                    Divider(height: 24, color: AppTheme.getLine(context)),
                     _buildReviewRow('Date', dateFormat.format(_selectedDate!), Icons.calendar_month_outlined),
-                    const Divider(height: 24, color: AppTheme.line),
+                    Divider(height: 24, color: AppTheme.getLine(context)),
                     _buildReviewRow('Time', _selectedTime ?? '', Icons.schedule_rounded),
-                    const Divider(height: 24, color: AppTheme.line),
+                    Divider(height: 24, color: AppTheme.getLine(context)),
                     _buildReviewRow('Doctor', _selectedDoctor ?? '', Icons.person_outline_rounded),
-                    const Divider(height: 24, color: AppTheme.line),
+                    Divider(height: 24, color: AppTheme.getLine(context)),
                     _buildReviewRow('Reason', _reasonController.text.trim(), Icons.edit_note_rounded),
-                    const Divider(height: 24, color: AppTheme.line),
+                    Divider(height: 24, color: AppTheme.getLine(context)),
                     _buildReviewRow('Status', 'Pending Approval', Icons.hourglass_top_rounded, valueColor: AppTheme.gold),
                   ],
                 ),
@@ -242,15 +242,15 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppTheme.getSurface(context),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: AppTheme.lineStrong),
+                      border: Border.all(color: AppTheme.getLine(context)),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'Edit Details',
                         style: TextStyle(
-                          color: AppTheme.ink,
+                          color: AppTheme.getInk(context),
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -277,6 +277,9 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
   }
 
   Widget _buildReviewRow(String label, String value, IconData icon, {Color? valueColor}) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -296,10 +299,10 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
             padding: const EdgeInsets.only(top: 6),
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: AppTheme.muted,
+                color: muted,
               ),
             ),
           ),
@@ -312,7 +315,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: valueColor ?? AppTheme.ink,
+                color: valueColor ?? ink,
               ),
             ),
           ),
@@ -322,6 +325,8 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
   }
 
   Widget _buildSectionHeader(String kicker, String title) {
+    final ink = AppTheme.getInk(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -350,10 +355,10 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
         const SizedBox(height: 3),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: ink,
           ),
         ),
       ],
@@ -361,33 +366,37 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
   }
 
   Widget _buildTypeDropdown() {
+    final surface = AppTheme.getSurface(context);
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
+    final ink = AppTheme.getInk(context);
+    final mutedLight = AppTheme.getMutedLight(context);
+
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: AppTheme.cardShadowSubtle,
-      ),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: DropdownButtonFormField<String>(
         initialValue: _selectedType,
+        dropdownColor: surface,
+        style: TextStyle(color: ink, fontSize: 14),
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.medical_services_outlined, color: AppTheme.primary, size: 20),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: AppTheme.line),
+            borderSide: BorderSide(color: line),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: AppTheme.line),
+            borderSide: BorderSide(color: line),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
           ),
           filled: true,
-          fillColor: const Color(0xFFFCFDFD),
+          fillColor: subtleBg,
         ),
-        hint: const Text('Select appointment type', style: TextStyle(fontSize: 13.5, color: AppTheme.mutedLight)),
+        hint: Text('Select appointment type', style: TextStyle(fontSize: 13.5, color: mutedLight)),
         items: _appointmentTypes.map((type) {
           return DropdownMenuItem(
             value: type,
@@ -410,9 +419,16 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
   }
 
   Widget _buildDatePicker() {
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+    final mutedLight = AppTheme.getMutedLight(context);
+
     return GestureDetector(
       onTap: () async {
         final now = DateTime.now();
+        final isDark = AppTheme.isDark(context);
         final picked = await showDatePicker(
           context: context,
           initialDate: _selectedDate ?? now.add(const Duration(days: 1)),
@@ -421,12 +437,19 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
           builder: (context, child) {
             return Theme(
               data: Theme.of(context).copyWith(
-                colorScheme: const ColorScheme.light(
-                  primary: AppTheme.primary,
-                  onPrimary: Colors.white,
-                  surface: Colors.white,
-                  onSurface: AppTheme.ink,
-                ),
+                colorScheme: isDark
+                    ? const ColorScheme.dark(
+                        primary: AppTheme.primary,
+                        onPrimary: Colors.white,
+                        surface: AppTheme.darkSurface,
+                        onSurface: Colors.white,
+                      )
+                    : const ColorScheme.light(
+                        primary: AppTheme.primary,
+                        onPrimary: Colors.white,
+                        surface: Colors.white,
+                        onSurface: AppTheme.ink,
+                      ),
               ),
               child: child!,
             );
@@ -441,10 +464,10 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: const Color(0xFFFCFDFD),
+          color: subtleBg,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _selectedDate == null ? AppTheme.line : AppTheme.primary,
+            color: _selectedDate == null ? line : AppTheme.primary,
             width: _selectedDate == null ? 1 : 1.5,
           ),
           boxShadow: AppTheme.cardShadowSubtle,
@@ -453,7 +476,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
           children: [
             Icon(
               Icons.calendar_month_outlined,
-              color: _selectedDate != null ? AppTheme.primary : AppTheme.muted,
+              color: _selectedDate != null ? AppTheme.primary : muted,
               size: 20,
             ),
             const SizedBox(width: 12),
@@ -465,11 +488,11 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: _selectedDate != null ? FontWeight.w600 : FontWeight.normal,
-                  color: _selectedDate != null ? AppTheme.ink : AppTheme.mutedLight,
+                  color: _selectedDate != null ? ink : mutedLight,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
+            Icon(Icons.chevron_right_rounded, color: muted),
           ],
         ),
       ),
@@ -477,6 +500,11 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
   }
 
   Widget _buildTimeSlotGrid() {
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -493,10 +521,10 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               gradient: isSelected ? AppTheme.primaryGradient : null,
-              color: isSelected ? null : const Color(0xFFF7FAF9),
+              color: isSelected ? null : subtleBg,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? Colors.transparent : AppTheme.line,
+                color: isSelected ? Colors.transparent : line,
               ),
               boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
             ),
@@ -506,7 +534,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
                 Icon(
                   Icons.schedule_rounded,
                   size: 14,
-                  color: isSelected ? Colors.white : AppTheme.muted,
+                  color: isSelected ? Colors.white : muted,
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -514,7 +542,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? Colors.white : AppTheme.ink,
+                    color: isSelected ? Colors.white : ink,
                   ),
                 ),
               ],
@@ -526,33 +554,37 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
   }
 
   Widget _buildDoctorDropdown() {
+    final surface = AppTheme.getSurface(context);
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
+    final ink = AppTheme.getInk(context);
+    final mutedLight = AppTheme.getMutedLight(context);
+
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: AppTheme.cardShadowSubtle,
-      ),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: DropdownButtonFormField<String>(
         initialValue: _selectedDoctor,
+        dropdownColor: surface,
+        style: TextStyle(color: ink, fontSize: 14),
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.person_outline_rounded, color: AppTheme.primary, size: 20),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: AppTheme.line),
+            borderSide: BorderSide(color: line),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: AppTheme.line),
+            borderSide: BorderSide(color: line),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
           ),
           filled: true,
-          fillColor: const Color(0xFFFCFDFD),
+          fillColor: subtleBg,
         ),
-        hint: const Text('Select a doctor or physician', style: TextStyle(fontSize: 13.5, color: AppTheme.mutedLight)),
+        hint: Text('Select a doctor or physician', style: TextStyle(fontSize: 13.5, color: mutedLight)),
         items: _doctorNames.map((name) {
           return DropdownMenuItem(
             value: name,

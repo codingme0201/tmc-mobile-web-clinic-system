@@ -19,7 +19,7 @@ class ConsultationSummaryCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: AppTheme.cardDecoration(),
+        decoration: AppTheme.cardDecoration(context: context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -34,20 +34,24 @@ class ConsultationSummaryCard extends StatelessWidget {
                   child: const Icon(Icons.medical_information_rounded, color: AppTheme.info, size: 18),
                 ),
                 const SizedBox(width: 10),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Consultations',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.getInk(context),
+                    ),
                   ),
                 ),
                 Container(
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: AppTheme.surfaceSubtle,
+                    color: AppTheme.getSurfaceSubtle(context),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.muted, size: 11),
+                  child: Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.getMuted(context), size: 11),
                 ),
               ],
             ),

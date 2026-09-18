@@ -95,6 +95,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   Widget _buildDetailContent() {
     final appointment = _appointment!;
     final dateFormat = DateFormat('EEEE, MMMM d, yyyy');
+    final muted = AppTheme.getMuted(context);
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -105,9 +106,9 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         const SizedBox(height: 12),
         _buildInfoCard([
           _buildInfoRow(Icons.receipt_outlined, 'Reference', appointment.id.toUpperCase()),
-          const Divider(height: 1),
+          Divider(height: 1, color: AppTheme.getLine(context)),
           _buildInfoRow(Icons.category_outlined, 'Type', appointment.type),
-          const Divider(height: 1),
+          Divider(height: 1, color: AppTheme.getLine(context)),
           _buildInfoRow(Icons.local_hospital_outlined, 'Clinic', appointment.clinic),
         ]),
         const SizedBox(height: 20),
@@ -115,9 +116,9 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         const SizedBox(height: 12),
         _buildInfoCard([
           _buildInfoRow(Icons.calendar_today_outlined, 'Date', dateFormat.format(appointment.date)),
-          const Divider(height: 1),
+          Divider(height: 1, color: AppTheme.getLine(context)),
           _buildInfoRow(Icons.access_time_outlined, 'Time', appointment.time),
-          const Divider(height: 1),
+          Divider(height: 1, color: AppTheme.getLine(context)),
           _buildInfoRow(Icons.person_outline, 'Doctor', appointment.doctorName),
         ]),
         const SizedBox(height: 20),
@@ -147,7 +148,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           const SizedBox(height: 12),
           Text(
             DateFormat('MMM d, yyyy \'at\' h:mm a').format(appointment.requestedOn!),
-            style: const TextStyle(fontSize: 14, color: AppTheme.muted),
+            style: TextStyle(fontSize: 14, color: muted),
           ),
         ],
         if (appointment.updatedAt != null) ...[
@@ -156,7 +157,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           const SizedBox(height: 8),
           Text(
             DateFormat('MMM d, yyyy \'at\' h:mm a').format(appointment.updatedAt!),
-            style: const TextStyle(fontSize: 14, color: AppTheme.muted),
+            style: TextStyle(fontSize: 14, color: muted),
           ),
         ],
         const SizedBox(height: 32),
@@ -190,6 +191,8 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         icon = Icons.person_off_outlined;
         break;
     }
+
+    final ink = AppTheme.getInk(context);
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -228,7 +231,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                   appointment.status.description,
                   style: TextStyle(
                     fontSize: 12.5,
-                    color: AppTheme.ink.withAlpha(180),
+                    color: ink.withAlpha(180),
                     height: 1.3,
                   ),
                 ),
@@ -241,6 +244,8 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
+    final ink = AppTheme.getInk(context);
+
     return Row(
       children: [
         Container(
@@ -254,10 +259,10 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         const SizedBox(width: 8),
         Text(
           title.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: ink,
             letterSpacing: 0.7,
           ),
         ),
@@ -267,12 +272,15 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
 
   Widget _buildInfoCard(List<Widget> children) {
     return Container(
-      decoration: AppTheme.cardDecoration(borderRadius: 16),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 16),
       child: Column(children: children),
     );
   }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
@@ -282,17 +290,17 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 13.5, color: AppTheme.muted),
+              style: TextStyle(fontSize: 13.5, color: muted),
             ),
           ),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13.5,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.ink,
+                color: ink,
               ),
             ),
           ),
@@ -302,15 +310,17 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   }
 
   Widget _buildReasonCard(String reason) {
+    final ink = AppTheme.getInk(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Text(
         reason,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 13.5,
-          color: AppTheme.ink,
+          color: ink,
           height: 1.5,
         ),
       ),
@@ -318,11 +328,13 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   }
 
   Widget _buildCancellationReasonCard(String reason) {
+    final isDark = AppTheme.isDark(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.dangerLight,
+        color: isDark ? AppTheme.danger.withAlpha(20) : AppTheme.dangerLight,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppTheme.danger.withAlpha(50)),
       ),

@@ -64,26 +64,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+    final line = AppTheme.getLine(context);
+
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Create Account',
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: AppTheme.ink),
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: ink),
         ),
         backgroundColor: Colors.transparent,
-        foregroundColor: AppTheme.ink,
+        foregroundColor: ink,
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppTheme.getSurface(context),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppTheme.line),
+              border: Border.all(color: line),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded, size: 18, color: AppTheme.ink),
+              icon: Icon(Icons.arrow_back_rounded, size: 18, color: ink),
               padding: EdgeInsets.zero,
               onPressed: () => Navigator.pop(context),
             ),
@@ -124,26 +128,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     'Join TMC CareLink',
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
-                      color: AppTheme.ink,
+                      color: ink,
                       letterSpacing: -0.5,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Create your confidential patient account',
-                    style: TextStyle(fontSize: 14, color: AppTheme.muted),
+                    style: TextStyle(fontSize: 14, color: muted),
                   ),
                   const SizedBox(height: 24),
 
                   // Form Container
                   Container(
                     padding: const EdgeInsets.all(22),
-                    decoration: AppTheme.cardDecoration(borderRadius: 22),
+                    decoration: AppTheme.cardDecoration(context: context, borderRadius: 22),
                     child: Column(
                       children: [
                         AppTextField(
@@ -185,7 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                              color: AppTheme.muted,
+                              color: muted,
                               size: 20,
                             ),
                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -208,7 +212,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                              color: AppTheme.muted,
+                              color: muted,
                               size: 20,
                             ),
                             onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
@@ -233,9 +237,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         'Already have an account? ',
-                        style: TextStyle(color: AppTheme.muted, fontSize: 13.5),
+                        style: TextStyle(color: muted, fontSize: 13.5),
                       ),
                       GestureDetector(
                         onTap: () => Navigator.pop(context),

@@ -98,11 +98,10 @@ class _SearchTabState extends State<SearchTab> {
       child: Column(
         children: [
           Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: AppTheme.cardShadowSubtle,
-              border: Border.all(color: AppTheme.line),
+            decoration: AppTheme.cardDecoration(
+              context: context,
+              borderRadius: 14,
+              shadow: AppTheme.cardShadowSubtle,
             ),
             child: Row(
               children: [
@@ -113,17 +112,18 @@ class _SearchTabState extends State<SearchTab> {
                   child: TextField(
                     controller: _controller,
                     onChanged: _onQueryChanged,
-                    decoration: const InputDecoration(
+                    style: TextStyle(fontSize: 14, color: AppTheme.getInk(context)),
+                    decoration: InputDecoration(
                       hintText: 'Search appointments, records, doctors...',
-                      hintStyle: TextStyle(fontSize: 13.5, color: AppTheme.mutedLight),
+                      hintStyle: TextStyle(fontSize: 13.5, color: AppTheme.getMutedLight(context)),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
                 if (_controller.text.isNotEmpty)
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, size: 18, color: AppTheme.muted),
+                    icon: Icon(Icons.close_rounded, size: 18, color: AppTheme.getMuted(context)),
                     onPressed: () {
                       _controller.clear();
                       _onQueryChanged('');
@@ -155,7 +155,7 @@ class _SearchTabState extends State<SearchTab> {
           children: [
             const Icon(Icons.error_outline, size: 48, color: AppTheme.danger),
             const SizedBox(height: 12),
-            Text(_error, style: const TextStyle(color: AppTheme.muted)),
+            Text(_error, style: TextStyle(color: AppTheme.getMuted(context))),
           ],
         ),
       );
@@ -166,21 +166,21 @@ class _SearchTabState extends State<SearchTab> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.search, size: 64, color: AppTheme.mutedLight.withAlpha(80)),
+            Icon(Icons.search, size: 64, color: AppTheme.getMutedLight(context).withAlpha(80)),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Search for anything',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.ink,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.getInk(context),
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Find appointments, medical records,\nprescriptions, and certificates',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: AppTheme.muted),
+              style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context)),
             ),
           ],
         ),
@@ -192,14 +192,14 @@ class _SearchTabState extends State<SearchTab> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.search_off, size: 56, color: AppTheme.mutedLight.withAlpha(120)),
+            Icon(Icons.search_off, size: 56, color: AppTheme.getMutedLight(context).withAlpha(120)),
             const SizedBox(height: 12),
             Text(
               'No results found for "${_controller.text}"',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.ink),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.getInk(context)),
             ),
             const SizedBox(height: 4),
-            const Text('Try searching with different keywords', style: TextStyle(fontSize: 13, color: AppTheme.muted)),
+            Text('Try searching with different keywords', style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context))),
           ],
         ),
       );
@@ -250,10 +250,10 @@ class _SearchTabState extends State<SearchTab> {
               const SizedBox(width: 8),
               Text(
                 title.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w700,
-                  color: AppTheme.ink,
+                  color: AppTheme.getInk(context),
                   letterSpacing: 0.7,
                 ),
               ),
@@ -262,7 +262,7 @@ class _SearchTabState extends State<SearchTab> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: AppTheme.primary.withAlpha(15),
+              color: AppTheme.primary.withAlpha(20),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -285,7 +285,7 @@ class _SearchTabState extends State<SearchTab> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Row(
         children: [
           Container(
@@ -304,11 +304,11 @@ class _SearchTabState extends State<SearchTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.ink)),
+                    Text(title, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.getInk(context))),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                       decoration: BoxDecoration(
-                        color: AppTheme.primary.withAlpha(16),
+                        color: AppTheme.primary.withAlpha(20),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(status, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppTheme.primary)),
@@ -316,7 +316,7 @@ class _SearchTabState extends State<SearchTab> {
                   ],
                 ),
                 const SizedBox(height: 3),
-                Text('$ref · $staff · $date', style: const TextStyle(fontSize: 12, color: AppTheme.muted)),
+                Text('$ref · $staff · $date', style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context))),
               ],
             ),
           ),
@@ -334,7 +334,7 @@ class _SearchTabState extends State<SearchTab> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Row(
         children: [
           Container(
@@ -350,9 +350,9 @@ class _SearchTabState extends State<SearchTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(ref, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.ink)),
+                Text(ref, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.getInk(context))),
                 const SizedBox(height: 3),
-                Text('$doctor · $date · ${meds.length} item(s)', style: const TextStyle(fontSize: 12, color: AppTheme.muted)),
+                Text('$doctor · $date · ${meds.length} item(s)', style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context))),
               ],
             ),
           ),
@@ -370,7 +370,7 @@ class _SearchTabState extends State<SearchTab> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Row(
         children: [
           Container(
@@ -389,11 +389,11 @@ class _SearchTabState extends State<SearchTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(ref, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.ink)),
+                    Text(ref, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.getInk(context))),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                       decoration: BoxDecoration(
-                        color: AppTheme.primary.withAlpha(16),
+                        color: AppTheme.primary.withAlpha(20),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(status, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppTheme.primary)),
@@ -401,7 +401,7 @@ class _SearchTabState extends State<SearchTab> {
                   ],
                 ),
                 const SizedBox(height: 3),
-                Text('$purpose · $date', style: const TextStyle(fontSize: 12, color: AppTheme.muted)),
+                Text('$purpose · $date', style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context))),
               ],
             ),
           ),
@@ -418,7 +418,7 @@ class _SearchTabState extends State<SearchTab> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Row(
         children: [
           Container(
@@ -434,11 +434,11 @@ class _SearchTabState extends State<SearchTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.ink)),
+                Text(name, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.getInk(context))),
                 const SizedBox(height: 3),
                 Text(
                   '${conditions.length} Condition(s) · ${allergies.length} Allergie(s)',
-                  style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                  style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context)),
                 ),
               ],
             ),

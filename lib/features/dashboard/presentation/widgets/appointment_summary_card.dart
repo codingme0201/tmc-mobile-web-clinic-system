@@ -19,11 +19,12 @@ class AppointmentSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppTheme.isDark(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: AppTheme.cardDecoration(),
+        decoration: AppTheme.cardDecoration(context: context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -32,26 +33,30 @@ class AppointmentSummaryCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryLight,
+                    color: isDark ? AppTheme.primary.withAlpha(45) : AppTheme.primaryLight,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(Icons.calendar_month_rounded, color: AppTheme.primary, size: 18),
                 ),
                 const SizedBox(width: 10),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Appointments',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.getInk(context),
+                    ),
                   ),
                 ),
                 Container(
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: AppTheme.surfaceSubtle,
+                    color: AppTheme.getSurfaceSubtle(context),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.muted, size: 11),
+                  child: Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.getMuted(context), size: 11),
                 ),
               ],
             ),

@@ -95,6 +95,12 @@ class _NotificationsTabState extends State<NotificationsTab> {
             );
           }
 
+          final isDark = AppTheme.isDark(context);
+          final ink = AppTheme.getInk(context);
+          final muted = AppTheme.getMuted(context);
+          final mutedLight = AppTheme.getMutedLight(context);
+          final line = AppTheme.getLine(context);
+
           final notifications = controller.notifications;
 
           if (notifications.isEmpty) {
@@ -102,16 +108,16 @@ class _NotificationsTabState extends State<NotificationsTab> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.notifications_none_outlined, size: 56, color: AppTheme.mutedLight.withAlpha(100)),
+                  Icon(Icons.notifications_none_outlined, size: 56, color: mutedLight.withAlpha(100)),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'No notifications yet',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: ink),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'You are all caught up!',
-                    style: TextStyle(fontSize: 13, color: AppTheme.muted),
+                    style: TextStyle(fontSize: 13, color: muted),
                   ),
                 ],
               ),
@@ -146,6 +152,13 @@ class _NotificationsTabState extends State<NotificationsTab> {
                     ),
                   ),
                 ...notifications.map((notif) {
+                  final cardBg = notif.isRead
+                      ? AppTheme.getSurface(context)
+                      : (isDark ? const Color(0xFF132825) : const Color(0xFFF2FAF8));
+                  final iconBg = notif.isRead
+                      ? AppTheme.getSurfaceSubtle(context)
+                      : AppTheme.primaryLight.withAlpha(isDark ? 35 : 22);
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: InkWell(
@@ -158,7 +171,8 @@ class _NotificationsTabState extends State<NotificationsTab> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: AppTheme.cardDecoration(
-                          color: notif.isRead ? Colors.white : const Color(0xFFF2FAF8),
+                          context: context,
+                          color: cardBg,
                           borderRadius: 16,
                         ),
                         child: Row(
@@ -168,15 +182,15 @@ class _NotificationsTabState extends State<NotificationsTab> {
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
-                                color: notif.isRead ? AppTheme.surfaceSubtle : AppTheme.primaryLight.withAlpha(22),
+                                color: iconBg,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: notif.isRead ? AppTheme.line : AppTheme.primaryLight.withAlpha(50),
+                                  color: notif.isRead ? line : AppTheme.primaryLight.withAlpha(50),
                                 ),
                               ),
                               child: Icon(
                                 _getNotificationIcon(notif),
-                                color: notif.isRead ? AppTheme.muted : AppTheme.primary,
+                                color: notif.isRead ? muted : AppTheme.primary,
                                 size: 20,
                               ),
                             ),
@@ -193,7 +207,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
                                           style: TextStyle(
                                             fontSize: 14.5,
                                             fontWeight: notif.isRead ? FontWeight.w600 : FontWeight.w800,
-                                            color: AppTheme.ink,
+                                            color: ink,
                                           ),
                                         ),
                                       ),
@@ -212,7 +226,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
                                   const SizedBox(height: 4),
                                   Text(
                                     notif.message,
-                                    style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.4),
+                                    style: TextStyle(fontSize: 12.5, color: muted, height: 1.4),
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
@@ -220,13 +234,13 @@ class _NotificationsTabState extends State<NotificationsTab> {
                                     children: [
                                       Text(
                                         _formatDate(notif.createdAt),
-                                        style: const TextStyle(fontSize: 11, color: AppTheme.mutedLight, fontWeight: FontWeight.w500),
+                                        style: TextStyle(fontSize: 11, color: mutedLight, fontWeight: FontWeight.w500),
                                       ),
                                       if (notif.source.isNotEmpty)
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: AppTheme.primary.withAlpha(12),
+                                            color: AppTheme.primary.withAlpha(isDark ? 25 : 12),
                                             borderRadius: BorderRadius.circular(6),
                                           ),
                                           child: Text(

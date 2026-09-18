@@ -36,7 +36,7 @@ class _RescheduleAppointmentScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -81,7 +81,7 @@ class _RescheduleAppointmentScreenState
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(18),
-            decoration: AppTheme.cardDecoration(radius: 18),
+            decoration: AppTheme.cardDecoration(context: context, radius: 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -110,7 +110,7 @@ class _RescheduleAppointmentScreenState
 
   Widget _buildCurrentAppointmentCard() {
     return Container(
-      decoration: AppTheme.cardDecoration(radius: 16),
+      decoration: AppTheme.cardDecoration(context: context, radius: 16),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +119,7 @@ class _RescheduleAppointmentScreenState
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: AppTheme.primary.withAlpha(12),
-              border: const Border(bottom: BorderSide(color: AppTheme.line)),
+              border: Border(bottom: BorderSide(color: AppTheme.getLine(context))),
             ),
             child: const Row(
               children: [
@@ -144,10 +144,10 @@ class _RescheduleAppointmentScreenState
               children: [
                 Text(
                   widget.appointment.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.ink,
+                    color: AppTheme.getInk(context),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -177,21 +177,24 @@ class _RescheduleAppointmentScreenState
   }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return Row(
       children: [
         Icon(icon, size: 16, color: AppTheme.primary),
         const SizedBox(width: 8),
         Text(
           '$label: ',
-          style: const TextStyle(fontSize: 13, color: AppTheme.muted, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 13, color: muted, fontWeight: FontWeight.w500),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: AppTheme.ink,
+              color: ink,
             ),
           ),
         ),
@@ -200,6 +203,8 @@ class _RescheduleAppointmentScreenState
   }
 
   Widget _buildSectionHeader(String kicker, String title) {
+    final ink = AppTheme.getInk(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -228,10 +233,10 @@ class _RescheduleAppointmentScreenState
         const SizedBox(height: 3),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: ink,
           ),
         ),
       ],
@@ -239,9 +244,16 @@ class _RescheduleAppointmentScreenState
   }
 
   Widget _buildDatePicker() {
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+    final mutedLight = AppTheme.getMutedLight(context);
+
     return GestureDetector(
       onTap: () async {
         final now = DateTime.now();
+        final isDark = AppTheme.isDark(context);
         final picked = await showDatePicker(
           context: context,
           initialDate: _newDate ?? now.add(const Duration(days: 1)),
@@ -250,12 +262,19 @@ class _RescheduleAppointmentScreenState
           builder: (context, child) {
             return Theme(
               data: Theme.of(context).copyWith(
-                colorScheme: const ColorScheme.light(
-                  primary: AppTheme.primary,
-                  onPrimary: Colors.white,
-                  surface: Colors.white,
-                  onSurface: AppTheme.ink,
-                ),
+                colorScheme: isDark
+                    ? const ColorScheme.dark(
+                        primary: AppTheme.primary,
+                        onPrimary: Colors.white,
+                        surface: AppTheme.darkSurface,
+                        onSurface: Colors.white,
+                      )
+                    : const ColorScheme.light(
+                        primary: AppTheme.primary,
+                        onPrimary: Colors.white,
+                        surface: Colors.white,
+                        onSurface: AppTheme.ink,
+                      ),
               ),
               child: child!,
             );
@@ -270,10 +289,10 @@ class _RescheduleAppointmentScreenState
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: const Color(0xFFFCFDFD),
+          color: subtleBg,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _newDate == null ? AppTheme.line : AppTheme.primary,
+            color: _newDate == null ? line : AppTheme.primary,
             width: _newDate == null ? 1 : 1.5,
           ),
           boxShadow: AppTheme.cardShadowSubtle,
@@ -282,7 +301,7 @@ class _RescheduleAppointmentScreenState
           children: [
             Icon(
               Icons.calendar_month_outlined,
-              color: _newDate != null ? AppTheme.primary : AppTheme.muted,
+              color: _newDate != null ? AppTheme.primary : muted,
               size: 20,
             ),
             const SizedBox(width: 12),
@@ -294,11 +313,11 @@ class _RescheduleAppointmentScreenState
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: _newDate != null ? FontWeight.w600 : FontWeight.normal,
-                  color: _newDate != null ? AppTheme.ink : AppTheme.mutedLight,
+                  color: _newDate != null ? ink : mutedLight,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
+            Icon(Icons.chevron_right_rounded, color: muted),
           ],
         ),
       ),
@@ -306,6 +325,11 @@ class _RescheduleAppointmentScreenState
   }
 
   Widget _buildTimeSlotGrid() {
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -322,10 +346,10 @@ class _RescheduleAppointmentScreenState
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               gradient: isSelected ? AppTheme.primaryGradient : null,
-              color: isSelected ? null : const Color(0xFFF7FAF9),
+              color: isSelected ? null : subtleBg,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? Colors.transparent : AppTheme.line,
+                color: isSelected ? Colors.transparent : line,
               ),
               boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
             ),
@@ -335,7 +359,7 @@ class _RescheduleAppointmentScreenState
                 Icon(
                   Icons.schedule_rounded,
                   size: 14,
-                  color: isSelected ? Colors.white : AppTheme.muted,
+                  color: isSelected ? Colors.white : muted,
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -343,7 +367,7 @@ class _RescheduleAppointmentScreenState
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? Colors.white : AppTheme.ink,
+                    color: isSelected ? Colors.white : ink,
                   ),
                 ),
               ],

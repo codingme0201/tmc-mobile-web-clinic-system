@@ -81,7 +81,7 @@ class _ConsultationsScreenState extends State<ConsultationsScreen> {
       ),
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: AppTheme.cardDecoration(),
+        decoration: AppTheme.cardDecoration(context: context),
         child: Row(
           children: [
             Container(
@@ -101,10 +101,10 @@ class _ConsultationsScreenState extends State<ConsultationsScreen> {
                 children: [
                   Text(
                     consultation.reference,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
-                      color: AppTheme.ink,
+                      color: AppTheme.getInk(context),
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -114,7 +114,7 @@ class _ConsultationsScreenState extends State<ConsultationsScreen> {
                       const SizedBox(width: 4),
                       Text(
                         '${consultation.date} · ${consultation.time}',
-                        style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, fontWeight: FontWeight.w500),
+                        style: TextStyle(fontSize: 12.5, color: AppTheme.getMuted(context), fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),

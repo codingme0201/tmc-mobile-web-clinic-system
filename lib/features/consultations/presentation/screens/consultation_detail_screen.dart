@@ -68,13 +68,13 @@ class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
         children: [
           _buildHeader(c),
           const SizedBox(height: 24),
-          _buildSection('Chief Complaint', c.chiefComplaint),
-          _buildSection('Diagnosis', c.diagnosis),
-          _buildSection('Treatment', c.treatment),
-          _buildSection('Disposition', c.disposition),
-          _buildSection('Clinical Findings', c.clinicalFindings),
+          _buildSection(context, 'Chief Complaint', c.chiefComplaint),
+          _buildSection(context, 'Diagnosis', c.diagnosis),
+          _buildSection(context, 'Treatment', c.treatment),
+          _buildSection(context, 'Disposition', c.disposition),
+          _buildSection(context, 'Clinical Findings', c.clinicalFindings),
           const SizedBox(height: 24),
-          _buildVitalsGrid(c.vitals),
+          _buildVitalsGrid(context, c.vitals),
         ],
       ),
     );
@@ -145,11 +145,13 @@ class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
     );
   }
 
-  Widget _buildSection(String title, String value) {
+  Widget _buildSection(BuildContext context, String title, String value) {
+    final ink = AppTheme.getInk(context);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -178,17 +180,22 @@ class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
           const SizedBox(height: 8),
           Text(
             value.isEmpty ? 'Not recorded' : value,
-            style: const TextStyle(fontSize: 14, color: AppTheme.ink, height: 1.4),
+            style: TextStyle(fontSize: 14, color: ink, height: 1.4),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildVitalsGrid(Map<String, dynamic> vitals) {
+  Widget _buildVitalsGrid(BuildContext context, Map<String, dynamic> vitals) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+    final subtleBg = AppTheme.getSurfaceSubtle(context);
+    final line = AppTheme.getLine(context);
+
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: AppTheme.cardDecoration(borderRadius: 16),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -203,12 +210,12 @@ class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'PATIENT VITALS',
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w700,
-                  color: AppTheme.ink,
+                  color: ink,
                   letterSpacing: 0.7,
                 ),
               ),
@@ -222,16 +229,16 @@ class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceSubtle,
+                  color: subtleBg,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppTheme.line),
+                  border: Border.all(color: line),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(e.key, style: const TextStyle(fontSize: 11, color: AppTheme.muted, fontWeight: FontWeight.w500)),
+                    Text(e.key, style: TextStyle(fontSize: 11, color: muted, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 2),
-                    Text(e.value.toString(), style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: AppTheme.ink)),
+                    Text(e.value.toString(), style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: ink)),
                   ],
                 ),
               );

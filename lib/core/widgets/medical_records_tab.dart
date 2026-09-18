@@ -76,28 +76,28 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
             children: [
               _buildPatientCard(record),
               const SizedBox(height: 16),
-              _buildSearchBar(),
+              _buildSearchBar(context),
               const SizedBox(height: 12),
-              _buildFilterChips(),
+              _buildFilterChips(context),
               const SizedBox(height: 20),
               if (_selectedCategory == 'All' || _selectedCategory == 'Conditions') ...[
-                _buildSectionHeader('Current Conditions', record.conditions.length),
-                ..._buildConditionsList(record.conditions),
+                _buildSectionHeader(context, 'Current Conditions', record.conditions.length),
+                ..._buildConditionsList(context, record.conditions),
                 const SizedBox(height: 20),
               ],
               if (_selectedCategory == 'All' || _selectedCategory == 'Allergies') ...[
-                _buildSectionHeader('Allergies', record.allergies.length),
-                ..._buildAllergiesList(record.allergies),
+                _buildSectionHeader(context, 'Allergies', record.allergies.length),
+                ..._buildAllergiesList(context, record.allergies),
                 const SizedBox(height: 20),
               ],
               if (_selectedCategory == 'All' || _selectedCategory == 'Medications') ...[
-                _buildSectionHeader('Current Medications', record.medications.length),
-                ..._buildMedicationsList(record.medications),
+                _buildSectionHeader(context, 'Current Medications', record.medications.length),
+                ..._buildMedicationsList(context, record.medications),
                 const SizedBox(height: 20),
               ],
               if (_selectedCategory == 'All' || _selectedCategory == 'History') ...[
-                _buildSectionHeader('Clinical History', record.medicalHistory.length),
-                ..._buildHistoryList(record.medicalHistory),
+                _buildSectionHeader(context, 'Clinical History', record.medicalHistory.length),
+                ..._buildHistoryList(context, record.medicalHistory),
                 const SizedBox(height: 20),
               ],
               const SizedBox(height: 20),
@@ -197,24 +197,24 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(BuildContext context) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+    final mutedLight = AppTheme.getMutedLight(context);
+
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: AppTheme.cardShadowSubtle,
-        border: Border.all(color: AppTheme.line),
-      ),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: TextField(
         controller: _searchController,
+        style: TextStyle(color: ink, fontSize: 13.5),
         onChanged: (val) => setState(() => _searchQuery = val.trim().toLowerCase()),
         decoration: InputDecoration(
           hintText: 'Search within medical records...',
-          hintStyle: const TextStyle(fontSize: 13.5, color: AppTheme.mutedLight),
+          hintStyle: TextStyle(fontSize: 13.5, color: mutedLight),
           prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primary, size: 20),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear_rounded, size: 18, color: AppTheme.muted),
+                  icon: Icon(Icons.clear_rounded, size: 18, color: muted),
                   onPressed: () {
                     _searchController.clear();
                     setState(() => _searchQuery = '');
@@ -228,8 +228,11 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
     );
   }
 
-  Widget _buildFilterChips() {
+  Widget _buildFilterChips(BuildContext context) {
     final categories = ['All', 'Conditions', 'Allergies', 'Medications', 'History'];
+    final isDark = AppTheme.isDark(context);
+    final muted = AppTheme.getMuted(context);
+    final line = AppTheme.getLine(context);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -245,11 +248,11 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                 decoration: BoxDecoration(
                   gradient: isSelected ? AppTheme.primaryGradient : null,
-                  color: isSelected ? null : Colors.white,
+                  color: isSelected ? null : (isDark ? AppTheme.darkSurfaceSubtle : Colors.white),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
                   border: Border.all(
-                    color: isSelected ? Colors.transparent : AppTheme.line,
+                    color: isSelected ? Colors.transparent : line,
                   ),
                 ),
                 child: Text(
@@ -257,7 +260,7 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                    color: isSelected ? Colors.white : AppTheme.muted,
+                    color: isSelected ? Colors.white : muted,
                   ),
                 ),
               ),
@@ -268,7 +271,9 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
     );
   }
 
-  Widget _buildSectionHeader(String title, int count) {
+  Widget _buildSectionHeader(BuildContext context, String title, int count) {
+    final ink = AppTheme.getInk(context);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -287,10 +292,10 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
               const SizedBox(width: 8),
               Text(
                 title.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w700,
-                  color: AppTheme.ink,
+                  color: ink,
                   letterSpacing: 0.7,
                 ),
               ),
@@ -313,17 +318,19 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
     );
   }
 
-  List<Widget> _buildConditionsList(List<Condition> conditions) {
+  List<Widget> _buildConditionsList(BuildContext context, List<Condition> conditions) {
+    final muted = AppTheme.getMuted(context);
     final filtered = conditions.where((c) {
       if (_searchQuery.isEmpty) return true;
       return c.name.toLowerCase().contains(_searchQuery) || c.notes.toLowerCase().contains(_searchQuery);
     }).toList();
 
     if (filtered.isEmpty) {
-      return [const Text('No conditions recorded.', style: TextStyle(color: AppTheme.muted, fontSize: 13))];
+      return [Text('No conditions recorded.', style: TextStyle(color: muted, fontSize: 13))];
     }
 
     return filtered.map((c) => _buildCard(
+      context: context,
       icon: Icons.healing_outlined,
       title: c.name,
       subtitle: 'Status: ${c.status} · Diagnosed: ${c.diagnosedDate}',
@@ -331,17 +338,19 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
     )).toList();
   }
 
-  List<Widget> _buildAllergiesList(List<Allergy> allergies) {
+  List<Widget> _buildAllergiesList(BuildContext context, List<Allergy> allergies) {
+    final muted = AppTheme.getMuted(context);
     final filtered = allergies.where((a) {
       if (_searchQuery.isEmpty) return true;
       return a.allergen.toLowerCase().contains(_searchQuery) || a.reaction.toLowerCase().contains(_searchQuery);
     }).toList();
 
     if (filtered.isEmpty) {
-      return [const Text('No allergies recorded.', style: TextStyle(color: AppTheme.muted, fontSize: 13))];
+      return [Text('No allergies recorded.', style: TextStyle(color: muted, fontSize: 13))];
     }
 
     return filtered.map((a) => _buildCard(
+      context: context,
       icon: Icons.warning_amber_outlined,
       title: a.allergen,
       subtitle: 'Reaction: ${a.reaction} · Severity: ${a.severity}',
@@ -350,17 +359,19 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
     )).toList();
   }
 
-  List<Widget> _buildMedicationsList(List<Medication> medications) {
+  List<Widget> _buildMedicationsList(BuildContext context, List<Medication> medications) {
+    final muted = AppTheme.getMuted(context);
     final filtered = medications.where((m) {
       if (_searchQuery.isEmpty) return true;
       return m.name.toLowerCase().contains(_searchQuery) || m.dosage.toLowerCase().contains(_searchQuery);
     }).toList();
 
     if (filtered.isEmpty) {
-      return [const Text('No active medications recorded.', style: TextStyle(color: AppTheme.muted, fontSize: 13))];
+      return [Text('No active medications recorded.', style: TextStyle(color: muted, fontSize: 13))];
     }
 
     return filtered.map((m) => _buildCard(
+      context: context,
       icon: Icons.medication_outlined,
       title: m.name,
       subtitle: '${m.dosage} · ${m.frequency} · ${m.status}',
@@ -368,17 +379,19 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
     )).toList();
   }
 
-  List<Widget> _buildHistoryList(List<MedicalHistory> history) {
+  List<Widget> _buildHistoryList(BuildContext context, List<MedicalHistory> history) {
+    final muted = AppTheme.getMuted(context);
     final filtered = history.where((h) {
       if (_searchQuery.isEmpty) return true;
       return h.condition.toLowerCase().contains(_searchQuery) || h.notes.toLowerCase().contains(_searchQuery);
     }).toList();
 
     if (filtered.isEmpty) {
-      return [const Text('No clinical history recorded.', style: TextStyle(color: AppTheme.muted, fontSize: 13))];
+      return [Text('No clinical history recorded.', style: TextStyle(color: muted, fontSize: 13))];
     }
 
     return filtered.map((h) => _buildCard(
+      context: context,
       icon: Icons.history_outlined,
       title: h.condition,
       subtitle: h.notes.isNotEmpty ? h.notes : 'No clinical notes',
@@ -387,16 +400,21 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
   }
 
   Widget _buildCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
     String? trailing,
     bool isWarning = false,
   }) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+    final mutedLight = AppTheme.getMutedLight(context);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -413,14 +431,14 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5, color: AppTheme.ink)),
+                Text(title, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5, color: ink)),
                 const SizedBox(height: 3),
-                Text(subtitle, style: const TextStyle(fontSize: 12.5, color: AppTheme.muted)),
+                Text(subtitle, style: TextStyle(fontSize: 12.5, color: muted)),
                 if (trailing != null) ...[
                   const SizedBox(height: 4),
                   Text(
                     trailing,
-                    style: const TextStyle(fontSize: 11.5, fontStyle: FontStyle.italic, color: AppTheme.mutedLight),
+                    style: TextStyle(fontSize: 11.5, fontStyle: FontStyle.italic, color: mutedLight),
                   ),
                 ],
               ],

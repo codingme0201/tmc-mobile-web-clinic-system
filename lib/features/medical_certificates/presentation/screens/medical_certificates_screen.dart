@@ -41,9 +41,10 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                 top: 24,
                 bottom: MediaQuery.of(context).viewInsets.bottom + 24,
               ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              decoration: BoxDecoration(
+                color: AppTheme.getSurface(context),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                border: Border(top: BorderSide(color: AppTheme.getLine(context))),
               ),
               child: Form(
                 key: formKey,
@@ -54,39 +55,45 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Request Medical Certificate',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
-                            color: AppTheme.ink,
+                            color: AppTheme.getInk(context),
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close),
+                          icon: Icon(Icons.close, color: AppTheme.getMuted(context)),
                           onPressed: () => Navigator.pop(sheetContext),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Purpose *',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
                     ),
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: purposeController,
+                      style: TextStyle(fontSize: 14, color: AppTheme.getInk(context)),
                       decoration: InputDecoration(
                         hintText: 'e.g., Excused Absence, OJT Requirement, PE Clearance',
+                        hintStyle: TextStyle(fontSize: 13, color: AppTheme.getMutedLight(context)),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: AppTheme.getSurfaceSubtle(context),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: AppTheme.getLine(context)),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: AppTheme.getLine(context)),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(color: AppTheme.primary, width: 1.5),
                         ),
                       ),
                       validator: (val) {
@@ -97,25 +104,31 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Medical Details / Notes',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
                     ),
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: notesController,
                       maxLines: 3,
+                      style: TextStyle(fontSize: 14, color: AppTheme.getInk(context)),
                       decoration: InputDecoration(
                         hintText: 'State your medical condition or symptoms...',
+                        hintStyle: TextStyle(fontSize: 13, color: AppTheme.getMutedLight(context)),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: AppTheme.getSurfaceSubtle(context),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: AppTheme.getLine(context)),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: AppTheme.getLine(context)),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(color: AppTheme.primary, width: 1.5),
                         ),
                       ),
                     ),
@@ -178,9 +191,10 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
       builder: (context) {
         return Container(
           padding: const EdgeInsets.all(24),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: AppTheme.getSurface(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border(top: BorderSide(color: AppTheme.getLine(context))),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -191,27 +205,29 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                 children: [
                   Text(
                     cert.reference,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.ink),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.getInk(context)),
                   ),
                   _buildStatusChip(cert.status),
                 ],
               ),
               const SizedBox(height: 16),
-              _buildDetailRow('Patient', cert.patient),
-              _buildDetailRow('Purpose', cert.purpose),
-              if (cert.diagnosis.isNotEmpty) _buildDetailRow('Diagnosis', cert.diagnosis),
-              if (cert.recommendation.isNotEmpty) _buildDetailRow('Recommendation', cert.recommendation),
-              _buildDetailRow('Issue Date', cert.issueDate),
-              if (cert.validUntil != null) _buildDetailRow('Valid Until', cert.validUntil!),
-              if (cert.issuedBy.isNotEmpty) _buildDetailRow('Attending Doctor', cert.issuedBy),
+              _buildDetailRow(context, 'Patient', cert.patient),
+              _buildDetailRow(context, 'Purpose', cert.purpose),
+              if (cert.diagnosis.isNotEmpty) _buildDetailRow(context, 'Diagnosis', cert.diagnosis),
+              if (cert.recommendation.isNotEmpty) _buildDetailRow(context, 'Recommendation', cert.recommendation),
+              _buildDetailRow(context, 'Issue Date', cert.issueDate),
+              if (cert.validUntil != null) _buildDetailRow(context, 'Valid Until', cert.validUntil!),
+              if (cert.issuedBy.isNotEmpty) _buildDetailRow(context, 'Attending Doctor', cert.issuedBy),
               if (cert.status == 'Rejected' && cert.rejectionReason.isNotEmpty)
-                _buildDetailRow('Rejection Reason', cert.rejectionReason, isDanger: true),
+                _buildDetailRow(context, 'Rejection Reason', cert.rejectionReason, isDanger: true),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.primary,
+                    side: const BorderSide(color: AppTheme.primary),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -225,7 +241,7 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
     );
   }
 
-  Widget _buildDetailRow(String label, String value, {bool isDanger = false}) {
+  Widget _buildDetailRow(BuildContext context, String label, String value, {bool isDanger = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -233,7 +249,7 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: const TextStyle(fontSize: 13, color: AppTheme.muted)),
+            child: Text(label, style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context))),
           ),
           Expanded(
             child: Text(
@@ -241,7 +257,7 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: isDanger ? AppTheme.danger : AppTheme.ink,
+                color: isDanger ? AppTheme.danger : AppTheme.getInk(context),
               ),
             ),
           ),
@@ -375,7 +391,7 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                             borderRadius: BorderRadius.circular(16),
                             child: Container(
                               padding: const EdgeInsets.all(18),
-                              decoration: AppTheme.cardDecoration(),
+                              decoration: AppTheme.cardDecoration(context: context),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -395,10 +411,10 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                                           const SizedBox(width: 8),
                                           Text(
                                             cert.reference,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 14.5,
                                               fontWeight: FontWeight.w700,
-                                              color: AppTheme.ink,
+                                              color: AppTheme.getInk(context),
                                             ),
                                           ),
                                         ],
@@ -409,10 +425,10 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                                   const SizedBox(height: 10),
                                   Text(
                                     cert.purpose,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w700,
-                                      color: AppTheme.ink,
+                                      color: AppTheme.getInk(context),
                                     ),
                                   ),
                                   if (cert.diagnosis.isNotEmpty) ...[
@@ -421,27 +437,27 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                                       cert.diagnosis,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.3),
+                                      style: TextStyle(fontSize: 12.5, color: AppTheme.getMuted(context), height: 1.3),
                                     ),
                                   ],
                                   const SizedBox(height: 12),
                                   Row(
                                     children: [
-                                      const Icon(Icons.calendar_today_rounded, size: 12.5, color: AppTheme.mutedLight),
+                                      Icon(Icons.calendar_today_rounded, size: 12.5, color: AppTheme.getMutedLight(context)),
                                       const SizedBox(width: 5),
                                       Text(
                                         'Issued: ${cert.issueDate}',
-                                        style: const TextStyle(fontSize: 12, color: AppTheme.muted, fontWeight: FontWeight.w500),
+                                        style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context), fontWeight: FontWeight.w500),
                                       ),
                                       if (cert.issuedBy.isNotEmpty) ...[
                                         const SizedBox(width: 14),
-                                        const Icon(Icons.person_outline_rounded, size: 12.5, color: AppTheme.mutedLight),
+                                        Icon(Icons.person_outline_rounded, size: 12.5, color: AppTheme.getMutedLight(context)),
                                         const SizedBox(width: 5),
                                         Expanded(
                                           child: Text(
                                             cert.issuedBy,
                                             overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(fontSize: 12, color: AppTheme.muted, fontWeight: FontWeight.w500),
+                                            style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context), fontWeight: FontWeight.w500),
                                           ),
                                         ),
                                       ],
@@ -481,11 +497,11 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                 decoration: BoxDecoration(
                   gradient: isSelected ? AppTheme.primaryGradient : null,
-                  color: isSelected ? null : Colors.white,
+                  color: isSelected ? null : AppTheme.getSurfaceSubtle(context),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
                   border: Border.all(
-                    color: isSelected ? Colors.transparent : AppTheme.line,
+                    color: isSelected ? Colors.transparent : AppTheme.getLine(context),
                   ),
                 ),
                 child: Text(
@@ -493,7 +509,7 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                    color: isSelected ? Colors.white : AppTheme.muted,
+                    color: isSelected ? Colors.white : AppTheme.getMuted(context),
                   ),
                 ),
               ),

@@ -57,41 +57,46 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                   child: Text('No medical record found.', style: TextStyle(color: AppTheme.muted)),
                 );
               }
-              return _buildMedicalRecordView(controller.medicalRecord!);
+              return _buildMedicalRecordView(context, controller.medicalRecord!);
           }
         },
       ),
     );
   }
 
-  Widget _buildMedicalRecordView(MedicalRecord record) {
+  Widget _buildMedicalRecordView(BuildContext context, MedicalRecord record) {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        _buildProfileHeader(record),
+        _buildProfileHeader(context, record),
         const SizedBox(height: 24),
-        _buildSectionTitle('Clinical History'),
-        _buildHistoryList(record.medicalHistory),
+        _buildSectionTitle(context, 'Clinical History'),
+        _buildHistoryList(context, record.medicalHistory),
         const SizedBox(height: 24),
-        _buildSectionTitle('Current Conditions'),
-        _buildConditionsList(record.conditions),
+        _buildSectionTitle(context, 'Current Conditions'),
+        _buildConditionsList(context, record.conditions),
         const SizedBox(height: 24),
-        _buildSectionTitle('Allergies'),
-        _buildAllergiesList(record.allergies),
+        _buildSectionTitle(context, 'Allergies'),
+        _buildAllergiesList(context, record.allergies),
         const SizedBox(height: 24),
-        _buildSectionTitle('Current Medications'),
-        _buildMedicationsList(record.medications),
+        _buildSectionTitle(context, 'Current Medications'),
+        _buildMedicationsList(context, record.medications),
       ],
     );
   }
 
-  Widget _buildProfileHeader(MedicalRecord record) {
+  Widget _buildProfileHeader(BuildContext context, MedicalRecord record) {
+    final isDark = AppTheme.isDark(context);
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: AppTheme.heroGradient,
+        gradient: isDark ? AppTheme.heroGradientDark : AppTheme.heroGradient,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: AppTheme.primaryGlow,
+        border: Border.all(
+          color: isDark ? AppTheme.primaryLight.withAlpha(50) : Colors.white.withAlpha(40),
+          width: 1,
+        ),
+        boxShadow: isDark ? AppTheme.cardShadowDark : AppTheme.primaryGlow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,7 +109,13 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(color: AppTheme.gold, width: 2),
-                  color: Colors.white.withAlpha(40),
+                  color: isDark ? AppTheme.darkSurface : Colors.white.withAlpha(40),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.gold.withAlpha(40),
+                      blurRadius: 8,
+                    ),
+                  ],
                 ),
                 child: Center(
                   child: Text(
@@ -180,7 +191,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -196,10 +207,10 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
           const SizedBox(width: 8),
           Text(
             title.toUpperCase(),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
-              color: AppTheme.ink,
+              color: AppTheme.getInk(context),
               letterSpacing: 0.7,
             ),
           ),
@@ -208,10 +219,11 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     );
   }
 
-  Widget _buildHistoryList(List<MedicalHistory> history) {
-    if (history.isEmpty) return _buildEmptyState();
+  Widget _buildHistoryList(BuildContext context, List<MedicalHistory> history) {
+    if (history.isEmpty) return _buildEmptyState(context);
     return Column(
       children: history.map((h) => _buildItemCard(
+        context,
         title: h.condition,
         subtitle: h.notes.isEmpty ? 'No additional notes' : h.notes,
         trailing: h.date,
@@ -219,10 +231,11 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     );
   }
 
-  Widget _buildConditionsList(List<Condition> conditions) {
-    if (conditions.isEmpty) return _buildEmptyState();
+  Widget _buildConditionsList(BuildContext context, List<Condition> conditions) {
+    if (conditions.isEmpty) return _buildEmptyState(context);
     return Column(
       children: conditions.map((c) => _buildItemCard(
+        context,
         title: c.name,
         subtitle: 'Status: ${c.status} · Diagnosed: ${c.diagnosedDate}',
         trailing: c.notes.isEmpty ? null : c.notes,
@@ -230,10 +243,11 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     );
   }
 
-  Widget _buildAllergiesList(List<Allergy> allergies) {
-    if (allergies.isEmpty) return _buildEmptyState();
+  Widget _buildAllergiesList(BuildContext context, List<Allergy> allergies) {
+    if (allergies.isEmpty) return _buildEmptyState(context);
     return Column(
       children: allergies.map((a) => _buildItemCard(
+        context,
         title: a.allergen,
         subtitle: 'Reaction: ${a.reaction} · Severity: ${a.severity}',
         trailing: a.dateRecorded,
@@ -241,10 +255,11 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     );
   }
 
-  Widget _buildMedicationsList(List<Medication> medications) {
-    if (medications.isEmpty) return _buildEmptyState();
+  Widget _buildMedicationsList(BuildContext context, List<Medication> medications) {
+    if (medications.isEmpty) return _buildEmptyState(context);
     return Column(
       children: medications.map((m) => _buildItemCard(
+        context,
         title: m.name,
         subtitle: '${m.dosage} · ${m.frequency} · ${m.route}',
         trailing: m.status,
@@ -252,11 +267,11 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     );
   }
 
-  Widget _buildItemCard({required String title, required String subtitle, String? trailing}) {
+  Widget _buildItemCard(BuildContext context, {required String title, required String subtitle, String? trailing}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -266,12 +281,12 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5, color: AppTheme.ink),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5, color: AppTheme.getInk(context)),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   subtitle,
-                  style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.3),
+                  style: TextStyle(fontSize: 12.5, color: AppTheme.getMuted(context), height: 1.3),
                 ),
               ],
             ),
@@ -280,7 +295,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: AppTheme.primary.withAlpha(15),
+                color: AppTheme.primary.withAlpha(20),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -293,10 +308,10 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 12),
-      child: Text('No records available.', style: TextStyle(color: AppTheme.muted, fontSize: 13)),
+  Widget _buildEmptyState(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Text('No records available.', style: TextStyle(color: AppTheme.getMuted(context), fontSize: 13)),
     );
   }
 }

@@ -11,12 +11,17 @@ class AuthApiDataSource {
     final response = await _apiClient.post('/login', body: {
       'email': email,
       'password': password,
+      'client': 'mobile',
     });
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final token = data['token'];
       final userJson = data['user'];
+
+      if (userJson['role'] != 'patient') {
+        throw Exception('This mobile app is for patient users only. Doctors, nurses, and administrators must log in through the web clinic portal.');
+      }
 
       final user = AppUser(
         id: userJson['id'].toString(),
@@ -67,6 +72,10 @@ class AuthApiDataSource {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final userJson = data['user'];
+
+      if (userJson['role'] != 'patient') {
+        return null;
+      }
 
       return AppUser(
         id: userJson['id'].toString(),

@@ -12,7 +12,7 @@ class ClinicScheduleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.getBackground(context),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -73,10 +73,10 @@ class ClinicScheduleScreen extends StatelessWidget {
             children: [
               _buildHeader(),
               const SizedBox(height: 22),
-              _buildSectionHeader('WEEKLY ROTATION', 'Clinic Operating Hours'),
+              _buildSectionHeader(context, 'WEEKLY ROTATION', 'Clinic Operating Hours'),
               const SizedBox(height: 12),
               Container(
-                decoration: AppTheme.cardDecoration(radius: 18),
+                decoration: AppTheme.cardDecoration(context: context, radius: 18),
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   children: schedule.weeklySchedule.asMap().entries.map((entry) {
@@ -86,8 +86,8 @@ class ClinicScheduleScreen extends StatelessWidget {
                     final isLast = index == schedule.weeklySchedule.length - 1;
                     return Column(
                       children: [
-                        _buildScheduleRow(day, isToday),
-                        if (!isLast) const Divider(height: 1, color: AppTheme.line),
+                        _buildScheduleRow(context, day, isToday),
+                        if (!isLast) Divider(height: 1, color: AppTheme.getLine(context)),
                       ],
                     );
                   }).toList(),
@@ -101,14 +101,14 @@ class ClinicScheduleScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppTheme.primary.withAlpha(25)),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.info_outline_rounded, size: 20, color: AppTheme.primary),
-                    SizedBox(width: 12),
+                    const Icon(Icons.info_outline_rounded, size: 20, color: AppTheme.primary),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Clinic hours may vary during holidays and university semester breaks. Please review the official announcements for sudden schedule changes.',
-                        style: TextStyle(fontSize: 12, color: AppTheme.inkLight, height: 1.45),
+                        style: TextStyle(fontSize: 12, color: AppTheme.getInk(context), height: 1.45),
                       ),
                     ),
                   ],
@@ -168,7 +168,7 @@ class ClinicScheduleScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String kicker, String title) {
+  Widget _buildSectionHeader(BuildContext context, String kicker, String title) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -197,17 +197,17 @@ class ClinicScheduleScreen extends StatelessWidget {
         const SizedBox(height: 3),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: AppTheme.getInk(context),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildScheduleRow(DaySchedule day, bool isToday) {
+  Widget _buildScheduleRow(BuildContext context, DaySchedule day, bool isToday) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: isToday
@@ -224,29 +224,29 @@ class ClinicScheduleScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: isToday ? FontWeight.w700 : FontWeight.w600,
-                color: isToday ? AppTheme.primary : AppTheme.ink,
+                color: isToday ? AppTheme.primary : AppTheme.getInk(context),
               ),
             ),
           ),
           Expanded(
             child: day.isClosed
-                ? const Text(
+                ? Text(
                     'Closed',
-                    style: TextStyle(fontSize: 13.5, color: AppTheme.muted, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 13.5, color: AppTheme.getMuted(context), fontWeight: FontWeight.w500),
                   )
                 : Text(
                     '${day.openTime} – ${day.closeTime}',
                     style: TextStyle(
                       fontSize: 13.5,
                       fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
-                      color: isToday ? AppTheme.ink : AppTheme.inkLight,
+                      color: isToday ? AppTheme.primary : AppTheme.getInk(context),
                     ),
                   ),
           ),
           if (!day.isClosed)
             const Icon(Icons.check_circle_rounded, size: 16, color: AppTheme.success)
           else
-            const Icon(Icons.cancel_rounded, size: 16, color: AppTheme.mutedLight),
+            Icon(Icons.cancel_rounded, size: 16, color: AppTheme.getMutedLight(context)),
           if (isToday) ...[
             const SizedBox(width: 10),
             Container(

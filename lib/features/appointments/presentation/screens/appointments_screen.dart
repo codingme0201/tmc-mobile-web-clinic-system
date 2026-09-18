@@ -142,14 +142,14 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
       child: Column(
         children: [
           Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: AppTheme.cardShadowSubtle,
-              border: Border.all(color: AppTheme.line),
+            decoration: AppTheme.cardDecoration(
+              context: context,
+              borderRadius: 14,
+              shadow: AppTheme.cardShadowSubtle,
             ),
             child: TextField(
               controller: _searchController,
+              style: TextStyle(fontSize: 14, color: AppTheme.getInk(context)),
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value.toLowerCase();
@@ -157,11 +157,11 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
               },
               decoration: InputDecoration(
                 hintText: 'Search appointments, doctors...',
-                hintStyle: const TextStyle(fontSize: 13.5, color: AppTheme.mutedLight),
+                hintStyle: TextStyle(fontSize: 13.5, color: AppTheme.getMutedLight(context)),
                 prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primary, size: 20),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear_rounded, size: 18, color: AppTheme.muted),
+                        icon: Icon(Icons.clear_rounded, size: 18, color: AppTheme.getMuted(context)),
                         onPressed: () {
                           _searchController.clear();
                           setState(() {
@@ -213,11 +213,11 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
                 gradient: isSelected ? AppTheme.primaryGradient : null,
-                color: isSelected ? null : Colors.white,
+                color: isSelected ? null : AppTheme.getSurfaceSubtle(context),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
                 border: Border.all(
-                  color: isSelected ? Colors.transparent : AppTheme.line,
+                  color: isSelected ? Colors.transparent : AppTheme.getLine(context),
                 ),
               ),
               child: Text(
@@ -225,7 +225,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                  color: isSelected ? Colors.white : AppTheme.muted,
+                  color: isSelected ? Colors.white : AppTheme.getMuted(context),
                 ),
               ),
             ),
@@ -326,6 +326,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
   }
 
   Widget _buildAppointmentCard(BuildContext context, Appointment appointment) {
+    final isDark = AppTheme.isDark(context);
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -338,7 +339,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
       child: Container(
         margin: const EdgeInsets.only(bottom: 14),
         padding: const EdgeInsets.all(18),
-        decoration: AppTheme.cardDecoration(),
+        decoration: AppTheme.cardDecoration(context: context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -348,9 +349,9 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryLight.withAlpha(22),
+                    color: isDark ? AppTheme.primary.withAlpha(45) : AppTheme.primaryLight.withAlpha(22),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.primaryLight.withAlpha(50)),
+                    border: Border.all(color: AppTheme.primary.withAlpha(isDark ? 80 : 50)),
                   ),
                   child: const Icon(Icons.calendar_month_rounded, color: AppTheme.primary, size: 22),
                 ),
@@ -361,10 +362,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
                     children: [
                       Text(
                         appointment.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppTheme.ink,
+                          color: AppTheme.getInk(context),
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -375,7 +376,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
                           Expanded(
                             child: Text(
                               appointment.doctorName,
-                              style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, fontWeight: FontWeight.w500),
+                              style: TextStyle(fontSize: 12.5, color: AppTheme.getMuted(context), fontWeight: FontWeight.w500),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -391,9 +392,9 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: AppTheme.surfaceSubtle,
+                color: AppTheme.getSurfaceSubtle(context),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppTheme.line),
+                border: Border.all(color: AppTheme.getLine(context)),
               ),
               child: Row(
                 children: [
@@ -401,14 +402,14 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
                   const SizedBox(width: 6),
                   Text(
                     DateFormat('MMM d, yyyy').format(appointment.date),
-                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
                   ),
                   const SizedBox(width: 14),
                   const Icon(Icons.access_time_rounded, size: 13, color: AppTheme.primary),
                   const SizedBox(width: 6),
                   Text(
                     appointment.time,
-                    style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
                   ),
                 ],
               ),
@@ -417,12 +418,12 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
               const SizedBox(height: 10),
               Row(
                 children: [
-                  const Icon(Icons.medical_services_outlined, size: 13, color: AppTheme.mutedLight),
+                  Icon(Icons.medical_services_outlined, size: 13, color: AppTheme.getMutedLight(context)),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       appointment.type,
-                      style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                      style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context)),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

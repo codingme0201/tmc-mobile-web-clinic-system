@@ -19,6 +19,12 @@ class HelpSupportTab extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
+        final surface = AppTheme.getSurface(sheetContext);
+        final bg = AppTheme.getBackground(sheetContext);
+        final ink = AppTheme.getInk(sheetContext);
+        final line = AppTheme.getLine(sheetContext);
+        final mutedLight = AppTheme.getMutedLight(sheetContext);
+
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Container(
@@ -28,9 +34,9 @@ class HelpSupportTab extends StatelessWidget {
                 top: 24,
                 bottom: MediaQuery.of(context).viewInsets.bottom + 24,
               ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              decoration: BoxDecoration(
+                color: surface,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Form(
                 key: formKey,
@@ -41,38 +47,40 @@ class HelpSupportTab extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Submit Support Request',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
-                            color: AppTheme.ink,
+                            color: ink,
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close),
+                          icon: Icon(Icons.close, color: ink),
                           onPressed: () => Navigator.pop(sheetContext),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Category',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink),
                     ),
                     const SizedBox(height: 6),
                     DropdownButtonFormField<String>(
                       initialValue: selectedCategory,
+                      dropdownColor: surface,
+                      style: TextStyle(color: ink, fontSize: 14),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: bg,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: line),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: line),
                         ),
                       ),
                       items: const [
@@ -87,24 +95,26 @@ class HelpSupportTab extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Subject *',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink),
                     ),
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: subjectController,
+                      style: TextStyle(color: ink, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'Brief summary of your concern',
+                        hintStyle: TextStyle(color: mutedLight, fontSize: 13.5),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: bg,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: line),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: line),
                         ),
                       ),
                       validator: (val) {
@@ -115,25 +125,27 @@ class HelpSupportTab extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Message *',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.ink),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink),
                     ),
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: messageController,
                       maxLines: 4,
+                      style: TextStyle(color: ink, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'Describe your question or issue in detail...',
+                        hintStyle: TextStyle(color: mutedLight, fontSize: 13.5),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: bg,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: line),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: AppTheme.line),
+                          borderSide: BorderSide(color: line),
                         ),
                       ),
                       validator: (val) {
@@ -225,54 +237,62 @@ class HelpSupportTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
         _buildHeader(context),
         const SizedBox(height: 20),
-        _buildSectionTitle('Frequently Asked Questions'),
+        _buildSectionTitle(context, 'Frequently Asked Questions'),
         const SizedBox(height: 12),
         _buildFaqItem(
+          context: context,
           question: 'How do I book an appointment?',
           answer: 'Tap on Appointments from the drawer menu or home screen and select your preferred date, time, and doctor.',
         ),
         const SizedBox(height: 8),
         _buildFaqItem(
+          context: context,
           question: 'How do I view my medical records?',
           answer: 'Go to Medical Records from the bottom navigation bar to view your clinical history, diagnosed conditions, and recorded allergies.',
         ),
         const SizedBox(height: 8),
         _buildFaqItem(
+          context: context,
           question: 'Can I reschedule my appointment?',
           answer: 'Yes, open your appointment details and tap the Reschedule button to select a new date and time.',
         ),
         const SizedBox(height: 8),
         _buildFaqItem(
+          context: context,
           question: 'How do I request a Medical Certificate?',
           answer: 'Open the drawer menu, select Medical Certificates, and tap "Request Certificate" at the bottom right.',
         ),
         const SizedBox(height: 8),
         _buildFaqItem(
+          context: context,
           question: 'How do I update my contact details?',
           answer: 'Tap the profile icon on the top right of the Home screen to view and update your contact number and emergency contact.',
         ),
         const SizedBox(height: 24),
-        _buildSectionTitle('Need Further Assistance?'),
+        _buildSectionTitle(context, 'Need Further Assistance?'),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(18),
-          decoration: AppTheme.cardDecoration(borderRadius: 16),
+          decoration: AppTheme.cardDecoration(context: context, borderRadius: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Have a question or clinic concern?',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.ink),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: ink),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Send a direct inquiry or support message to clinic administrators.',
-                style: TextStyle(fontSize: 13, color: AppTheme.muted),
+                style: TextStyle(fontSize: 13, color: muted),
               ),
               const SizedBox(height: 16),
               AppButton(
@@ -284,27 +304,31 @@ class HelpSupportTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        _buildSectionTitle('Clinic Contact Details'),
+        _buildSectionTitle(context, 'Clinic Contact Details'),
         const SizedBox(height: 12),
         _buildContactCard(
+          context: context,
           icon: Icons.phone_android_rounded,
           title: 'Mobile Hotline',
           subtitle: '+63 917 123 4567',
         ),
         const SizedBox(height: 12),
         _buildContactCard(
+          context: context,
           icon: Icons.phone_outlined,
           title: 'Telephone (Landline)',
           subtitle: '+63 (02) 8123-4567',
         ),
         const SizedBox(height: 12),
         _buildContactCard(
+          context: context,
           icon: Icons.email_outlined,
           title: 'Email',
           subtitle: 'clinic@tmccarelink.com',
         ),
         const SizedBox(height: 12),
         _buildContactCard(
+          context: context,
           icon: Icons.location_on_outlined,
           title: 'Clinic Location',
           subtitle: 'Health Sciences Building, Room 102, Main Campus',
@@ -355,7 +379,9 @@ class HelpSupportTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    final ink = AppTheme.getInk(context);
+
     return Row(
       children: [
         Container(
@@ -369,10 +395,10 @@ class HelpSupportTab extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           title.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: ink,
             letterSpacing: 0.7,
           ),
         ),
@@ -380,10 +406,13 @@ class HelpSupportTab extends StatelessWidget {
     );
   }
 
-  Widget _buildFaqItem({required String question, required String answer}) {
+  Widget _buildFaqItem({required BuildContext context, required String question, required String answer}) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -401,10 +430,10 @@ class HelpSupportTab extends StatelessWidget {
               Expanded(
                 child: Text(
                   question,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
-                    color: AppTheme.ink,
+                    color: ink,
                   ),
                 ),
               ),
@@ -413,7 +442,7 @@ class HelpSupportTab extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             answer,
-            style: const TextStyle(fontSize: 12.5, color: AppTheme.muted, height: 1.4),
+            style: TextStyle(fontSize: 12.5, color: muted, height: 1.4),
           ),
         ],
       ),
@@ -421,13 +450,17 @@ class HelpSupportTab extends StatelessWidget {
   }
 
   Widget _buildContactCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
   }) {
+    final ink = AppTheme.getInk(context);
+    final muted = AppTheme.getMuted(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(borderRadius: 14),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: Row(
         children: [
           Container(
@@ -444,16 +477,16 @@ class HelpSupportTab extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.muted,
+                  color: muted,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppTheme.ink),
+                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: ink),
               ),
             ],
           ),

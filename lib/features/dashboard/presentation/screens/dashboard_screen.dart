@@ -93,40 +93,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            _buildWelcomeHeader(userName),
+            _buildWelcomeHeader(context, userName),
             const SizedBox(height: 24),
-            _buildSectionTitle('Quick Actions'),
+            _buildSectionTitle(context, 'Quick Actions'),
             const SizedBox(height: 12),
             _buildQuickActions(context),
             const SizedBox(height: 24),
-            _buildSectionTitle('Appointments'),
+            _buildSectionTitle(context, 'Appointments'),
             const SizedBox(height: 12),
             AppointmentSummaryCard(
               pending: pending,
               confirmed: confirmed,
               completed: completed,
               cancelled: cancelled,
-              onTap: () {},
+              onTap: () => Navigator.pushNamed(context, '/appointments'),
             ),
             const SizedBox(height: 24),
             UpcomingScheduleCard(items: data.upcomingSchedule),
             const SizedBox(height: 24),
-            _buildSectionTitle('Consultations'),
+            _buildSectionTitle(context, 'Consultations'),
             const SizedBox(height: 12),
             ConsultationSummaryCard(
               scheduled: scheduledConsultations,
               completed: completedConsultations,
-              onTap: () {},
+              onTap: () => Navigator.pushNamed(context, '/consultations'),
             ),
             const SizedBox(height: 24),
-            _buildSectionTitle('Medical Records'),
+            _buildSectionTitle(context, 'Medical Records'),
             const SizedBox(height: 12),
             MedicalRecordSummaryCard(
               records: data.medicalRecords,
-              onTap: () {},
+              onTap: () => Navigator.pushNamed(context, '/medical-records'),
             ),
             const SizedBox(height: 24),
-            _buildSectionTitle('Clinic Activity'),
+            _buildSectionTitle(context, 'Clinic Activity'),
             const SizedBox(height: 12),
             ClinicActivityCard(
               activities: data.clinicActivities,
@@ -137,20 +137,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         if (dashboard.isRefreshing)
           Container(
-            color: Colors.black.withAlpha(15),
+            color: Colors.black.withAlpha(20),
             child: const Center(child: CircularProgressIndicator(color: AppTheme.primary)),
           ),
       ],
     );
   }
 
-  Widget _buildWelcomeHeader(String name) {
+  Widget _buildWelcomeHeader(BuildContext context, String name) {
+    final isDark = AppTheme.isDark(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: AppTheme.heroGradient,
+        gradient: isDark ? AppTheme.heroGradientDark : AppTheme.heroGradient,
         borderRadius: BorderRadius.circular(22),
-        boxShadow: [
+        border: Border.all(
+          color: isDark ? AppTheme.primaryLight.withAlpha(60) : Colors.white.withAlpha(50),
+          width: 1,
+        ),
+        boxShadow: isDark ? AppTheme.cardShadowDark : [
           BoxShadow(
             color: AppTheme.primaryDark.withAlpha(50),
             blurRadius: 20,
@@ -167,14 +172,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
               border: Border.all(color: AppTheme.gold, width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.gold.withAlpha(40),
-                  blurRadius: 8,
+                  color: AppTheme.gold.withAlpha(50),
+                  blurRadius: 10,
                 ),
               ],
             ),
             child: CircleAvatar(
               radius: 26,
-              backgroundColor: Colors.white.withAlpha(40),
+              backgroundColor: isDark ? AppTheme.darkSurface : Colors.white.withAlpha(40),
               child: Text(
                 name.isNotEmpty ? name[0].toUpperCase() : '?',
                 style: const TextStyle(
@@ -217,11 +222,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                const Text(
+                Text(
                   'Your health records are up to date',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFFBBE5DE),
+                    color: isDark ? const Color(0xFFA5DCD3) : const Color(0xFFBBE5DE),
                   ),
                 ),
               ],
@@ -232,7 +237,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Row(
       children: [
         Container(
@@ -246,10 +251,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: AppTheme.getInk(context),
             letterSpacing: 0.2,
           ),
         ),
@@ -290,19 +295,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
           .map((a) => Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: _buildActionCard(a),
+                  child: _buildActionCard(context, a),
                 ),
               ))
           .toList(),
     );
   }
 
-  Widget _buildActionCard(_QuickAction action) {
+  Widget _buildActionCard(BuildContext context, _QuickAction action) {
     return GestureDetector(
       onTap: action.onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
         decoration: AppTheme.cardDecoration(
+          context: context,
           borderRadius: 16,
           shadow: AppTheme.cardShadowSubtle,
         ),
@@ -320,10 +326,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               action.label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.ink,
+                color: AppTheme.getInk(context),
                 letterSpacing: -0.1,
               ),
               maxLines: 1,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/theme.dart';
+import '../../app/theme_controller.dart';
 import '../../features/auth/presentation/controllers/auth_controller.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'medical_records_tab.dart';
@@ -91,6 +92,27 @@ class _MainShellState extends State<MainShell> {
           ),
         ),
         actions: [
+          Consumer<ThemeController>(
+            builder: (context, themeCtrl, _) => Padding(
+              padding: const EdgeInsets.only(right: 6),
+              child: Material(
+                color: Colors.white.withAlpha(25),
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => themeCtrl.toggleTheme(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      themeCtrl.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                      color: themeCtrl.isDarkMode ? AppTheme.gold : Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
           if (_currentTabIndex == 0)
             Padding(
               padding: const EdgeInsets.only(right: 12),
@@ -316,7 +338,63 @@ class _MainShellState extends State<MainShell> {
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: Divider(height: 1, color: AppTheme.line),
+                    child: Divider(height: 1),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: Text(
+                      'PREFERENCES',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.muted,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ),
+                  Consumer<ThemeController>(
+                    builder: (context, themeCtrl, _) {
+                      final isDark = AppTheme.isDark(context);
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isDark ? AppTheme.darkSurfaceSubtle : AppTheme.surfaceSubtle,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppTheme.getLine(context)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              themeCtrl.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                              size: 20,
+                              color: themeCtrl.isDarkMode ? AppTheme.gold : AppTheme.primary,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Dark Theme',
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.getInk(context),
+                                ),
+                              ),
+                            ),
+                            Switch.adaptive(
+                              value: themeCtrl.isDarkMode,
+                              activeTrackColor: AppTheme.primary,
+                              activeThumbColor: AppTheme.primaryLight,
+                              onChanged: (_) => themeCtrl.toggleTheme(),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Divider(height: 1),
                   ),
                   _DrawerItem(
                     icon: Icons.logout,
@@ -334,12 +412,13 @@ class _MainShellState extends State<MainShell> {
   }
 
   Widget _buildBottomNavBar() {
+    final isDark = AppTheme.isDark(context);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppTheme.darkSurface : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-        boxShadow: AppTheme.cardShadow,
-        border: const Border(top: BorderSide(color: AppTheme.line, width: 0.8)),
+        boxShadow: isDark ? AppTheme.cardShadowDark : AppTheme.cardShadow,
+        border: Border(top: BorderSide(color: AppTheme.getLine(context), width: 0.8)),
       ),
       child: SafeArea(
         top: false,
@@ -350,19 +429,19 @@ class _MainShellState extends State<MainShell> {
             onTap: _onTabTapped,
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.transparent,
-            selectedItemColor: AppTheme.primary,
-            unselectedItemColor: AppTheme.mutedLight,
+            selectedItemColor: isDark ? AppTheme.primaryLight : AppTheme.primary,
+            unselectedItemColor: isDark ? AppTheme.darkMuted : AppTheme.mutedLight,
             selectedFontSize: 11.5,
             unselectedFontSize: 11.5,
-            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w800),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
             elevation: 0,
             items: [
-              _buildNavItem(Icons.home_outlined, Icons.home, 'Home', 0),
-              _buildNavItem(Icons.folder_outlined, Icons.folder, 'Records', 1),
-              _buildNavItem(Icons.search, Icons.search, 'Search', 2),
-              _buildNavItem(Icons.notifications_outlined, Icons.notifications, 'Alerts', 3),
-              _buildNavItem(Icons.help_outline, Icons.help, 'Help', 4),
+              _buildNavItem(Icons.home_outlined, Icons.home_rounded, 'Home', 0),
+              _buildNavItem(Icons.folder_outlined, Icons.folder_rounded, 'Records', 1),
+              _buildNavItem(Icons.search_rounded, Icons.search_rounded, 'Search', 2),
+              _buildNavItem(Icons.notifications_none_rounded, Icons.notifications_rounded, 'Alerts', 3),
+              _buildNavItem(Icons.help_outline_rounded, Icons.help_rounded, 'Help', 4),
             ],
           ),
         ),
@@ -377,11 +456,14 @@ class _MainShellState extends State<MainShell> {
     int index,
   ) {
     final isSelected = _currentTabIndex == index;
+    final isDark = AppTheme.isDark(context);
     return BottomNavigationBarItem(
       icon: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primary.withAlpha(22) : Colors.transparent,
+          color: isSelected
+              ? (isDark ? AppTheme.primaryLight.withAlpha(40) : AppTheme.primary.withAlpha(22))
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Icon(isSelected ? activeIcon : icon, size: 22),
@@ -390,6 +472,7 @@ class _MainShellState extends State<MainShell> {
     );
   }
 }
+
 
 class _DrawerItem extends StatelessWidget {
   final IconData icon;
@@ -406,13 +489,16 @@ class _DrawerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final itemColor = color ?? AppTheme.ink;
+    final isDark = AppTheme.isDark(context);
+    final itemColor = color ?? AppTheme.getInk(context);
     final isDanger = color == AppTheme.danger;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: BoxDecoration(
-        color: isDanger ? AppTheme.dangerLight.withAlpha(120) : Colors.transparent,
+        color: isDanger
+            ? (isDark ? AppTheme.danger.withAlpha(35) : AppTheme.dangerLight.withAlpha(120))
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(14),
       ),
       child: ListTile(
@@ -427,19 +513,21 @@ class _DrawerItem extends StatelessWidget {
         title: Text(
           title,
           style: TextStyle(
-            fontSize: 13.5,
-            fontWeight: isDanger ? FontWeight.w700 : FontWeight.w600,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
             color: itemColor,
           ),
         ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: isDanger ? AppTheme.danger.withAlpha(150) : AppTheme.mutedLight,
-          size: 18,
-        ),
+        trailing: isDanger
+            ? null
+            : Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 13,
+                color: AppTheme.getMutedLight(context),
+              ),
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-        visualDensity: const VisualDensity(vertical: -1),
+        dense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );

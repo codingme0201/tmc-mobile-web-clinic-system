@@ -31,9 +31,10 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
             maxHeight: MediaQuery.of(context).size.height * 0.85,
           ),
           padding: const EdgeInsets.all(24),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: AppTheme.getSurface(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border(top: BorderSide(color: AppTheme.getLine(context), width: 1)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -44,10 +45,10 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                 children: [
                   Text(
                     prescription.reference,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: AppTheme.ink,
+                      color: AppTheme.getInk(context),
                     ),
                   ),
                   Container(
@@ -70,22 +71,22 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
               const SizedBox(height: 8),
               Text(
                 'Prescribed by: ${prescription.prescribedBy.isNotEmpty ? prescription.prescribedBy : "Attending Doctor"}',
-                style: const TextStyle(fontSize: 13, color: AppTheme.muted),
+                style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context)),
               ),
-              const Divider(height: 24),
-              const Text(
+              Divider(height: 24, color: AppTheme.getLine(context)),
+              Text(
                 'Medications',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: AppTheme.ink,
+                  color: AppTheme.getInk(context),
                 ),
               ),
               const SizedBox(height: 12),
               Expanded(
                 child: ListView.separated(
                   itemCount: prescription.medications.length,
-                  separatorBuilder: (_, _) => const Divider(height: 16),
+                  separatorBuilder: (_, _) => Divider(height: 16, color: AppTheme.getLine(context)),
                   itemBuilder: (context, index) {
                     final med = prescription.medications[index];
                     return Column(
@@ -93,10 +94,10 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                       children: [
                         Text(
                           med.medicineName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: AppTheme.ink,
+                            color: AppTheme.getInk(context),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -106,13 +107,13 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.background,
+                                  color: AppTheme.getSurfaceSubtle(context),
                                   borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(color: AppTheme.line),
+                                  border: Border.all(color: AppTheme.getLine(context)),
                                 ),
                                 child: Text(
                                   med.dosage,
-                                  style: const TextStyle(fontSize: 12, color: AppTheme.ink),
+                                  style: TextStyle(fontSize: 12, color: AppTheme.getInk(context)),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -120,13 +121,13 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                             if (med.frequency.isNotEmpty) ...[
                               Text(
                                 med.frequency,
-                                style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                                style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context)),
                               ),
                             ],
                             if (med.duration.isNotEmpty) ...[
                               Text(
                                 ' · ${med.duration}',
-                                style: const TextStyle(fontSize: 12, color: AppTheme.muted),
+                                style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context)),
                               ),
                             ],
                           ],
@@ -135,10 +136,10 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                           const SizedBox(height: 6),
                           Text(
                             med.instructions,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
-                              color: AppTheme.muted,
+                              color: AppTheme.getMuted(context),
                             ),
                           ),
                         ],
@@ -153,6 +154,8 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.primary,
+                    side: const BorderSide(color: AppTheme.primary),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -233,7 +236,7 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
                   padding: const EdgeInsets.all(18),
-                  decoration: AppTheme.cardDecoration(),
+                  decoration: AppTheme.cardDecoration(context: context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -253,10 +256,10 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                               const SizedBox(width: 8),
                               Text(
                                 rx.reference,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14.5,
                                   fontWeight: FontWeight.w700,
-                                  color: AppTheme.ink,
+                                  color: AppTheme.getInk(context),
                                 ),
                               ),
                             ],
@@ -284,9 +287,9 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                         margin: const EdgeInsets.only(bottom: 6),
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                         decoration: BoxDecoration(
-                          color: AppTheme.surfaceSubtle,
+                          color: AppTheme.getSurfaceSubtle(context),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppTheme.line),
+                          border: Border.all(color: AppTheme.getLine(context)),
                         ),
                         child: Row(
                           children: [
@@ -295,10 +298,10 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                             Expanded(
                               child: Text(
                                 '${m.medicineName} ${m.dosage}'.trim(),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: AppTheme.ink,
+                                  color: AppTheme.getInk(context),
                                 ),
                               ),
                             ),
@@ -310,26 +313,26 @@ class _PrescriptionsScreenState extends State<PrescriptionsScreen> {
                           padding: const EdgeInsets.only(top: 2, bottom: 4),
                           child: Text(
                             '+ ${rx.medications.length - 2} more medications',
-                            style: const TextStyle(fontSize: 11.5, color: AppTheme.muted, fontStyle: FontStyle.italic),
+                            style: TextStyle(fontSize: 11.5, color: AppTheme.getMuted(context), fontStyle: FontStyle.italic),
                           ),
                         ),
                       const SizedBox(height: 10),
                       Row(
                         children: [
-                          const Icon(Icons.calendar_today_rounded, size: 12.5, color: AppTheme.mutedLight),
+                          Icon(Icons.calendar_today_rounded, size: 12.5, color: AppTheme.getMutedLight(context)),
                           const SizedBox(width: 5),
                           Text(
                             rx.date,
-                            style: const TextStyle(fontSize: 12, color: AppTheme.muted, fontWeight: FontWeight.w500),
+                            style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context), fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(width: 14),
-                          const Icon(Icons.person_outline_rounded, size: 12.5, color: AppTheme.mutedLight),
+                          Icon(Icons.person_outline_rounded, size: 12.5, color: AppTheme.getMutedLight(context)),
                           const SizedBox(width: 5),
                           Expanded(
                             child: Text(
                               rx.prescribedBy.isNotEmpty ? rx.prescribedBy : 'Attending Doctor',
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12, color: AppTheme.muted, fontWeight: FontWeight.w500),
+                              style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context), fontWeight: FontWeight.w500),
                             ),
                           ),
                         ],

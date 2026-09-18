@@ -41,7 +41,7 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
                     Text(
                       controller.error ?? 'Unable to load clinic information.',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: AppTheme.muted, fontSize: 15),
+                      style: TextStyle(color: AppTheme.getMuted(context), fontSize: 15),
                     ),
                     const SizedBox(height: 16),
                     TextButton.icon(
@@ -55,8 +55,8 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
             case ClinicInfoStatus.loaded:
               final data = controller.data;
               if (data == null) {
-                return const Center(
-                  child: Text('No clinic data.', style: TextStyle(color: AppTheme.muted)),
+                return Center(
+                  child: Text('No clinic data.', style: TextStyle(color: AppTheme.getMuted(context))),
                 );
               }
               return _buildContent(context, data);
@@ -75,25 +75,25 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
       children: [
         _buildClinicHeader(info.name, info.description),
         const SizedBox(height: 24),
-        _buildSectionTitle('Contact Information'),
+        _buildSectionTitle(context, 'Contact Information'),
         const SizedBox(height: 12),
-        _buildInfoCard([
-          _buildInfoRow(Icons.location_on_outlined, 'Address', info.address),
-          const Divider(height: 1),
-          _buildInfoRow(Icons.phone_android_rounded, 'Mobile Hotline', '+63 917 123 4567'),
-          const Divider(height: 1),
-          _buildInfoRow(Icons.phone_outlined, 'Telephone (Landline)', info.contactNumber),
-          const Divider(height: 1),
-          _buildInfoRow(Icons.email_outlined, 'Email', info.email),
+        _buildInfoCard(context, [
+          _buildInfoRow(context, Icons.location_on_outlined, 'Address', info.address),
+          Divider(height: 1, color: AppTheme.getLine(context)),
+          _buildInfoRow(context, Icons.phone_android_rounded, 'Mobile Hotline', '+63 917 123 4567'),
+          Divider(height: 1, color: AppTheme.getLine(context)),
+          _buildInfoRow(context, Icons.phone_outlined, 'Telephone (Landline)', info.contactNumber),
+          Divider(height: 1, color: AppTheme.getLine(context)),
+          _buildInfoRow(context, Icons.email_outlined, 'Email', info.email),
         ]),
         const SizedBox(height: 24),
-        _buildSectionTitle('Services'),
+        _buildSectionTitle(context, 'Services'),
         const SizedBox(height: 12),
-        _buildServicesCard(info.services),
+        _buildServicesCard(context, info.services),
         const SizedBox(height: 24),
-        _buildSectionTitle('Operating Hours'),
+        _buildSectionTitle(context, 'Operating Hours'),
         const SizedBox(height: 12),
-        _buildSchedulePreview(schedule),
+        _buildSchedulePreview(context, schedule),
         const SizedBox(height: 16),
         _buildViewAllButton(
           context,
@@ -172,7 +172,7 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Row(
       children: [
         Container(
@@ -186,10 +186,10 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
         const SizedBox(width: 8),
         Text(
           title.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.w700,
-            color: AppTheme.ink,
+            color: AppTheme.getInk(context),
             letterSpacing: 0.7,
           ),
         ),
@@ -197,14 +197,14 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
     );
   }
 
-  Widget _buildInfoCard(List<Widget> children) {
+  Widget _buildInfoCard(BuildContext context, List<Widget> children) {
     return Container(
-      decoration: AppTheme.cardDecoration(borderRadius: 16),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 16),
       child: Column(children: children),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
@@ -212,13 +212,13 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
           Icon(icon, size: 18, color: AppTheme.primary),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(label, style: const TextStyle(fontSize: 13.5, color: AppTheme.muted)),
+            child: Text(label, style: TextStyle(fontSize: 13.5, color: AppTheme.getMuted(context))),
           ),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppTheme.ink),
+              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
             ),
           ),
         ],
@@ -226,10 +226,10 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
     );
   }
 
-  Widget _buildServicesCard(List<String> services) {
+  Widget _buildServicesCard(BuildContext context, List<String> services) {
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: AppTheme.cardDecoration(borderRadius: 16),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 16),
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
@@ -251,27 +251,27 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
     );
   }
 
-  Widget _buildSchedulePreview(ClinicSchedule? schedule) {
+  Widget _buildSchedulePreview(BuildContext context, ClinicSchedule? schedule) {
     if (schedule == null) {
-      return const Center(
-        child: Text('No schedule available.', style: TextStyle(fontSize: 13, color: AppTheme.muted)),
+      return Center(
+        child: Text('No schedule available.', style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context))),
       );
     }
     final now = DateTime.now().weekday;
     final dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     return Container(
-      decoration: AppTheme.cardDecoration(borderRadius: 16),
+      decoration: AppTheme.cardDecoration(context: context, borderRadius: 16),
       child: Column(
         children: schedule.weeklySchedule.take(5).map((day) {
           final isToday = day.day == dayNames[now - 1];
-          return _buildScheduleRow(day, isToday);
+          return _buildScheduleRow(context, day, isToday);
         }).toList(),
       ),
     );
   }
 
-  Widget _buildScheduleRow(DaySchedule day, bool isToday) {
+  Widget _buildScheduleRow(BuildContext context, DaySchedule day, bool isToday) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: isToday
@@ -289,19 +289,19 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: isToday ? FontWeight.w700 : FontWeight.w600,
-                color: isToday ? AppTheme.primary : AppTheme.ink,
+                color: isToday ? AppTheme.primary : AppTheme.getInk(context),
               ),
             ),
           ),
           Expanded(
             child: day.isClosed
-                ? const Text(
+                ? Text(
                     'Closed',
-                    style: TextStyle(fontSize: 13, color: AppTheme.muted),
+                    style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context)),
                   )
                 : Text(
                     '${day.openTime} – ${day.closeTime}',
-                    style: const TextStyle(fontSize: 13, color: AppTheme.ink, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 13, color: AppTheme.getInk(context), fontWeight: FontWeight.w500),
                   ),
           ),
           if (isToday)
@@ -354,7 +354,7 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: AppTheme.cardDecoration(borderRadius: 16),
+        decoration: AppTheme.cardDecoration(context: context, borderRadius: 16),
         child: Row(
           children: [
             Container(
@@ -372,10 +372,10 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: AppTheme.ink),
+                    style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: AppTheme.getInk(context)),
                   ),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: AppTheme.muted)),
+                  Text(subtitle, style: TextStyle(fontSize: 12, color: AppTheme.getMuted(context))),
                 ],
               ),
             ),
@@ -383,10 +383,10 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
               width: 26,
               height: 26,
               decoration: BoxDecoration(
-                color: AppTheme.surfaceSubtle,
+                color: AppTheme.getSurfaceSubtle(context),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.muted, size: 11),
+              child: Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.getMuted(context), size: 11),
             ),
           ],
         ),
