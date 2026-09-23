@@ -29,6 +29,7 @@ class AuthApiDataSource {
         name: userJson['name'],
         email: userJson['email'],
         createdAt: DateTime.now(),
+        isProfileComplete: userJson['isProfileComplete'] == true,
       );
 
       final session = Session(
@@ -74,6 +75,7 @@ class AuthApiDataSource {
         name: userJson['name'],
         email: userJson['email'],
         createdAt: DateTime.now(),
+        isProfileComplete: userJson['isProfileComplete'] == true,
       );
 
       final session = Session(

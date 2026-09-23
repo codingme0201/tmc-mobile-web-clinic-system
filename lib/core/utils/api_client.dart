@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, SocketException;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
+  static const Duration requestTimeout = Duration(seconds: 12);
   static String? _configuredBaseUrl;
 
   static void setBaseUrl(String url) {
@@ -31,7 +33,7 @@ class ApiClient {
     }
     try {
       if (Platform.isAndroid) {
-        return 'http://10.0.2.2:8000/api';
+        return 'http://192.168.8.56:8000/api';
       }
     } catch (_) {}
     return 'http://127.0.0.1:8000/api';
@@ -83,62 +85,92 @@ class ApiClient {
   }
 
   Future<http.Response> get(String endpoint, {Map<String, String>? queries}) async {
-    final baseUrl = await getBaseUrl();
-    final token = await getToken();
-    final parsed = Uri.parse('$baseUrl$endpoint');
-    final uri = queries != null && queries.isNotEmpty
-        ? parsed.replace(queryParameters: {
-            ...parsed.queryParameters,
-            ...queries,
-          })
-        : parsed;
+    try {
+      final baseUrl = await getBaseUrl();
+      final token = await getToken();
+      final parsed = Uri.parse('$baseUrl$endpoint');
+      final uri = queries != null && queries.isNotEmpty
+          ? parsed.replace(queryParameters: {
+              ...parsed.queryParameters,
+              ...queries,
+            })
+          : parsed;
 
-    return await http.get(
-      uri,
-      headers: _buildHeaders(token),
-    );
+      return await http.get(
+        uri,
+        headers: _buildHeaders(token),
+      ).timeout(requestTimeout);
+    } on TimeoutException {
+      throw Exception('Connection timed out. Please check your network and server connection.');
+    } on SocketException {
+      throw Exception('Cannot connect to clinic server. Please ensure you are connected to the clinic Wi-Fi.');
+    }
   }
 
   Future<http.Response> post(String endpoint, {Map<String, dynamic>? body}) async {
-    final baseUrl = await getBaseUrl();
-    final token = await getToken();
+    try {
+      final baseUrl = await getBaseUrl();
+      final token = await getToken();
 
-    return await http.post(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: _buildHeaders(token, isJson: true),
-      body: body != null ? jsonEncode(body) : null,
-    );
+      return await http.post(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: _buildHeaders(token, isJson: true),
+        body: body != null ? jsonEncode(body) : null,
+      ).timeout(requestTimeout);
+    } on TimeoutException {
+      throw Exception('Connection timed out. Please check your network and server connection.');
+    } on SocketException {
+      throw Exception('Cannot connect to clinic server. Please ensure you are connected to the clinic Wi-Fi.');
+    }
   }
 
   Future<http.Response> put(String endpoint, {Map<String, dynamic>? body}) async {
-    final baseUrl = await getBaseUrl();
-    final token = await getToken();
+    try {
+      final baseUrl = await getBaseUrl();
+      final token = await getToken();
 
-    return await http.put(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: _buildHeaders(token, isJson: true),
-      body: body != null ? jsonEncode(body) : null,
-    );
+      return await http.put(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: _buildHeaders(token, isJson: true),
+        body: body != null ? jsonEncode(body) : null,
+      ).timeout(requestTimeout);
+    } on TimeoutException {
+      throw Exception('Connection timed out. Please check your network and server connection.');
+    } on SocketException {
+      throw Exception('Cannot connect to clinic server. Please ensure you are connected to the clinic Wi-Fi.');
+    }
   }
 
   Future<http.Response> patch(String endpoint, {Map<String, dynamic>? body}) async {
-    final baseUrl = await getBaseUrl();
-    final token = await getToken();
+    try {
+      final baseUrl = await getBaseUrl();
+      final token = await getToken();
 
-    return await http.patch(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: _buildHeaders(token, isJson: true),
-      body: body != null ? jsonEncode(body) : null,
-    );
+      return await http.patch(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: _buildHeaders(token, isJson: true),
+        body: body != null ? jsonEncode(body) : null,
+      ).timeout(requestTimeout);
+    } on TimeoutException {
+      throw Exception('Connection timed out. Please check your network and server connection.');
+    } on SocketException {
+      throw Exception('Cannot connect to clinic server. Please ensure you are connected to the clinic Wi-Fi.');
+    }
   }
 
   Future<http.Response> delete(String endpoint) async {
-    final baseUrl = await getBaseUrl();
-    final token = await getToken();
+    try {
+      final baseUrl = await getBaseUrl();
+      final token = await getToken();
 
-    return await http.delete(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: _buildHeaders(token),
-    );
+      return await http.delete(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: _buildHeaders(token),
+      ).timeout(requestTimeout);
+    } on TimeoutException {
+      throw Exception('Connection timed out. Please check your network and server connection.');
+    } on SocketException {
+      throw Exception('Cannot connect to clinic server. Please ensure you are connected to the clinic Wi-Fi.');
+    }
   }
 }

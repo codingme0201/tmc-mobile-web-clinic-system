@@ -13,9 +13,20 @@ class AuthController extends ChangeNotifier {
 
   Session? get session => _session;
   bool get isAuthenticated => _session != null;
+  bool get isProfileComplete => _session?.user.isProfileComplete ?? false;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get initialized => _initialized;
+
+  void markProfileComplete() {
+    if (_session != null) {
+      _session = _session!.copyWith(
+        user: _session!.user.copyWith(isProfileComplete: true),
+      );
+      _repository.saveSession(_session!);
+      notifyListeners();
+    }
+  }
 
   Future<void> initialize() async {
     _session = await _repository.getCurrentSession();

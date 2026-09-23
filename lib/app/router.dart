@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../features/auth/presentation/controllers/auth_controller.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
+import '../features/auth/presentation/screens/complete_profile_screen.dart';
 import '../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../features/auth/presentation/screens/change_password_screen.dart';
 import '../features/auth/presentation/screens/account_security_screen.dart';
@@ -23,6 +24,7 @@ import '../core/widgets/main_shell.dart';
 class AppRouter {
   static const String login = '/login';
   static const String register = '/register';
+  static const String completeProfile = '/complete-profile';
   static const String forgotPassword = '/forgot-password';
   static const String mainShell = '/main';
   static const String changePassword = '/change-password';
@@ -46,6 +48,13 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case register:
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
+      case completeProfile:
+        return MaterialPageRoute(
+          builder: (_) => const AuthGuard(
+            requireProfileComplete: false,
+            child: CompleteProfileScreen(),
+          ),
+        );
       case forgotPassword:
         return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       case mainShell:
@@ -96,8 +105,13 @@ class AppRouter {
 
 class AuthGuard extends StatelessWidget {
   final Widget child;
+  final bool requireProfileComplete;
 
-  const AuthGuard({super.key, required this.child});
+  const AuthGuard({
+    super.key,
+    required this.child,
+    this.requireProfileComplete = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +136,21 @@ class AuthGuard extends StatelessWidget {
                 (route) => false,
               );
             }
+          });
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (requireProfileComplete && !auth.isProfileComplete) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRouter.completeProfile,
+              (route) => false,
+            );
           });
           return const Scaffold(
             body: Center(
