@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../app/theme.dart';
 import '../../app/theme_controller.dart';
@@ -28,6 +29,7 @@ class _MainShellState extends State<MainShell> {
   ];
 
   void _onTabTapped(int index) {
+    HapticFeedback.selectionClick();
     setState(() {
       _currentTabIndex = index;
     });

@@ -32,15 +32,33 @@ class AuthApiRepository implements AuthRepository {
     required String email,
     required String password,
   }) async {
-    // Note: The backend does not currently have a public /api/register endpoint.
-    // This would typically be handled by an admin or via a specific request flow.
-    throw Exception('Registration is currently handled by clinic administrators.');
+    try {
+      final result = await _dataSource.register(
+        name: name,
+        email: email,
+        password: password,
+      );
+
+      final session = Session(
+        token: result.session.token,
+        user: result.session.user,
+        loginTime: result.session.loginTime,
+      );
+
+      await saveSession(session);
+      return AuthResult(session: session, message: result.message ?? 'Registration successful.');
+    } catch (e) {
+      throw Exception(e.toString().replaceFirst('Exception: ', ''));
+    }
   }
 
   @override
   Future<void> forgotPassword(String email) async {
-    // Not implemented in backend API yet.
-    throw Exception('Forgot password feature is not yet available via API.');
+    try {
+      await _dataSource.forgotPassword(email);
+    } catch (e) {
+      throw Exception(e.toString().replaceFirst('Exception: ', ''));
+    }
   }
 
   @override

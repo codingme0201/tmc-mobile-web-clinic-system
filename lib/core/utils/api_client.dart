@@ -85,7 +85,13 @@ class ApiClient {
   Future<http.Response> get(String endpoint, {Map<String, String>? queries}) async {
     final baseUrl = await getBaseUrl();
     final token = await getToken();
-    final uri = Uri.parse('$baseUrl$endpoint').replace(queryParameters: queries);
+    final parsed = Uri.parse('$baseUrl$endpoint');
+    final uri = queries != null && queries.isNotEmpty
+        ? parsed.replace(queryParameters: {
+            ...parsed.queryParameters,
+            ...queries,
+          })
+        : parsed;
 
     return await http.get(
       uri,

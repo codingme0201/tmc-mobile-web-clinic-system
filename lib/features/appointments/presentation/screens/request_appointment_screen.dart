@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/models/appointment.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../controllers/appointment_controller.dart';
@@ -458,6 +459,9 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
         if (picked != null) {
           setState(() {
             _selectedDate = picked;
+            if (_selectedTime != null && _isSlotOccupied(_selectedTime!)) {
+              _selectedTime = null;
+            }
           });
         }
       },
@@ -499,57 +503,154 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
     );
   }
 
+  String _normalizeTime(String raw) {
+    final clean = raw.trim().toUpperCase();
+    try {
+      if (clean.contains('AM') || clean.contains('PM')) {
+        final parsed = DateFormat('hh:mm a').parse(clean);
+        return DateFormat('hh:mm a').format(parsed);
+      } else {
+        final parts = clean.split(':');
+        if (parts.length >= 2) {
+          final h = int.parse(parts[0]);
+          final m = int.parse(parts[1]);
+          final dummy = DateTime(2000, 1, 1, h, m);
+          return DateFormat('hh:mm a').format(dummy);
+        }
+      }
+    } catch (_) {}
+    return clean;
+  }
+
+  bool _isSlotOccupied(String slot) {
+    if (_selectedDate == null) return false;
+    final controller = context.read<AppointmentController>();
+    final normSlot = _normalizeTime(slot);
+
+    return controller.appointments.any((a) {
+      if (a.status == AppointmentStatus.cancelled || a.status == AppointmentStatus.noShow) {
+        return false;
+      }
+      final sameDate = a.date.year == _selectedDate!.year &&
+          a.date.month == _selectedDate!.month &&
+          a.date.day == _selectedDate!.day;
+      if (!sameDate) return false;
+      return _normalizeTime(a.time) == normSlot;
+    });
+  }
+
   Widget _buildTimeSlotGrid() {
     final subtleBg = AppTheme.getSurfaceSubtle(context);
     final line = AppTheme.getLine(context);
     final ink = AppTheme.getInk(context);
     final muted = AppTheme.getMuted(context);
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: _availableTimeSlots.map((slot) {
-        final isSelected = _selectedTime == slot;
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedTime = slot;
-            });
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              gradient: isSelected ? AppTheme.primaryGradient : null,
-              color: isSelected ? null : subtleBg,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected ? Colors.transparent : line,
-              ),
-              boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.schedule_rounded,
-                  size: 14,
-                  color: isSelected ? Colors.white : muted,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  slot,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? Colors.white : ink,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: _availableTimeSlots.map((slot) {
+            final isOccupied = _isSlotOccupied(slot);
+            final isSelected = _selectedTime == slot;
+
+            return GestureDetector(
+              onTap: isOccupied
+                  ? () {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('The $slot slot on this date is already booked. Please pick another time.'),
+                          backgroundColor: AppTheme.warning,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  : () {
+                      setState(() {
+                        _selectedTime = slot;
+                      });
+                    },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: isSelected ? AppTheme.primaryGradient : null,
+                  color: isSelected
+                      ? null
+                      : isOccupied
+                          ? (AppTheme.isDark(context) ? const Color(0xFF202525) : const Color(0xFFF1F3F4))
+                          : subtleBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected
+                        ? Colors.transparent
+                        : isOccupied
+                            ? (AppTheme.isDark(context) ? Colors.white10 : Colors.black12)
+                            : line,
                   ),
+                  boxShadow: isSelected ? AppTheme.cardShadowSubtle : null,
                 ),
-              ],
-            ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isOccupied ? Icons.block_rounded : Icons.schedule_rounded,
+                      size: 14,
+                      color: isSelected
+                          ? Colors.white
+                          : isOccupied
+                              ? AppTheme.danger.withAlpha(160)
+                              : muted,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      slot,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected
+                            ? Colors.white
+                            : isOccupied
+                                ? muted.withAlpha(140)
+                                : ink,
+                        decoration: isOccupied ? TextDecoration.lineThrough : null,
+                        decorationColor: AppTheme.danger.withAlpha(180),
+                      ),
+                    ),
+                    if (isOccupied) ...[
+                      const SizedBox(width: 4),
+                      Text(
+                        '(Booked)',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.danger.withAlpha(200),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        if (_selectedDate != null && _availableTimeSlots.any(_isSlotOccupied)) ...[
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.info_outline_rounded, size: 13, color: AppTheme.warning),
+              const SizedBox(width: 6),
+              Text(
+                'Crossed-out slots have already been reserved for this day.',
+                style: TextStyle(fontSize: 11.5, color: muted, fontStyle: FontStyle.italic),
+              ),
+            ],
           ),
-        );
-      }).toList(),
+        ],
+      ],
     );
   }
 
@@ -610,6 +711,15 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
     if (_formKey.currentState!.validate() &&
         _selectedDate != null &&
         _selectedTime != null) {
+      if (_isSlotOccupied(_selectedTime!)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('The selected time slot is already booked. Please choose an available slot.'),
+            backgroundColor: AppTheme.danger,
+          ),
+        );
+        return;
+      }
       setState(() {
         _showReview = true;
       });

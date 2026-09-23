@@ -282,5 +282,35 @@ void main() {
       expect(profile.studentInfo?.studentId, '24-021128');
       expect(profile.studentInfo?.block, 'Block 1');
     });
+
+    test('AppointmentStatus handles No-Show, Approved, and Confirmed correctly', () {
+      final noShowJson = {
+        'id': 201,
+        'reference': 'APT-2026-0201',
+        'patient': 'Juan dela Cruz',
+        'date': '2026-09-22',
+        'time': '10:00 AM',
+        'status': 'no_show',
+        'reason': 'Routine dental check',
+        'staff': 'Dr. S. Lopez',
+      };
+      final aptNoShow = Appointment.fromJson(noShowJson);
+      expect(aptNoShow.status, AppointmentStatus.noShow);
+      expect(aptNoShow.status.label, 'No-Show');
+
+      final approvedJson = {
+        'id': 202,
+        'reference': 'APT-2026-0202',
+        'patient': 'Juan dela Cruz',
+        'date': '2026-09-22',
+        'time': '11:00 AM',
+        'status': 'approved',
+        'reason': 'Check-up',
+        'staff': 'Dr. Ana Cruz',
+      };
+      final aptApproved = Appointment.fromJson(approvedJson);
+      expect(aptApproved.status, AppointmentStatus.confirmed);
+      expect(aptApproved.status.label, 'Confirmed');
+    });
   });
 }

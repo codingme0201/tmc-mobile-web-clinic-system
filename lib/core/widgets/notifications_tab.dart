@@ -104,22 +104,39 @@ class _NotificationsTabState extends State<NotificationsTab> {
           final notifications = controller.notifications;
 
           if (notifications.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.notifications_none_outlined, size: 56, color: mutedLight.withAlpha(100)),
-                  const SizedBox(height: 12),
-                  Text(
-                    'No notifications yet',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: ink),
+            return RefreshIndicator(
+              onRefresh: () => controller.loadNotifications(),
+              color: AppTheme.primary,
+              child: LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.notifications_none_outlined, size: 56, color: mutedLight.withAlpha(100)),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No notifications yet',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: ink),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'You are all caught up!',
+                            style: TextStyle(fontSize: 13, color: muted),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Pull down to refresh',
+                            style: TextStyle(fontSize: 11.5, color: muted.withAlpha(160)),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'You are all caught up!',
-                    style: TextStyle(fontSize: 13, color: muted),
-                  ),
-                ],
+                ),
               ),
             );
           }
@@ -128,6 +145,7 @@ class _NotificationsTabState extends State<NotificationsTab> {
             onRefresh: () => controller.loadNotifications(),
             color: AppTheme.primary,
             child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(20),
               children: [
                 if (controller.unreadCount > 0)

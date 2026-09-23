@@ -191,6 +191,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
       {'value': 'confirmed', 'label': 'Confirmed'},
       {'value': 'completed', 'label': 'Completed'},
       {'value': 'cancelled', 'label': 'Cancelled'},
+      {'value': 'noShow', 'label': 'No-Show'},
     ];
 
     return SizedBox(

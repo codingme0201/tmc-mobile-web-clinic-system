@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme.dart';
 import '../../../../app/theme_controller.dart';
+import '../../../../core/utils/api_client.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../controllers/auth_controller.dart';
@@ -140,6 +141,156 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void _showServerSettingsDialog() async {
+    final currentUrl = await ApiClient().getBaseUrl();
+    if (!mounted) return;
+    final urlController = TextEditingController(text: currentUrl);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (dialogCtx, setDialogState) {
+          final ink = AppTheme.getInk(dialogCtx);
+          final muted = AppTheme.getMuted(dialogCtx);
+          final line = AppTheme.getLine(dialogCtx);
+
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
+              side: BorderSide(color: line),
+            ),
+            backgroundColor: AppTheme.getSurface(dialogCtx),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primary.withAlpha(20),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.dns_rounded, color: AppTheme.primary, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Server Configuration',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 17,
+                      color: ink,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Configure backend API endpoint for physical devices or custom networks.',
+                    style: TextStyle(fontSize: 13, color: muted, height: 1.4),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: urlController,
+                    decoration: InputDecoration(
+                      labelText: 'API Base URL',
+                      labelStyle: const TextStyle(color: AppTheme.primary, fontSize: 13),
+                      hintText: 'http://192.168.1.X:8000/api',
+                      hintStyle: TextStyle(color: AppTheme.getMutedLight(dialogCtx), fontSize: 13),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: line),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: line),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    ),
+                    style: TextStyle(fontSize: 13.5, color: ink),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'Quick Presets:',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: muted),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      ActionChip(
+                        label: const Text('Emulator (10.0.2.2)', style: TextStyle(fontSize: 11)),
+                        onPressed: () {
+                          setDialogState(() {
+                            urlController.text = 'http://10.0.2.2:8000/api';
+                          });
+                        },
+                      ),
+                      ActionChip(
+                        label: const Text('Localhost (127.0.0.1)', style: TextStyle(fontSize: 11)),
+                        onPressed: () {
+                          setDialogState(() {
+                            urlController.text = 'http://127.0.0.1:8000/api';
+                          });
+                        },
+                      ),
+                      ActionChip(
+                        label: const Text('Default Host', style: TextStyle(fontSize: 11)),
+                        onPressed: () {
+                          setDialogState(() {
+                            urlController.text = ApiClient.defaultBaseUrl;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text('Cancel', style: TextStyle(color: muted)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () async {
+                  final newUrl = urlController.text.trim();
+                  if (newUrl.isNotEmpty) {
+                    await ApiClient.saveBaseUrl(newUrl);
+                    if (!dialogCtx.mounted) return;
+                    Navigator.pop(ctx);
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Server endpoint saved: $newUrl'),
+                        backgroundColor: AppTheme.success,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Save & Apply'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = AppTheme.isDark(context);
@@ -178,29 +329,55 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
 
-            // Top Quick Theme Switcher
+            // Top Quick Actions (Server Settings + Theme Switcher)
             Positioned(
               top: 12,
               right: 16,
-              child: Material(
-                color: isDark ? AppTheme.darkSurfaceSubtle : Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                elevation: 0,
-                child: Container(
-                  decoration: BoxDecoration(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Material(
+                    color: isDark ? AppTheme.darkSurfaceSubtle : Colors.white,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppTheme.getLine(context)),
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      themeController.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                      color: themeController.isDarkMode ? AppTheme.gold : AppTheme.primary,
-                      size: 20,
+                    elevation: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppTheme.getLine(context)),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.dns_rounded,
+                          color: AppTheme.primary,
+                          size: 20,
+                        ),
+                        tooltip: 'Server Settings',
+                        onPressed: _showServerSettingsDialog,
+                      ),
                     ),
-                    tooltip: themeController.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
-                    onPressed: () => themeController.toggleTheme(),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  Material(
+                    color: isDark ? AppTheme.darkSurfaceSubtle : Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    elevation: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppTheme.getLine(context)),
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          themeController.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                          color: themeController.isDarkMode ? AppTheme.gold : AppTheme.primary,
+                          size: 20,
+                        ),
+                        tooltip: themeController.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+                        onPressed: () => themeController.toggleTheme(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
 
