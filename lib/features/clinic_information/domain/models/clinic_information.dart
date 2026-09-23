@@ -98,7 +98,7 @@ class ClinicInformation {
     return ClinicInformation(
       name: (json['clinicName'] ?? json['name'] ?? 'TMC Medical Clinic').toString(),
       description: (json['clinicDescription'] ?? json['description'] ?? 'TMC CareLink Clinic provides medical services to the campus community.').toString(),
-      address: (json['clinicAddress'] ?? json['address'] ?? 'Ground Floor, Health Sciences Building, Main Campus').toString(),
+      address: (json['clinicAddress'] ?? json['address'] ?? 'Tagum Norte, Trinidad, Bohol, Philippines').toString(),
       contactNumber: (json['clinicPhone'] ?? json['contactNumber'] ?? '+63 (02) 8123-4567').toString(),
       email: (json['clinicEmail'] ?? json['email'] ?? 'clinic@tmccarelink.com').toString(),
       services: parsedServices,

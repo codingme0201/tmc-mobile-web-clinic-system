@@ -270,7 +270,7 @@ void main() {
         'email': 'angela.reyes@tmc.edu.ph',
         'phone': '+63 917 123 4567',
         'telephone': '+63 (02) 8123-4567',
-        'address': 'Trinidad, Bohol',
+        'address': 'Tagum Norte, Trinidad, Bohol, Philippines',
         'dateOfBirth': '2003-05-15T00:00:00.000',
         'accountStatus': 'active',
         'studentInfo': studentJson,
@@ -279,6 +279,7 @@ void main() {
       final profile = Profile.fromJson(profileJson);
       expect(profile.phone, '+63 917 123 4567');
       expect(profile.telephone, '+63 (02) 8123-4567');
+      expect(profile.address, 'Tagum Norte, Trinidad, Bohol, Philippines');
       expect(profile.studentInfo?.studentId, '24-021128');
       expect(profile.studentInfo?.block, 'Block 1');
     });

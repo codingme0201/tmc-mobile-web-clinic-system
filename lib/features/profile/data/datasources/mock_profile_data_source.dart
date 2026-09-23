@@ -13,7 +13,7 @@ class MockProfileDataSource {
       email: 'maria.santos@tmc.edu.ph',
       phone: '+63 917 123 4567',
       telephone: '+63 (02) 8123-4567',
-      address: '123 Rizal Avenue, Trinidad, Bohol',
+      address: 'Tagum Norte, Trinidad, Bohol, Philippines',
       dateOfBirth: DateTime(2003, 6, 15),
       gender: 'Female',
       accountStatus: AccountStatus.active,

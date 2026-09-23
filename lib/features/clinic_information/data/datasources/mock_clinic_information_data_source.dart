@@ -29,7 +29,7 @@ class MockClinicInformationDataSource {
           'The TMC Student Health Clinic provides comprehensive healthcare services to enrolled students, '
           'faculty, and staff. Our team of qualified medical professionals is dedicated to promoting '
           'the health and well-being of the campus community.',
-      address: 'TMC Building, 2nd Floor, Room 205, Rizal Avenue, Quezon City',
+      address: 'Tagum Norte, Trinidad, Bohol, Philippines',
       contactNumber: '(02) 8123-4567',
       email: 'clinic@tmc.edu.ph',
       services: [

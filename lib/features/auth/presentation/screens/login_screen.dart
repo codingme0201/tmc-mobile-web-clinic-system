@@ -5,6 +5,7 @@ import '../../../../app/theme_controller.dart';
 import '../../../../core/utils/api_client.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/clinic_emblem.dart';
 import '../controllers/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -393,30 +394,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 10),
 
                       // Brand Emblem
-                      Container(
-                        width: 82,
-                        height: 82,
-                        decoration: BoxDecoration(
-                          gradient: isDark ? AppTheme.heroGradientDark : AppTheme.heroGradient,
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppTheme.primary.withAlpha(isDark ? 80 : 70),
-                              blurRadius: 22,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                          border: Border.all(
-                            color: AppTheme.gold.withAlpha(120),
-                            width: 1.6,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.local_hospital_rounded,
-                          color: Colors.white,
-                          size: 42,
-                        ),
-                      ),
+                      const ClinicEmblem(size: 86),
                       const SizedBox(height: 18),
                       Text(
                         'TMC CareLink',

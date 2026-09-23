@@ -331,7 +331,7 @@ class HelpSupportTab extends StatelessWidget {
           context: context,
           icon: Icons.location_on_outlined,
           title: 'Clinic Location',
-          subtitle: 'Health Sciences Building, Room 102, Main Campus',
+          subtitle: 'Tagum Norte, Trinidad, Bohol, Philippines',
         ),
         const SizedBox(height: 32),
       ],

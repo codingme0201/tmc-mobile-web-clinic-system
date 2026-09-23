@@ -62,7 +62,7 @@ class _CareLinkAppState extends State<CareLinkApp> {
       child: Consumer<ThemeController>(
         builder: (context, themeController, _) {
           return MaterialApp(
-            title: 'TMC CareLink',
+            title: 'CareLink',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,

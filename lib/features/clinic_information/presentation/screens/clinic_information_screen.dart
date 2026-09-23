@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/widgets/clinic_emblem.dart';
 import '../controllers/clinic_information_controller.dart';
 import '../../domain/models/clinic_information.dart';
 import '../../domain/models/clinic_schedule.dart';
@@ -134,16 +135,7 @@ class _ClinicInformationScreenState extends State<ClinicInformationScreen> {
         children: [
           Row(
             children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppTheme.gold, width: 2),
-                  color: Colors.white.withAlpha(35),
-                ),
-                child: const Icon(Icons.local_hospital_rounded, color: Colors.white, size: 26),
-              ),
+              const ClinicEmblem(size: 48, showShadow: false),
               const SizedBox(width: 14),
               Expanded(
                 child: Text(
