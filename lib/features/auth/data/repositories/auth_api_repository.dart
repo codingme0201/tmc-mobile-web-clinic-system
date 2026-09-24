@@ -31,12 +31,18 @@ class AuthApiRepository implements AuthRepository {
     required String name,
     required String email,
     required String password,
+    String? firstName,
+    String? middleName,
+    String? lastName,
   }) async {
     try {
       final result = await _dataSource.register(
         name: name,
         email: email,
         password: password,
+        firstName: firstName,
+        middleName: middleName,
+        lastName: lastName,
       );
 
       final session = Session(

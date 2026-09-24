@@ -2,7 +2,14 @@ import '../models/session.dart';
 
 abstract class AuthRepository {
   Future<AuthResult> login(String email, String password);
-  Future<AuthResult> register({required String name, required String email, required String password});
+  Future<AuthResult> register({
+    required String name,
+    required String email,
+    required String password,
+    String? firstName,
+    String? middleName,
+    String? lastName,
+  });
   Future<void> forgotPassword(String email);
   Future<void> changePassword({required String currentPassword, required String newPassword});
   Future<void> logout();

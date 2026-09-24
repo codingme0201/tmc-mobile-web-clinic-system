@@ -14,7 +14,9 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _middleNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -24,7 +26,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _middleNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -39,8 +43,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final auth = context.read<AuthController>();
+      final firstName = _firstNameController.text.trim();
+      final middleName = _middleNameController.text.trim();
+      final lastName = _lastNameController.text.trim();
+      final fullName = [firstName, if (middleName.isNotEmpty) middleName, lastName].join(' ');
+
       final success = await auth.register(
-        name: _nameController.text.trim(),
+        name: fullName,
+        firstName: firstName,
+        middleName: middleName.isNotEmpty ? middleName : null,
+        lastName: lastName,
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
@@ -166,14 +178,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       children: [
                         AppTextField(
-                          label: 'Full Name',
-                          controller: _nameController,
-                          hintText: 'e.g. Maria Santos',
-                          prefixIcon: Icons.person_outline_rounded,
+                          label: 'First Name',
+                          controller: _firstNameController,
+                          hintText: 'e.g. Maria',
+                          prefixIcon: Icons.badge_outlined,
                           textInputAction: TextInputAction.next,
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) return 'Full name is required.';
-                            if (v.trim().length < 2) return 'Name must be at least 2 characters.';
+                            if (v == null || v.trim().isEmpty) return 'First name is required.';
+                            if (v.trim().length < 2) return 'First name must be at least 2 characters.';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          label: 'Middle Name (Optional)',
+                          controller: _middleNameController,
+                          hintText: 'e.g. Santos',
+                          prefixIcon: Icons.person_outline_rounded,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          label: 'Last Name',
+                          controller: _lastNameController,
+                          hintText: 'e.g. Dela Cruz',
+                          prefixIcon: Icons.badge_outlined,
+                          textInputAction: TextInputAction.next,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) return 'Last name is required.';
+                            if (v.trim().length < 2) return 'Last name must be at least 2 characters.';
                             return null;
                           },
                         ),

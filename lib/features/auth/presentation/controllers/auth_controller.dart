@@ -57,6 +57,9 @@ class AuthController extends ChangeNotifier {
     required String name,
     required String email,
     required String password,
+    String? firstName,
+    String? middleName,
+    String? lastName,
   }) async {
     _isLoading = true;
     _error = null;
@@ -67,6 +70,9 @@ class AuthController extends ChangeNotifier {
         name: name,
         email: email,
         password: password,
+        firstName: firstName,
+        middleName: middleName,
+        lastName: lastName,
       );
       _session = result.session;
       _isLoading = false;

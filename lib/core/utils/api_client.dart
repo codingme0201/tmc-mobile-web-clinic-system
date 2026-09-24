@@ -43,6 +43,13 @@ class ApiClient {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString('api_base_url');
     if (saved != null && saved.isNotEmpty) {
+      if (!kIsWeb) {
+        try {
+          if (Platform.isAndroid && (saved.contains('10.0.2.2') || saved.contains('127.0.0.1') || saved.contains('localhost'))) {
+            return defaultBaseUrl;
+          }
+        } catch (_) {}
+      }
       return saved;
     }
     if (_configuredBaseUrl != null && _configuredBaseUrl!.isNotEmpty) {
