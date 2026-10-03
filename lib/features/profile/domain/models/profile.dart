@@ -86,7 +86,8 @@ class Profile {
   final String? phone;
   final String? telephone;
   final String? address;
-  final DateTime dateOfBirth;
+  final DateTime? dateOfBirth;
+  final int? age;
   final String? gender;
   final AccountStatus accountStatus;
   final StudentInfo? studentInfo;
@@ -99,7 +100,8 @@ class Profile {
     this.phone,
     this.telephone,
     this.address,
-    required this.dateOfBirth,
+    this.dateOfBirth,
+    this.age,
     this.gender,
     required this.accountStatus,
     this.studentInfo,
@@ -113,6 +115,7 @@ class Profile {
     String? telephone,
     String? address,
     DateTime? dateOfBirth,
+    int? age,
     String? gender,
     AccountStatus? accountStatus,
     StudentInfo? studentInfo,
@@ -126,6 +129,7 @@ class Profile {
       telephone: telephone ?? this.telephone,
       address: address ?? this.address,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      age: age ?? this.age,
       gender: gender ?? this.gender,
       accountStatus: accountStatus ?? this.accountStatus,
       studentInfo: studentInfo ?? this.studentInfo,
@@ -141,7 +145,8 @@ class Profile {
       'phone': phone,
       'telephone': telephone,
       'address': address,
-      'dateOfBirth': dateOfBirth.toIso8601String(),
+      'dateOfBirth': dateOfBirth?.toIso8601String(),
+      'age': age,
       'gender': gender,
       'accountStatus': accountStatus.name,
       'studentInfo': studentInfo?.toJson(),
@@ -157,7 +162,8 @@ class Profile {
       phone: json['phone'] as String?,
       telephone: (json['telephone'] ?? json['telephoneNumber'] ?? json['landline']) as String?,
       address: json['address'] as String?,
-      dateOfBirth: DateTime.parse(json['dateOfBirth'] as String),
+      dateOfBirth: json['dateOfBirth'] != null ? DateTime.tryParse(json['dateOfBirth'].toString()) : null,
+      age: json['age'] is int ? json['age'] as int : int.tryParse('${json['age'] ?? ''}'),
       gender: json['gender'] as String?,
       accountStatus: AccountStatus.values.firstWhere(
         (e) => e.name == json['accountStatus'],

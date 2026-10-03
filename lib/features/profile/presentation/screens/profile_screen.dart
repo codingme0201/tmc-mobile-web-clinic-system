@@ -103,18 +103,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Divider(height: 1, color: AppTheme.getLine(context)),
               _buildInfoRow(context, Icons.phone_android_rounded, 'Mobile Number', profile.phone ?? 'Not provided'),
               Divider(height: 1, color: AppTheme.getLine(context)),
-              _buildInfoRow(context, Icons.phone_outlined, 'Telephone', profile.telephone ?? 'Not provided'),
-              Divider(height: 1, color: AppTheme.getLine(context)),
               _buildInfoRow(context, Icons.home_outlined, 'Address', profile.address ?? 'Not provided'),
               Divider(height: 1, color: AppTheme.getLine(context)),
-              _buildInfoRow(
-                context,
-                Icons.cake_outlined,
-                'Date of Birth',
-                '${profile.dateOfBirth.day}/${profile.dateOfBirth.month}/${profile.dateOfBirth.year}',
-              ),
-              Divider(height: 1, color: AppTheme.getLine(context)),
-              _buildInfoRow(context, Icons.wc_outlined, 'Gender', profile.gender ?? 'Not specified'),
+              _buildInfoRow(context, Icons.cake_outlined, 'Age', profile.age?.toString() ?? 'Not provided'),
             ]),
             const SizedBox(height: 16),
             _buildEditButton(context, profile),
@@ -479,40 +470,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildStudentInfo(BuildContext context, StudentInfo info) {
     return _buildInfoCard(context, [
-      _buildInfoRow(context, Icons.badge_outlined, 'Student ID', info.studentId),
+      _buildInfoRow(context, Icons.badge_outlined, 'Student ID', info.studentId.isNotEmpty ? info.studentId : 'Not provided'),
       Divider(height: 1, color: AppTheme.getLine(context)),
-      _buildInfoRow(context, Icons.school_outlined, 'Program', info.program),
+      _buildInfoRow(context, Icons.school_outlined, 'Program', info.program.isNotEmpty ? info.program : 'Not provided'),
       Divider(height: 1, color: AppTheme.getLine(context)),
-      _buildInfoRow(context, Icons.calendar_today, 'Year Level', info.yearLevel),
-      Divider(height: 1, color: AppTheme.getLine(context)),
-      _buildInfoRow(context, Icons.grid_view_rounded, 'Block', info.block),
-      Divider(height: 1, color: AppTheme.getLine(context)),
-      _buildInfoRow(context, Icons.how_to_reg, 'Status', info.enrollmentStatus),
+      _buildInfoRow(context, Icons.grid_view_rounded, 'Block', info.block.isNotEmpty ? info.block : 'Not provided'),
     ]);
   }
 
   Widget _buildMedicalInfo(BuildContext context, MedicalInfo info) {
+    final rows = <Widget>[
+      if (info.bloodType.isNotEmpty) _buildInfoRow(context, Icons.bloodtype_outlined, 'Blood Type', info.bloodType),
+      if (info.allergies != null) _buildInfoRow(context, Icons.warning_amber_outlined, 'Allergies', info.allergies!),
+      if (info.conditions != null) _buildInfoRow(context, Icons.medical_services_outlined, 'Conditions', info.conditions!),
+      if (info.medications != null) _buildInfoRow(context, Icons.medication_outlined, 'Medications', info.medications!),
+      _buildInfoRow(context, Icons.contact_phone_outlined, 'Emergency Contact', info.emergencyContact ?? 'Not provided'),
+      _buildInfoRow(context, Icons.phone_android_rounded, 'Emergency Mobile', info.emergencyContactNumber ?? 'Not provided'),
+    ];
+
     return _buildInfoCard(context, [
-      _buildInfoRow(context, Icons.bloodtype_outlined, 'Blood Type', info.bloodType),
-      if (info.allergies != null) ...[
-        Divider(height: 1, color: AppTheme.getLine(context)),
-        _buildInfoRow(context, Icons.warning_amber_outlined, 'Allergies', info.allergies!),
-      ],
-      if (info.conditions != null) ...[
-        Divider(height: 1, color: AppTheme.getLine(context)),
-        _buildInfoRow(context, Icons.medical_services_outlined, 'Conditions', info.conditions!),
-      ],
-      if (info.medications != null) ...[
-        Divider(height: 1, color: AppTheme.getLine(context)),
-        _buildInfoRow(context, Icons.medication_outlined, 'Medications', info.medications!),
-      ],
-      if (info.emergencyContact != null) ...[
-        Divider(height: 1, color: AppTheme.getLine(context)),
-        _buildInfoRow(context, Icons.contact_phone_outlined, 'Emergency Contact', info.emergencyContact!),
-      ],
-      if (info.emergencyContactNumber != null) ...[
-        Divider(height: 1, color: AppTheme.getLine(context)),
-        _buildInfoRow(context, Icons.phone_android_rounded, 'Emergency Mobile', info.emergencyContactNumber!),
+      for (var i = 0; i < rows.length; i++) ...[
+        if (i > 0) Divider(height: 1, color: AppTheme.getLine(context)),
+        rows[i],
       ],
     ]);
   }

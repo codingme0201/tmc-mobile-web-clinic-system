@@ -24,9 +24,9 @@ class MockClinicInformationDataSource {
 
   ClinicInformationData getData() {
     const clinicInfo = ClinicInformation(
-      name: 'TMC Student Health Clinic',
+      name: 'TMC Expansion Clinic',
       description:
-          'The TMC Student Health Clinic provides comprehensive healthcare services to enrolled students, '
+          'The TMC Expansion Clinic provides comprehensive healthcare services to enrolled students, '
           'faculty, and staff. Our team of qualified medical professionals is dedicated to promoting '
           'the health and well-being of the campus community.',
       address: 'Tagum Norte, Trinidad, Bohol, Philippines',
@@ -156,7 +156,7 @@ class MockClinicInformationDataSource {
             'Some services may have limited availability during this period.',
         date: now.subtract(const Duration(days: 3)),
         time: '8:00 AM – 5:00 PM',
-        location: 'TMC Student Health Clinic',
+        location: 'TMC Expansion Clinic',
         status: ActivityStatus.completed,
       ),
     ];

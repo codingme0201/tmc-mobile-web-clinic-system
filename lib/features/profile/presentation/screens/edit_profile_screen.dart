@@ -19,9 +19,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
-  late final TextEditingController _telephoneController;
   late final TextEditingController _addressController;
-  late String _selectedGender;
   bool _busy = false;
 
   @override
@@ -29,16 +27,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     _nameController = TextEditingController(text: widget.profile.name);
     _phoneController = TextEditingController(text: widget.profile.phone ?? '');
-    _telephoneController = TextEditingController(text: widget.profile.telephone ?? '');
     _addressController = TextEditingController(text: widget.profile.address ?? '');
-    _selectedGender = widget.profile.gender ?? '';
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _telephoneController.dispose();
     _addressController.dispose();
     super.dispose();
   }
@@ -50,11 +45,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _busy = true);
 
     final updated = widget.profile.copyWith(
-      name: _nameController.text.trim(),
       phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-      telephone: _telephoneController.text.trim().isEmpty ? null : _telephoneController.text.trim(),
       address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
-      gender: _selectedGender.isEmpty ? null : _selectedGender,
     );
 
     final success = await context.read<ProfileController>().updateProfile(updated);
@@ -177,12 +169,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         controller: _nameController,
                         hintText: 'Enter your full legal name',
                         prefixIcon: Icons.person_outline_rounded,
-                        textInputAction: TextInputAction.next,
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) return 'Full name is required.';
-                          if (v.trim().length < 2) return 'Name must be at least 2 characters.';
-                          return null;
-                        },
+                        enabled: false,
                       ),
                       const SizedBox(height: 16),
                       AppTextField(
@@ -204,24 +191,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       const SizedBox(height: 16),
                       AppTextField(
-                        label: 'Telephone Number (Landline)',
-                        controller: _telephoneController,
-                        hintText: '+63 (02) 8123-4567 or (038) 510-8200',
-                        prefixIcon: Icons.phone_outlined,
-                        keyboardType: TextInputType.phone,
-                        textInputAction: TextInputAction.next,
-                      ),
-                      const SizedBox(height: 16),
-                      AppTextField(
                         label: 'Residential Address',
                         controller: _addressController,
                         hintText: 'Enter your complete address',
                         prefixIcon: Icons.home_outlined,
                         maxLines: 2,
-                        textInputAction: TextInputAction.next,
+                        textInputAction: TextInputAction.done,
                       ),
-                      const SizedBox(height: 16),
-                      _buildGenderDropdown(),
                     ],
                   ),
                 ),
@@ -239,7 +215,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Primary university email and date of birth cannot be modified in the mobile portal. Please consult the clinic registrar for changes.',
+                          'Your name, email and student ID cannot be changed in the mobile app. Please visit the clinic to update them.',
                           style: TextStyle(fontSize: 12, color: AppTheme.inkLight, height: 1.4),
                         ),
                       ),
@@ -277,67 +253,5 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildGenderDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Gender',
-          style: TextStyle(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.getInk(context),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            color: AppTheme.getSurfaceSubtle(context),
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: AppTheme.cardShadowSubtle,
-          ),
-          child: DropdownButtonFormField<String>(
-            initialValue: _selectedGender.isEmpty ? null : _selectedGender,
-            dropdownColor: AppTheme.getSurface(context),
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: AppTheme.getInk(context),
-            ),
-            decoration: InputDecoration(
-              hintText: 'Select gender identity',
-              hintStyle: TextStyle(fontSize: 13.5, color: AppTheme.getMutedLight(context)),
-              prefixIcon: const Icon(Icons.wc_outlined, color: AppTheme.primary, size: 20),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: AppTheme.getLine(context)),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: AppTheme.getLine(context)),
-              ),
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(14)),
-                borderSide: BorderSide(color: AppTheme.primary, width: 1.5),
-              ),
-              filled: true,
-              fillColor: AppTheme.getSurfaceSubtle(context),
-            ),
-            items: const [
-              DropdownMenuItem(value: 'Male', child: Text('Male')),
-              DropdownMenuItem(value: 'Female', child: Text('Female')),
-              DropdownMenuItem(value: 'Other', child: Text('Other')),
-              DropdownMenuItem(value: 'Prefer not to say', child: Text('Prefer not to say')),
-            ],
-            onChanged: (value) {
-              setState(() => _selectedGender = value ?? '');
-            },
-          ),
-        ),
-      ],
-    );
-  }
 }
 

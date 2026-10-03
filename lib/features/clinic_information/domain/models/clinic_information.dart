@@ -8,6 +8,7 @@ class ClinicInformation {
   final String address;
   final String contactNumber;
   final String email;
+  final String? emergencyHotline;
   final List<String> services;
   final ClinicSchedule? schedule;
   final List<StaffSchedule> staffSchedules;
@@ -22,6 +23,7 @@ class ClinicInformation {
     required this.address,
     required this.contactNumber,
     required this.email,
+    this.emergencyHotline,
     required this.services,
     this.schedule,
     this.staffSchedules = const [],
@@ -36,6 +38,7 @@ class ClinicInformation {
       'address': address,
       'contactNumber': contactNumber,
       'email': email,
+      'emergencyHotline': emergencyHotline,
       'services': services,
       'schedule': schedule?.toJson(),
       'operatingHours': operatingHours,
@@ -96,11 +99,14 @@ class ClinicInformation {
     }
 
     return ClinicInformation(
-      name: (json['clinicName'] ?? json['name'] ?? 'TMC Medical Clinic').toString(),
+      name: (json['clinicName'] ?? json['name'] ?? 'TMC Expansion Clinic').toString(),
       description: (json['clinicDescription'] ?? json['description'] ?? 'TMC CareLink Clinic provides medical services to the campus community.').toString(),
       address: (json['clinicAddress'] ?? json['address'] ?? 'Tagum Norte, Trinidad, Bohol, Philippines').toString(),
-      contactNumber: (json['clinicPhone'] ?? json['contactNumber'] ?? '+63 (02) 8123-4567').toString(),
-      email: (json['clinicEmail'] ?? json['email'] ?? 'clinic@tmccarelink.com').toString(),
+      contactNumber: (json['clinicPhone'] ?? json['contactNumber'] ?? '').toString(),
+      email: (json['clinicEmail'] ?? json['email'] ?? '').toString(),
+      emergencyHotline: (json['emergencyHotline'] ?? '').toString().trim().isEmpty
+          ? null
+          : json['emergencyHotline'].toString(),
       services: parsedServices,
       schedule: parsedSchedule,
       staffSchedules: parsedStaff,

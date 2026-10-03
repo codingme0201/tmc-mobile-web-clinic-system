@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../app/theme.dart';
+import '../../features/clinic_information/presentation/controllers/clinic_information_controller.dart';
 import '../utils/api_client.dart';
 import 'app_button.dart';
 
@@ -306,33 +308,51 @@ class HelpSupportTab extends StatelessWidget {
         const SizedBox(height: 24),
         _buildSectionTitle(context, 'Clinic Contact Details'),
         const SizedBox(height: 12),
-        _buildContactCard(
-          context: context,
-          icon: Icons.phone_android_rounded,
-          title: 'Mobile Hotline',
-          subtitle: '+63 917 123 4567',
-        ),
-        const SizedBox(height: 12),
-        _buildContactCard(
-          context: context,
-          icon: Icons.phone_outlined,
-          title: 'Telephone (Landline)',
-          subtitle: '+63 (02) 8123-4567',
-        ),
-        const SizedBox(height: 12),
-        _buildContactCard(
-          context: context,
-          icon: Icons.email_outlined,
-          title: 'Email',
-          subtitle: 'clinic@tmccarelink.com',
-        ),
-        const SizedBox(height: 12),
-        _buildContactCard(
-          context: context,
-          icon: Icons.location_on_outlined,
-          title: 'Clinic Location',
-          subtitle: 'Tagum Norte, Trinidad, Bohol, Philippines',
-        ),
+        Builder(builder: (context) {
+          final clinic = context.watch<ClinicInformationController>();
+          if (clinic.status == ClinicInfoStatus.initial) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) context.read<ClinicInformationController>().loadClinicInformation();
+            });
+          }
+          final info = clinic.data;
+          String show(String? value) {
+            if (clinic.isLoading && info == null) return 'Loading...';
+            return value != null && value.trim().isNotEmpty ? value : 'Not provided';
+          }
+
+          return Column(
+            children: [
+              _buildContactCard(
+                context: context,
+                icon: Icons.phone_android_rounded,
+                title: 'Emergency Hotline',
+                subtitle: show(info?.emergencyHotline),
+              ),
+              const SizedBox(height: 12),
+              _buildContactCard(
+                context: context,
+                icon: Icons.phone_outlined,
+                title: 'Clinic Phone',
+                subtitle: show(info?.contactNumber),
+              ),
+              const SizedBox(height: 12),
+              _buildContactCard(
+                context: context,
+                icon: Icons.email_outlined,
+                title: 'Email',
+                subtitle: show(info?.email),
+              ),
+              const SizedBox(height: 12),
+              _buildContactCard(
+                context: context,
+                icon: Icons.location_on_outlined,
+                title: 'Clinic Location',
+                subtitle: show(info?.address),
+              ),
+            ],
+          );
+        }),
         const SizedBox(height: 32),
       ],
     );

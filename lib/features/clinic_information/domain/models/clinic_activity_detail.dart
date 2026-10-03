@@ -56,7 +56,7 @@ class ClinicActivityDetail {
       description: (json['description'] ?? '').toString(),
       date: parsedDate,
       time: json['time']?.toString() ?? json['start_time']?.toString(),
-      location: json['location']?.toString() ?? 'Main Clinic',
+      location: json['location']?.toString() ?? 'TMC Expansion Clinic',
       status: resolvedStatus,
     );
   }

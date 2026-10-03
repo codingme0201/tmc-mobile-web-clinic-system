@@ -24,7 +24,7 @@ class Appointment {
     required this.status,
     required this.doctorName,
     this.type = 'Check-up',
-    this.clinic = 'TMC Student Health Clinic',
+    this.clinic = 'TMC Expansion Clinic',
     this.notes,
     this.requestedOn,
     this.updatedAt,
@@ -109,7 +109,7 @@ class Appointment {
       status: _parseStatus(json['status']?.toString()),
       doctorName: (json['staff'] ?? json['doctorName'] ?? 'TMC Medical Staff').toString(),
       type: (json['type'] ?? 'Check-up').toString(),
-      clinic: (json['clinic'] ?? 'TMC Student Health Clinic').toString(),
+      clinic: (json['clinic'] ?? 'TMC Expansion Clinic').toString(),
       notes: json['notes']?.toString(),
       requestedOn: json['requestedOn'] != null
           ? DateTime.tryParse(json['requestedOn'].toString())

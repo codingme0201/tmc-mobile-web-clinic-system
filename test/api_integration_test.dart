@@ -153,5 +153,21 @@ void main() {
 
       expect(res.statusCode, 201);
     });
+
+    test('13. AppointmentApiDataSource loads live clinicians and slot availability', () async {
+      final aptDs = AppointmentApiDataSource();
+      final clinicians = await aptDs.getClinicians();
+
+      expect(clinicians, isNotEmpty);
+      expect(clinicians.first['id'], isNotNull);
+      expect(clinicians.first['name'], isNotEmpty);
+
+      final yesterday = DateTime.now().subtract(const Duration(days: 1));
+      final date = '${yesterday.year}-${yesterday.month.toString().padLeft(2, '0')}-${yesterday.day.toString().padLeft(2, '0')}';
+      final unavailable = await aptDs.getUnavailableSlots(date, staffId: clinicians.first['id'] as int);
+
+      expect(unavailable, isNotEmpty);
+      expect(unavailable.values, everyElement('past'));
+    });
   });
 }

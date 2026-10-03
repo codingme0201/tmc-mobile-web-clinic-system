@@ -29,12 +29,45 @@ class AppointmentApiDataSource {
     return null;
   }
 
+  Future<List<Map<String, dynamic>>> getClinicians() async {
+    final response = await _apiClient.get('/me/appointment-options');
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      final data = decoded is Map ? (decoded['data'] ?? {}) : {};
+      final doctors = (data is Map ? data['doctors'] : null) as List? ?? [];
+      return doctors.whereType<Map<String, dynamic>>().toList();
+    } else {
+      throw Exception('Failed to load doctors: ${response.statusCode}');
+    }
+  }
+
+  Future<Map<String, String>> getUnavailableSlots(String date, {int? staffId}) async {
+    final response = await _apiClient.get('/me/appointments/availability', queries: {
+      'date': date,
+      if (staffId != null) 'staff_id': staffId.toString(),
+    });
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      final data = decoded is Map ? (decoded['data'] ?? {}) : {};
+      final slots = (data is Map ? data['slots'] : null) as List? ?? [];
+      return {
+        for (final slot in slots.whereType<Map<String, dynamic>>())
+          if (slot['available'] != true) slot['time'].toString(): (slot['reason'] ?? 'booked').toString(),
+      };
+    } else {
+      throw Exception('Failed to load slot availability: ${response.statusCode}');
+    }
+  }
+
   Future<Appointment> requestAppointment({
     required String type,
     required String reason,
     required String date,
     required String time,
     String? staff,
+    int? staffId,
   }) async {
     final response = await _apiClient.post('/me/appointments', body: {
       'type': type,
@@ -42,6 +75,7 @@ class AppointmentApiDataSource {
       'date': date,
       'time': time,
       'staff': staff,
+      'staff_id': ?staffId,
     });
 
     if (response.statusCode == 201 || response.statusCode == 200) {

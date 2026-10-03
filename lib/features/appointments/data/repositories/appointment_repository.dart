@@ -37,6 +37,7 @@ class AppointmentRepository {
     required String doctorName,
     required String type,
     required String clinic,
+    int? staffId,
   }) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return _dataSource.createAppointment(

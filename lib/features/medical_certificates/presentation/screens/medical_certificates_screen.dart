@@ -365,31 +365,28 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
     final line = AppTheme.getLine(context);
 
     final certSummaryText = '''
-REPUBLIC OF THE PHILIPPINES
-TAGUIG CITY UNIVERSITY
-UNIVERSITY HEALTH SERVICES CENTER
-TMC CareLink Medical Clinic
+TMC EXPANSION CLINIC
+Tagum Norte, Trinidad, Bohol, Philippines
 
 MEDICAL CERTIFICATE
 Reference: ${cert.reference}
 Date Issued: ${cert.issueDate}
 
 TO WHOM IT MAY CONCERN:
-This is to certify that ${cert.patient} has been examined and attended to at the TMC University Health Services Clinic.
+This is to certify that ${cert.patient} has been examined and attended to at the TMC Expansion Clinic.
 
 DIAGNOSIS:
-${cert.diagnosis.isNotEmpty ? cert.diagnosis : 'Clinical Consultation & Assessment'}
+${cert.diagnosis.isNotEmpty ? cert.diagnosis : '—'}
 
 RECOMMENDATIONS / REMARKS:
-${cert.recommendation.isNotEmpty ? cert.recommendation : 'Excused from physical strenuous activity and given supportive rest.'}
+${cert.recommendation.isNotEmpty ? cert.recommendation : '—'}
 ${cert.validUntil != null ? 'Valid Until: ${cert.validUntil}\n' : ''}
 PURPOSE:
 ${cert.purpose}
 
 ATTENDING PHYSICIAN:
-${cert.issuedBy.isNotEmpty ? cert.issuedBy : 'Attending University Physician, M.D.'}
-License No. PRC-0084729
-TMC Student Health Clinic
+${cert.issuedBy.isNotEmpty ? cert.issuedBy : 'Attending Physician'}
+TMC Expansion Clinic
 ''';
 
     showDialog(
@@ -463,7 +460,7 @@ TMC Student Health Clinic
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          'TAGUIG CITY UNIVERSITY',
+                          'TMC EXPANSION CLINIC',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
@@ -472,16 +469,7 @@ TMC Student Health Clinic
                           ),
                         ),
                         Text(
-                          'UNIVERSITY HEALTH SERVICES CENTER',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.6,
-                            color: muted,
-                          ),
-                        ),
-                        Text(
-                          'Gen. Santos Ave, Central Bicutan, Taguig City',
+                          'Tagum Norte, Trinidad, Bohol, Philippines',
                           style: TextStyle(fontSize: 9.5, color: muted.withAlpha(180)),
                         ),
                         const SizedBox(height: 12),
@@ -535,7 +523,7 @@ TMC Student Health Clinic
                                 style: const TextStyle(fontWeight: FontWeight.w800, decoration: TextDecoration.underline),
                               ),
                               const TextSpan(
-                                text: ' has been formally examined and evaluated at the TCU University Health Services Clinic.',
+                                text: ' has been formally examined and evaluated at the TMC Expansion Clinic.',
                               ),
                             ],
                           ),
@@ -563,7 +551,7 @@ TMC Student Health Clinic
                               ),
                               const SizedBox(height: 3),
                               Text(
-                                cert.diagnosis.isNotEmpty ? cert.diagnosis : 'Clinical Evaluation & Assessment',
+                                cert.diagnosis.isNotEmpty ? cert.diagnosis : '—',
                                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ink),
                               ),
                               const SizedBox(height: 10),
@@ -578,9 +566,7 @@ TMC Student Health Clinic
                               ),
                               const SizedBox(height: 3),
                               Text(
-                                cert.recommendation.isNotEmpty
-                                    ? cert.recommendation
-                                    : 'Patient advised rest and excused from strenuous activities.',
+                                cert.recommendation.isNotEmpty ? cert.recommendation : '—',
                                 style: TextStyle(fontSize: 12.5, color: ink),
                               ),
                               if (cert.validUntil != null) ...[
@@ -627,15 +613,11 @@ TMC Student Health Clinic
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                cert.issuedBy.isNotEmpty ? cert.issuedBy : 'Attending Physician, M.D.',
+                                cert.issuedBy.isNotEmpty ? cert.issuedBy : 'Attending Physician',
                                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: ink),
                               ),
                               Text(
-                                'License No. PRC-0084729',
-                                style: TextStyle(fontSize: 10, color: muted),
-                              ),
-                              Text(
-                                'University Physician',
+                                'Signature over printed name',
                                 style: TextStyle(fontSize: 10, color: muted),
                               ),
                             ],

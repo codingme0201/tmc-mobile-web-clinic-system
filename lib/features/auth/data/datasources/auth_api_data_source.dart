@@ -21,7 +21,7 @@ class AuthApiDataSource {
 
       final role = userJson['role'];
       if (role != 'student' && role != 'patient') {
-        throw Exception('This mobile app is for student users only. Doctors, nurses, and administrators must log in through the web clinic portal.');
+        throw Exception('This mobile app is for student users only. Doctors, nurses, front desk staff, and administrators must log in through the web clinic portal.');
       }
 
       final user = AppUser(

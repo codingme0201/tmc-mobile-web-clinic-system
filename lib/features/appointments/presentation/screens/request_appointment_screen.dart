@@ -26,16 +26,110 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
   bool _showReview = false;
 
   late List<String> _availableTimeSlots;
-  late List<String> _doctorNames;
   late List<String> _appointmentTypes;
+  List<Map<String, dynamic>> _clinicians = [];
+  bool _loadingClinicians = true;
+  String? _cliniciansError;
+  Map<String, String> _unavailableSlots = {};
+  bool _loadingSlots = false;
 
   @override
   void initState() {
     super.initState();
     final controller = context.read<AppointmentController>();
     _availableTimeSlots = controller.getAvailableTimeSlots();
-    _doctorNames = controller.getDoctorNames();
     _appointmentTypes = controller.getAppointmentTypes();
+    _loadClinicians();
+  }
+
+  int? get _selectedStaffId {
+    final match = _clinicians.where((c) => c['name'] == _selectedDoctor);
+    if (match.isEmpty) return null;
+    final id = match.first['id'];
+    return id is int ? id : int.tryParse(id.toString());
+  }
+
+  Future<void> _loadClinicians() async {
+    setState(() {
+      _loadingClinicians = true;
+      _cliniciansError = null;
+    });
+    try {
+      final clinicians = await context.read<AppointmentController>().getClinicians();
+      if (!mounted) return;
+      setState(() {
+        _clinicians = clinicians;
+        _loadingClinicians = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _cliniciansError = e.toString().replaceFirst('Exception: ', '');
+        _loadingClinicians = false;
+      });
+    }
+  }
+
+  Future<void> _loadAvailability() async {
+    final date = _selectedDate;
+    if (date == null) return;
+    setState(() => _loadingSlots = true);
+    try {
+      final unavailable = await context
+          .read<AppointmentController>()
+          .getUnavailableSlots(date, staffId: _selectedStaffId);
+      if (!mounted || date != _selectedDate) return;
+      setState(() {
+        _unavailableSlots = {
+          for (final entry in unavailable.entries) _normalizeTime(entry.key): entry.value,
+        };
+        _loadingSlots = false;
+        if (_selectedTime != null && _isSlotOccupied(_selectedTime!)) {
+          _selectedTime = null;
+        }
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _unavailableSlots = {};
+        _loadingSlots = false;
+      });
+    }
+  }
+
+  String? _slotReason(String slot) {
+    if (_selectedDate == null) return null;
+    return _unavailableSlots[_normalizeTime(slot)] ?? (_isOwnBooking(slot) ? 'yours' : null);
+  }
+
+  String _slotLabel(String reason) {
+    switch (reason) {
+      case 'yours':
+        return '(Yours)';
+      case 'blocked':
+        return '(Closed)';
+      case 'full':
+        return '(Full)';
+      case 'past':
+        return '(Past)';
+      default:
+        return '(Booked)';
+    }
+  }
+
+  String _slotMessage(String slot, String reason) {
+    switch (reason) {
+      case 'yours':
+        return 'You already have an appointment at $slot on this date.';
+      case 'blocked':
+        return 'The clinic or the selected doctor is unavailable at $slot on this date.';
+      case 'full':
+        return 'The clinic is fully booked on this date. Please pick another day.';
+      case 'past':
+        return 'The $slot slot has already passed. Please pick a later time.';
+      default:
+        return 'The $slot slot on this date is already booked. Please pick another time.';
+    }
   }
 
   @override
@@ -459,10 +553,12 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
         if (picked != null) {
           setState(() {
             _selectedDate = picked;
+            _unavailableSlots = {};
             if (_selectedTime != null && _isSlotOccupied(_selectedTime!)) {
               _selectedTime = null;
             }
           });
+          _loadAvailability();
         }
       },
       child: Container(
@@ -522,7 +618,9 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
     return clean;
   }
 
-  bool _isSlotOccupied(String slot) {
+  bool _isSlotOccupied(String slot) => _slotReason(slot) != null;
+
+  bool _isOwnBooking(String slot) {
     if (_selectedDate == null) return false;
     final controller = context.read<AppointmentController>();
     final normSlot = _normalizeTime(slot);
@@ -552,7 +650,8 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
           spacing: 8,
           runSpacing: 8,
           children: _availableTimeSlots.map((slot) {
-            final isOccupied = _isSlotOccupied(slot);
+            final reason = _slotReason(slot);
+            final isOccupied = reason != null;
             final isSelected = _selectedTime == slot;
 
             return GestureDetector(
@@ -561,7 +660,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
                       ScaffoldMessenger.of(context).hideCurrentSnackBar();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('The $slot slot on this date is already booked. Please pick another time.'),
+                          content: Text(_slotMessage(slot, reason)),
                           backgroundColor: AppTheme.warning,
                           behavior: SnackBarBehavior.floating,
                           duration: const Duration(seconds: 2),
@@ -623,7 +722,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
                     if (isOccupied) ...[
                       const SizedBox(width: 4),
                       Text(
-                        '(Booked)',
+                        _slotLabel(reason),
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -637,15 +736,23 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
             );
           }).toList(),
         ),
-        if (_selectedDate != null && _availableTimeSlots.any(_isSlotOccupied)) ...[
+        if (_loadingSlots) ...[
+          const SizedBox(height: 8),
+          Text(
+            'Checking live slot availability...',
+            style: TextStyle(fontSize: 11.5, color: muted, fontStyle: FontStyle.italic),
+          ),
+        ] else if (_selectedDate != null && _availableTimeSlots.any(_isSlotOccupied)) ...[
           const SizedBox(height: 8),
           Row(
             children: [
               const Icon(Icons.info_outline_rounded, size: 13, color: AppTheme.warning),
               const SizedBox(width: 6),
-              Text(
-                'Crossed-out slots have already been reserved for this day.',
-                style: TextStyle(fontSize: 11.5, color: muted, fontStyle: FontStyle.italic),
+              Expanded(
+                child: Text(
+                  'Crossed-out slots are not available for this day.',
+                  style: TextStyle(fontSize: 11.5, color: muted, fontStyle: FontStyle.italic),
+                ),
               ),
             ],
           ),
@@ -685,8 +792,19 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
           filled: true,
           fillColor: subtleBg,
         ),
-        hint: Text('Select a doctor or physician', style: TextStyle(fontSize: 13.5, color: mutedLight)),
-        items: _doctorNames.map((name) {
+        hint: Text(
+          _loadingClinicians
+              ? 'Loading doctors...'
+              : _cliniciansError != null
+                  ? 'Could not load doctors. Tap to retry.'
+                  : _clinicians.isEmpty
+                      ? 'No doctors available right now'
+                      : 'Select a doctor or physician',
+          style: TextStyle(fontSize: 13.5, color: mutedLight),
+        ),
+        onTap: _cliniciansError != null ? _loadClinicians : null,
+        items: _clinicians.map((clinician) {
+          final name = clinician['name'].toString();
           return DropdownMenuItem(
             value: name,
             child: Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
@@ -696,6 +814,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
           setState(() {
             _selectedDoctor = value;
           });
+          _loadAvailability();
         },
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -713,8 +832,8 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
         _selectedTime != null) {
       if (_isSlotOccupied(_selectedTime!)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('The selected time slot is already booked. Please choose an available slot.'),
+          SnackBar(
+            content: Text(_slotMessage(_selectedTime!, _slotReason(_selectedTime!)!)),
             backgroundColor: AppTheme.danger,
           ),
         );
@@ -757,7 +876,8 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
       time: _selectedTime!,
       doctorName: _selectedDoctor!,
       type: _selectedType!,
-      clinic: 'TMC Student Health Clinic',
+      clinic: 'TMC Expansion Clinic',
+      staffId: _selectedStaffId,
     );
 
     if (mounted) {

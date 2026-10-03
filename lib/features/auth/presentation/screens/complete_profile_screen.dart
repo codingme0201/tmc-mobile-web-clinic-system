@@ -5,6 +5,7 @@ import '../../../../app/theme.dart';
 import '../../../../core/utils/api_client.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/course_dropdown_field.dart';
 import '../controllers/auth_controller.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
@@ -347,9 +348,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         validator: (v) => v == null || v.trim().isEmpty ? 'Student ID is required' : null,
                       ),
                       const SizedBox(height: 14),
-                      AppTextField(
+                      CourseDropdownField(
+                        key: ValueKey('course-${_loading ? 'loading' : 'ready'}'),
                         label: 'Course / Program *',
-                        hintText: 'e.g. BS Information Technology',
                         controller: _courseController,
                         validator: (v) => v == null || v.trim().isEmpty ? 'Course is required' : null,
                       ),

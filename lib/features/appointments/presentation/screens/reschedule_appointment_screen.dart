@@ -23,6 +23,7 @@ class _RescheduleAppointmentScreenState
   bool _isSubmitting = false;
 
   late List<String> _availableTimeSlots;
+  Map<String, String> _unavailableSlots = {};
 
   @override
   void initState() {
@@ -31,6 +32,45 @@ class _RescheduleAppointmentScreenState
     _availableTimeSlots = controller.getAvailableTimeSlots();
     _newDate = widget.appointment.date;
     _newTime = widget.appointment.time;
+    _loadAvailability();
+  }
+
+  Future<void> _loadAvailability() async {
+    final date = _newDate;
+    if (date == null) return;
+    try {
+      final unavailable = await context.read<AppointmentController>().getUnavailableSlots(date);
+      if (!mounted || date != _newDate) return;
+      setState(() {
+        _unavailableSlots = {
+          for (final entry in unavailable.entries) entry.key.trim().toUpperCase(): entry.value,
+        };
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _unavailableSlots = {});
+    }
+  }
+
+  String? _slotReason(String slot) {
+    final isCurrentSlot = _newDate == widget.appointment.date && slot == widget.appointment.time;
+    if (isCurrentSlot) return null;
+    return _unavailableSlots[slot.trim().toUpperCase()];
+  }
+
+  String _slotMessage(String slot, String reason) {
+    switch (reason) {
+      case 'yours':
+        return 'You already have an appointment at $slot on this date.';
+      case 'blocked':
+        return 'The clinic is unavailable at $slot on this date.';
+      case 'full':
+        return 'The clinic is fully booked on this date. Please pick another day.';
+      case 'past':
+        return 'The $slot slot has already passed. Please pick a later time.';
+      default:
+        return 'The $slot slot on this date is already booked. Please pick another time.';
+    }
   }
 
   @override
@@ -283,7 +323,9 @@ class _RescheduleAppointmentScreenState
         if (picked != null) {
           setState(() {
             _newDate = picked;
+            _unavailableSlots = {};
           });
+          _loadAvailability();
         }
       },
       child: Container(
@@ -335,8 +377,22 @@ class _RescheduleAppointmentScreenState
       runSpacing: 8,
       children: _availableTimeSlots.map((slot) {
         final isSelected = _newTime == slot;
+        final reason = _slotReason(slot);
+        final isUnavailable = reason != null && !isSelected;
         return GestureDetector(
           onTap: () {
+            if (reason != null) {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(_slotMessage(slot, reason)),
+                  backgroundColor: AppTheme.warning,
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+              return;
+            }
             setState(() {
               _newTime = slot;
             });
@@ -357,9 +413,13 @@ class _RescheduleAppointmentScreenState
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  Icons.schedule_rounded,
+                  isUnavailable ? Icons.block_rounded : Icons.schedule_rounded,
                   size: 14,
-                  color: isSelected ? Colors.white : muted,
+                  color: isSelected
+                      ? Colors.white
+                      : isUnavailable
+                          ? AppTheme.danger.withAlpha(160)
+                          : muted,
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -367,7 +427,13 @@ class _RescheduleAppointmentScreenState
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? Colors.white : ink,
+                    color: isSelected
+                        ? Colors.white
+                        : isUnavailable
+                            ? muted.withAlpha(140)
+                            : ink,
+                    decoration: isUnavailable ? TextDecoration.lineThrough : null,
+                    decorationColor: AppTheme.danger.withAlpha(180),
                   ),
                 ),
               ],
@@ -383,6 +449,17 @@ class _RescheduleAppointmentScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please select both a new date and time.'),
+          backgroundColor: AppTheme.danger,
+        ),
+      );
+      return;
+    }
+
+    final selectedReason = _slotReason(_newTime!);
+    if (selectedReason != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_slotMessage(_newTime!, selectedReason)),
           backgroundColor: AppTheme.danger,
         ),
       );

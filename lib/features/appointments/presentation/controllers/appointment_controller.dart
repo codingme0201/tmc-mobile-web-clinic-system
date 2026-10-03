@@ -65,6 +65,7 @@ class AppointmentController extends ChangeNotifier {
     required String doctorName,
     required String type,
     required String clinic,
+    int? staffId,
   }) async {
     try {
       final appointment = await _repository.createAppointment(
@@ -75,6 +76,7 @@ class AppointmentController extends ChangeNotifier {
         doctorName: doctorName,
         type: type,
         clinic: clinic,
+        staffId: staffId,
       );
       await refreshAppointments();
       return appointment;
@@ -116,8 +118,12 @@ class AppointmentController extends ChangeNotifier {
     return _repository.getAvailableTimeSlots();
   }
 
-  List<String> getDoctorNames() {
-    return _repository.getDoctorNames();
+  Future<List<Map<String, dynamic>>> getClinicians() {
+    return _repository.getClinicians();
+  }
+
+  Future<Map<String, String>> getUnavailableSlots(DateTime date, {int? staffId}) {
+    return _repository.getUnavailableSlots(date, staffId: staffId);
   }
 
   List<String> getAppointmentTypes() {

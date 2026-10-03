@@ -71,16 +71,28 @@ class AppointmentApiRepository extends AppointmentRepository {
     required String doctorName,
     required String type,
     required String clinic,
+    int? staffId,
   }) async {
-    final dateStr = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     return await _dataSource.requestAppointment(
       type: type,
       reason: reason,
-      date: dateStr,
+      date: _formatDate(date),
       time: time,
       staff: doctorName,
+      staffId: staffId,
     );
   }
+
+  Future<List<Map<String, dynamic>>> getClinicians() async {
+    return await _dataSource.getClinicians();
+  }
+
+  Future<Map<String, String>> getUnavailableSlots(DateTime date, {int? staffId}) async {
+    return await _dataSource.getUnavailableSlots(_formatDate(date), staffId: staffId);
+  }
+
+  String _formatDate(DateTime date) =>
+      '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
   @override
   Future<Appointment?> rescheduleAppointment(String id, DateTime newDate, String newTime) async {
@@ -92,6 +104,8 @@ class AppointmentApiRepository extends AppointmentRepository {
     return await _dataSource.cancelAppointment(id, reason: reason);
   }
 
+  /// Same slots as the clinic backend (appointments and consultations
+  /// share one 30-minute grid starting at 8:00 AM).
   @override
   List<String> getAvailableTimeSlots() => [
     '08:00 AM',
@@ -101,6 +115,7 @@ class AppointmentApiRepository extends AppointmentRepository {
     '10:00 AM',
     '10:30 AM',
     '11:00 AM',
+    '11:30 AM',
     '01:00 PM',
     '01:30 PM',
     '02:00 PM',
@@ -108,23 +123,17 @@ class AppointmentApiRepository extends AppointmentRepository {
     '03:00 PM',
     '03:30 PM',
     '04:00 PM',
+    '04:30 PM',
   ];
 
-  @override
-  List<String> getDoctorNames() => [
-    'Dr. R. Mendoza',
-    'Dr. Ana Cruz',
-    'Dr. S. Lopez',
-    'Nurse C. Villanueva',
-    'Nurse J. Santos',
-  ];
-
+  /// Types accepted by the clinic backend. "Follow-up" books a
+  /// Follow-up Consultation visit.
   @override
   List<String> getAppointmentTypes() => [
     'Check-up',
-    'Consultation',
     'Follow-up',
     'Dental concern',
+    'Fever',
     'Vaccination',
     'Emergency',
   ];

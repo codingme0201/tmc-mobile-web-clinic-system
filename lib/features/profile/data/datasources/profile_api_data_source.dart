@@ -26,31 +26,35 @@ class ProfileApiDataSource {
         }
       }
 
+      String? text(dynamic value) {
+        final str = (value ?? '').toString().trim();
+        return str.isEmpty ? null : str;
+      }
+
       return Profile(
         id: p['id'].toString(),
         name: (p['name'] ?? '').toString(),
-        email: userEmail.isNotEmpty ? userEmail : 'patient@tmccarelink.com',
-        phone: (p['contact'] ?? '+63 912 345 6789').toString(),
-        telephone: (p['telephone'] ?? '+63 (02) 8123-4567').toString(),
-        address: (p['address'] ?? 'Tagum Norte, Trinidad, Bohol, Philippines').toString(),
-        dateOfBirth: DateTime(2003, 5, 15),
+        email: userEmail,
+        phone: text(p['contact']),
+        address: text(p['address']),
+        age: p['age'] is int ? p['age'] as int : int.tryParse('${p['age'] ?? ''}'),
         accountStatus: AccountStatus.values.firstWhere(
           (e) => e.name.toLowerCase() == (p['status'] ?? '').toString().toLowerCase(),
           orElse: () => AccountStatus.active,
         ),
         studentInfo: StudentInfo(
-          studentId: (p['patientId'] ?? '24-021128').toString(),
-          program: (p['courseDept'] ?? 'Bachelor of Science in Information Technology').toString(),
-          yearLevel: '3rd Year',
-          block: (p['block'] ?? 'Block 1').toString(),
-          enrollmentStatus: 'Enrolled',
+          studentId: (p['patientId'] ?? '').toString(),
+          program: (p['courseDept'] ?? '').toString(),
+          yearLevel: '',
+          block: (p['block'] ?? '').toString(),
+          enrollmentStatus: '',
         ),
         medicalInfo: MedicalInfo(
-          bloodType: (p['bloodType'] ?? 'O+').toString(),
-          allergies: (p['allergies'] ?? 'None').toString(),
-          conditions: (p['history'] ?? 'None').toString(),
-          emergencyContact: (p['emergencyContact'] ?? '').toString(),
-          emergencyContactNumber: (p['contact'] ?? '+63 912 345 6789').toString(),
+          bloodType: '',
+          allergies: text(p['allergies']) ?? 'None',
+          conditions: text(p['history']) ?? 'None',
+          emergencyContact: text(p['emergencyContactName']) ?? text(p['emergencyContact']),
+          emergencyContactNumber: text(p['emergencyContactPhone']),
         ),
       );
     } else {
@@ -60,8 +64,8 @@ class ProfileApiDataSource {
 
   Future<Profile> updateProfile(Profile profile) async {
     final response = await _apiClient.put('/me/profile', body: {
-      'contact': profile.phone ?? profile.medicalInfo?.emergencyContactNumber ?? '',
-      'emergencyContact': profile.medicalInfo?.emergencyContact ?? '',
+      'contact': profile.phone ?? '',
+      'address': profile.address ?? '',
     });
 
     if (response.statusCode == 200) {
