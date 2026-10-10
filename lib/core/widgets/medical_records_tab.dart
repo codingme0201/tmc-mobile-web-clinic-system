@@ -179,7 +179,7 @@ class _MedicalRecordsTabState extends State<MedicalRecordsTab> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'ID: ${record.patientId} · ${record.age} yrs · ${record.sex}',
+                  'ID: ${record.patientId} · ${record.demographicsLabel}',
                   style: TextStyle(fontSize: 12, color: Colors.white.withAlpha(190)),
                 ),
               ],

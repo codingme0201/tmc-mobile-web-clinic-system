@@ -17,15 +17,22 @@ class ConsultationController extends ChangeNotifier {
   String? get error => _error;
   bool get isLoading => _status == ConsultationListStatus.loading;
 
-  Future<void> loadConsultations() async {
-    _status = ConsultationListStatus.loading;
-    _error = null;
-    notifyListeners();
+  /// [silent] refreshes already-loaded data in the background (live
+  /// sync) without showing a loading state or replacing it with an error.
+  Future<void> loadConsultations({bool silent = false}) async {
+    final background = silent && _status == ConsultationListStatus.loaded;
+    if (!background) {
+      _status = ConsultationListStatus.loading;
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       _consultations = await _repository.getMyConsultations();
       _status = ConsultationListStatus.loaded;
+      _error = null;
     } catch (e) {
+      if (background) return;
       _error = e.toString().replaceFirst('Exception: ', '');
       _status = ConsultationListStatus.error;
     }

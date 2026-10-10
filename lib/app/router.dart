@@ -11,7 +11,6 @@ import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/clinic_information/presentation/screens/clinic_information_screen.dart';
 import '../features/clinic_information/presentation/screens/clinic_schedule_screen.dart';
 import '../features/clinic_information/presentation/screens/staff_schedule_screen.dart';
-import '../features/clinic_information/presentation/screens/clinic_activities_screen.dart';
 import '../features/appointments/presentation/screens/appointments_screen.dart';
 import '../features/appointments/presentation/screens/appointment_detail_screen.dart';
 import '../features/consultations/presentation/screens/consultations_screen.dart';
@@ -33,7 +32,6 @@ class AppRouter {
   static const String clinicInformation = '/clinic-information';
   static const String clinicSchedule = '/clinic-schedule';
   static const String staffSchedule = '/staff-schedule';
-  static const String clinicActivities = '/clinic-activities';
   static const String appointments = '/appointments';
   static const String appointmentDetail = '/appointment-detail';
   static const String consultations = '/consultations';
@@ -71,8 +69,6 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const AuthGuard(child: ClinicScheduleScreen()));
       case staffSchedule:
         return MaterialPageRoute(builder: (_) => const AuthGuard(child: StaffScheduleScreen()));
-      case clinicActivities:
-        return MaterialPageRoute(builder: (_) => const AuthGuard(child: ClinicActivitiesScreen()));
       case appointments:
         return MaterialPageRoute(builder: (_) => const AuthGuard(child: AppointmentsScreen()));
       case appointmentDetail:

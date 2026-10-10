@@ -17,19 +17,22 @@ class DashboardController extends ChangeNotifier {
   bool get isLoading => _status == DashboardStatus.loading;
   bool get isRefreshing => _status == DashboardStatus.refreshing;
 
-  Future<void> loadDashboard() async {
-    if (_status == DashboardStatus.loaded) {
-      _status = DashboardStatus.refreshing;
-    } else {
-      _status = DashboardStatus.loading;
+  /// [silent] refreshes already-loaded data in the background (live sync)
+  /// without the refreshing overlay or replacing it with an error.
+  Future<void> loadDashboard({bool silent = false}) async {
+    final background = silent && _status == DashboardStatus.loaded;
+    if (!background) {
+      _status = _status == DashboardStatus.loaded ? DashboardStatus.refreshing : DashboardStatus.loading;
+      _error = null;
+      notifyListeners();
     }
-    _error = null;
-    notifyListeners();
 
     try {
       _data = await _repository.getDashboardData();
       _status = DashboardStatus.loaded;
+      _error = null;
     } catch (e) {
+      if (background) return;
       _error = e.toString().replaceFirst('Exception: ', '');
       _status = DashboardStatus.error;
     }

@@ -123,14 +123,13 @@ void main() {
       }
     });
 
-    test('10. ClinicInfoApiDataSource fetches clinic information and activities', () async {
+    test('10. ClinicInfoApiDataSource fetches clinic information and staff profiles', () async {
       final clinicDs = ClinicInfoApiDataSource();
       final info = await clinicDs.getClinicInformation();
 
       expect(info.name, isNotEmpty);
       expect(info.address, isNotEmpty);
       expect(info.services, isNotEmpty);
-      expect(info.activities, isNotEmpty);
       expect(info.staffSchedules, isNotEmpty);
     });
 

@@ -19,15 +19,22 @@ class NotificationController extends ChangeNotifier {
 
   int get unreadCount => _notifications.where((n) => !n.isRead).length;
 
-  Future<void> loadNotifications() async {
-    _status = NotificationListStatus.loading;
-    _error = null;
-    notifyListeners();
+  /// [silent] refreshes already-loaded data in the background (live
+  /// sync) without showing a loading state or replacing it with an error.
+  Future<void> loadNotifications({bool silent = false}) async {
+    final background = silent && _status == NotificationListStatus.loaded;
+    if (!background) {
+      _status = NotificationListStatus.loading;
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       _notifications = await _repository.getMyNotifications();
       _status = NotificationListStatus.loaded;
+      _error = null;
     } catch (e) {
+      if (background) return;
       _error = e.toString().replaceFirst('Exception: ', '');
       _status = NotificationListStatus.error;
     }

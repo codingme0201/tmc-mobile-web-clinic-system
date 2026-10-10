@@ -17,6 +17,17 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
   StaffRole? _selectedRole;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = context.read<ClinicInformationController>();
+      if (controller.data == null && !controller.isLoading) {
+        controller.loadClinicInformation();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.getBackground(context),
@@ -47,7 +58,7 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
             ),
             SizedBox(height: 2),
             Text(
-              'Doctor & Nurse Roster',
+              'Doctors & Nurses',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -59,16 +70,19 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
       ),
       body: Consumer<ClinicInformationController>(
         builder: (context, controller, _) {
-          if (controller.status == ClinicInfoStatus.loading) {
-            return const LoadingView(message: 'Loading practitioner schedules...');
+          final staff = controller.data?.staffSchedules;
+
+          if (controller.isLoading && staff == null) {
+            return const LoadingView(message: 'Loading doctors and nurses...');
           }
 
-          final staff = controller.data?.staffSchedules;
           if (staff == null || staff.isEmpty) {
-            return const EmptyState(
-              title: 'Roster Unavailable',
-              message: 'No clinical practitioner schedule data is currently registered.',
+            return EmptyState(
+              title: 'No Doctors or Nurses Yet',
+              message: controller.error ?? 'No doctor or nurse profiles are available right now.',
               icon: Icons.people_outline_rounded,
+              actionLabel: 'Retry',
+              onAction: controller.loadClinicInformation,
             );
           }
 
@@ -80,20 +94,30 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
             children: [
               _buildFilterBar(),
               Expanded(
-                child: filtered.isEmpty
-                    ? const EmptyState(
-                        title: 'No Staff Found',
-                        message: 'No clinical practitioners match the selected filter.',
-                        icon: Icons.person_search_outlined,
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        itemCount: filtered.length,
-                        itemBuilder: (context, index) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _buildStaffCard(filtered[index]),
+                child: RefreshIndicator(
+                  onRefresh: controller.loadClinicInformation,
+                  child: filtered.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: const [
+                            SizedBox(height: 80),
+                            EmptyState(
+                              title: 'No Staff Found',
+                              message: 'No doctors or nurses match the selected filter.',
+                              icon: Icons.person_search_outlined,
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          itemCount: filtered.length,
+                          itemBuilder: (context, index) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _buildStaffCard(filtered[index]),
+                          ),
                         ),
-                      ),
+                ),
               ),
             ],
           );
@@ -147,102 +171,299 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
     );
   }
 
-  Widget _buildStaffCard(StaffSchedule staff) {
+  Widget _buildAvatar(StaffSchedule staff, {double radius = 22}) {
     final isDoctor = staff.role == StaffRole.doctor;
     final primaryColor = isDoctor ? AppTheme.primary : AppTheme.info;
 
     return Container(
-      decoration: AppTheme.cardDecoration(context: context, radius: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      padding: const EdgeInsets.all(2.5),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: isDoctor ? AppTheme.gold : AppTheme.info.withAlpha(120),
+          width: 1.5,
+        ),
+      ),
+      child: CircleAvatar(
+        radius: radius,
+        backgroundColor: primaryColor.withAlpha(20),
+        child: Icon(
+          isDoctor ? Icons.medical_services_rounded : Icons.health_and_safety_rounded,
+          color: primaryColor,
+          size: radius,
+        ),
+      ),
+    );
+  }
+
+  String _subtitle(StaffSchedule staff) {
+    return [staff.position, staff.specialty].where((s) => s.isNotEmpty).join(' · ');
+  }
+
+  Widget _buildStaffCard(StaffSchedule staff) {
+    final isDoctor = staff.role == StaffRole.doctor;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => _showProfile(staff),
+        child: Ink(
+          decoration: AppTheme.cardDecoration(context: context, radius: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(2.5),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: isDoctor ? AppTheme.gold : AppTheme.info.withAlpha(120),
-                      width: 1.5,
+                Row(
+                  children: [
+                    _buildAvatar(staff),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  staff.name,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppTheme.getInk(context),
+                                    letterSpacing: -0.2,
+                                  ),
+                                ),
+                              ),
+                              if (staff.isVerified) ...[
+                                const SizedBox(width: 4),
+                                const Icon(Icons.verified_rounded, size: 16, color: AppTheme.success),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _subtitle(staff),
+                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: AppTheme.getMuted(context)),
+                          ),
+                        ],
+                      ),
                     ),
+                    _buildRoleBadge(isDoctor ? 'Physician' : 'Nurse', isDoctor),
+                  ],
+                ),
+                if (staff.background.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    staff.background,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12.5, height: 1.45, color: AppTheme.getInk(context)),
                   ),
-                  child: CircleAvatar(
-                    radius: 22,
-                    backgroundColor: primaryColor.withAlpha(20),
-                    child: Icon(
-                      isDoctor ? Icons.medical_services_rounded : Icons.health_and_safety_rounded,
-                      color: primaryColor,
-                      size: 22,
-                    ),
+                ],
+                const SizedBox(height: 12),
+                _buildScheduleBox(staff, limit: 3),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'View full profile',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.primary.withAlpha(220)),
                   ),
                 ),
-                const SizedBox(width: 12),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScheduleBox(StaffSchedule staff, {int? limit}) {
+    final entries = limit == null ? staff.schedule : staff.schedule.take(limit).toList();
+    final hidden = staff.schedule.length - entries.length;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.getSurfaceSubtle(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.getLine(context)),
+      ),
+      child: entries.isEmpty
+          ? Text(
+              'No upcoming clinic schedule.',
+              style: TextStyle(fontSize: 12.5, color: AppTheme.getMuted(context)),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < entries.length; i++)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: i == entries.length - 1 ? 0 : 8),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.schedule_rounded, size: 14, color: AppTheme.primary),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            entries[i].day,
+                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
+                          ),
+                        ),
+                        Text(
+                          '${entries[i].startTime} – ${entries[i].endTime}',
+                          style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: AppTheme.getMuted(context)),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (hidden > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      '+$hidden more',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.getMuted(context)),
+                    ),
+                  ),
+              ],
+            ),
+    );
+  }
+
+  void _showProfile(StaffSchedule staff) {
+    final isDoctor = staff.role == StaffRole.doctor;
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.getSurface(context),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
+      builder: (sheetContext) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.75,
+        maxChildSize: 0.95,
+        minChildSize: 0.4,
+        builder: (_, scrollController) => ListView(
+          controller: scrollController,
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(color: AppTheme.getLine(context), borderRadius: BorderRadius.circular(4)),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                _buildAvatar(staff, radius: 28),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         staff.name,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.getInk(context),
-                          letterSpacing: -0.2,
-                        ),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.getInk(context)),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        staff.specialty,
-                        style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: AppTheme.getMuted(context)),
+                        _subtitle(staff),
+                        style: TextStyle(fontSize: 13, color: AppTheme.getMuted(context)),
                       ),
+                      const SizedBox(height: 6),
+                      _buildRoleBadge(isDoctor ? 'Physician' : 'Nurse', isDoctor),
                     ],
                   ),
                 ),
-                _buildRoleBadge(isDoctor ? 'Physician' : 'Nurse', isDoctor),
               ],
             ),
-            const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.getSurfaceSubtle(context),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.getLine(context)),
-              ),
-              child: Column(
-                children: staff.schedule.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final item = entry.value;
-                  final isLast = index == staff.schedule.length - 1;
-
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: isLast ? 0 : 8),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.schedule_rounded, size: 14, color: AppTheme.primary),
-                        const SizedBox(width: 8),
-                        SizedBox(
-                          width: 86,
-                          child: Text(
-                            item.day,
-                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
-                          ),
-                        ),
-                        Text(
-                          '${item.startTime} – ${item.endTime}',
-                          style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: AppTheme.getMuted(context)),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+            const SizedBox(height: 20),
+            _buildSection(
+              'Background',
+              Text(
+                staff.background.isEmpty ? 'This staff member has not added a background yet.' : staff.background,
+                style: TextStyle(
+                  fontSize: 13.5,
+                  height: 1.5,
+                  color: staff.background.isEmpty ? AppTheme.getMuted(context) : AppTheme.getInk(context),
+                ),
               ),
             ),
+            _buildSection(
+              'Professional Credentials',
+              Column(
+                children: [
+                  _buildInfoRow(Icons.badge_outlined, 'License', staff.licenseType.isEmpty ? 'Not provided' : staff.licenseType),
+                  _buildInfoRow(
+                    staff.isVerified ? Icons.verified_rounded : Icons.hourglass_empty_rounded,
+                    'Status',
+                    staff.credentialStatus,
+                    valueColor: staff.isVerified ? AppTheme.success : null,
+                  ),
+                  if (staff.otherCredentials.isNotEmpty)
+                    _buildInfoRow(Icons.workspace_premium_outlined, 'Other', staff.otherCredentials),
+                ],
+              ),
+            ),
+            if (staff.email.isNotEmpty || staff.contactNumber.isNotEmpty)
+              _buildSection(
+                'Contact',
+                Column(
+                  children: [
+                    if (staff.email.isNotEmpty) _buildInfoRow(Icons.email_outlined, 'Email', staff.email),
+                    if (staff.contactNumber.isNotEmpty) _buildInfoRow(Icons.phone_outlined, 'Phone', staff.contactNumber),
+                  ],
+                ),
+              ),
+            _buildSection('Upcoming Clinic Schedule', _buildScheduleBox(staff)),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, Widget child) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: AppTheme.getMuted(context)),
+          ),
+          const SizedBox(height: 8),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value, {Color? valueColor}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: AppTheme.primary),
+          const SizedBox(width: 10),
+          SizedBox(
+            width: 70,
+            child: Text(label, style: TextStyle(fontSize: 12.5, color: AppTheme.getMuted(context))),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: valueColor ?? AppTheme.getInk(context)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -282,4 +503,3 @@ class _StaffScheduleScreenState extends State<StaffScheduleScreen> {
     );
   }
 }
-

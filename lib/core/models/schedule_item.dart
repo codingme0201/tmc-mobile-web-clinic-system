@@ -1,4 +1,4 @@
-enum ScheduleType { appointment, clinicActivity, clinicSchedule }
+enum ScheduleType { appointment, clinicSchedule }
 
 class ScheduleItem {
   final String id;
@@ -31,9 +31,6 @@ class ScheduleItem {
   static ScheduleType _parseType(String? type) {
     if (type == null) return ScheduleType.appointment;
     final normalized = type.toLowerCase();
-    if (normalized.contains('activit') || normalized.contains('event')) {
-      return ScheduleType.clinicActivity;
-    }
     if (normalized.contains('clinic') || normalized.contains('staff') || normalized.contains('duty')) {
       return ScheduleType.clinicSchedule;
     }

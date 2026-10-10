@@ -22,10 +22,15 @@ class AppointmentController extends ChangeNotifier {
   String? get error => _error;
   bool get isLoading => _status == AppointmentListStatus.loading;
 
-  Future<void> loadAppointments() async {
-    _status = AppointmentListStatus.loading;
-    _error = null;
-    notifyListeners();
+  /// [silent] refreshes already-loaded data in the background (live
+  /// sync) without showing a loading state or replacing it with an error.
+  Future<void> loadAppointments({bool silent = false}) async {
+    final background = silent && _status == AppointmentListStatus.loaded;
+    if (!background) {
+      _status = AppointmentListStatus.loading;
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       _appointments = await _repository.getAppointments();
@@ -33,7 +38,9 @@ class AppointmentController extends ChangeNotifier {
       _appointmentHistory = await _repository.getAppointmentHistory();
       _statusCounts = await _repository.getStatusCounts();
       _status = AppointmentListStatus.loaded;
+      _error = null;
     } catch (e) {
+      if (background) return;
       _error = e.toString().replaceFirst('Exception: ', '');
       _status = AppointmentListStatus.error;
     }

@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/models/appointment.dart';
+import '../../../../core/utils/live_sync.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../controllers/appointment_controller.dart';
 
@@ -24,6 +26,7 @@ class _RescheduleAppointmentScreenState
 
   late List<String> _availableTimeSlots;
   Map<String, String> _unavailableSlots = {};
+  StreamSubscription<Set<String>>? _liveSub;
 
   @override
   void initState() {
@@ -33,6 +36,17 @@ class _RescheduleAppointmentScreenState
     _newDate = widget.appointment.date;
     _newTime = widget.appointment.time;
     _loadAvailability();
+    _liveSub = LiveSync.changes.listen((changed) {
+      if (changed.contains('appointments') || changed.contains('staff_schedules') || changed.contains('settings')) {
+        _loadAvailability();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _liveSub?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadAvailability() async {

@@ -17,15 +17,22 @@ class PrescriptionController extends ChangeNotifier {
   String? get error => _error;
   bool get isLoading => _status == PrescriptionListStatus.loading;
 
-  Future<void> loadPrescriptions() async {
-    _status = PrescriptionListStatus.loading;
-    _error = null;
-    notifyListeners();
+  /// [silent] refreshes already-loaded data in the background (live
+  /// sync) without showing a loading state or replacing it with an error.
+  Future<void> loadPrescriptions({bool silent = false}) async {
+    final background = silent && _status == PrescriptionListStatus.loaded;
+    if (!background) {
+      _status = PrescriptionListStatus.loading;
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       _prescriptions = await _repository.getMyPrescriptions();
       _status = PrescriptionListStatus.loaded;
+      _error = null;
     } catch (e) {
+      if (background) return;
       _error = e.toString().replaceFirst('Exception: ', '');
       _status = PrescriptionListStatus.error;
     }

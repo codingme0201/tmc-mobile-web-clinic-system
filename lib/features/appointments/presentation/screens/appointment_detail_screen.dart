@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/models/appointment.dart';
+import '../../../../core/utils/live_sync.dart';
 import '../controllers/appointment_controller.dart';
 import 'reschedule_appointment_screen.dart';
 
@@ -19,11 +21,21 @@ class AppointmentDetailScreen extends StatefulWidget {
 class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   Appointment? _appointment;
   bool _isLoading = true;
+  StreamSubscription<Set<String>>? _liveSub;
 
   @override
   void initState() {
     super.initState();
     _loadAppointment();
+    _liveSub = LiveSync.changes.listen((changed) {
+      if (changed.contains('appointments') || changed.contains('users')) _loadAppointment().catchError((_) {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _liveSub?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadAppointment() async {

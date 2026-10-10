@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/models/appointment.dart';
+import '../../../../core/utils/live_sync.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../controllers/appointment_controller.dart';
@@ -32,6 +34,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
   String? _cliniciansError;
   Map<String, String> _unavailableSlots = {};
   bool _loadingSlots = false;
+  StreamSubscription<Set<String>>? _liveSub;
 
   @override
   void initState() {
@@ -40,6 +43,16 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
     _availableTimeSlots = controller.getAvailableTimeSlots();
     _appointmentTypes = controller.getAppointmentTypes();
     _loadClinicians();
+    // Slots another student just booked, or schedule changes made by the
+    // clinic, show up while the form is open.
+    _liveSub = LiveSync.changes.listen((changed) {
+      if (changed.contains('users') || changed.contains('staff_schedules') || changed.contains('staff_profiles')) {
+        _loadClinicians(silent: true);
+      }
+      if (changed.contains('appointments') || changed.contains('staff_schedules') || changed.contains('settings')) {
+        _loadAvailability(silent: true);
+      }
+    });
   }
 
   int? get _selectedStaffId {
@@ -49,11 +62,13 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
     return id is int ? id : int.tryParse(id.toString());
   }
 
-  Future<void> _loadClinicians() async {
-    setState(() {
-      _loadingClinicians = true;
-      _cliniciansError = null;
-    });
+  Future<void> _loadClinicians({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _loadingClinicians = true;
+        _cliniciansError = null;
+      });
+    }
     try {
       final clinicians = await context.read<AppointmentController>().getClinicians();
       if (!mounted) return;
@@ -62,7 +77,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
         _loadingClinicians = false;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || silent) return;
       setState(() {
         _cliniciansError = e.toString().replaceFirst('Exception: ', '');
         _loadingClinicians = false;
@@ -70,10 +85,10 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
     }
   }
 
-  Future<void> _loadAvailability() async {
+  Future<void> _loadAvailability({bool silent = false}) async {
     final date = _selectedDate;
     if (date == null) return;
-    setState(() => _loadingSlots = true);
+    if (!silent) setState(() => _loadingSlots = true);
     try {
       final unavailable = await context
           .read<AppointmentController>()
@@ -89,7 +104,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
         }
       });
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || silent) return;
       setState(() {
         _unavailableSlots = {};
         _loadingSlots = false;
@@ -134,6 +149,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
 
   @override
   void dispose() {
+    _liveSub?.cancel();
     _reasonController.dispose();
     super.dispose();
   }

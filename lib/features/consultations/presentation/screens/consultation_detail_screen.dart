@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:carelink_mobile/app/theme.dart';
+import 'package:carelink_mobile/core/utils/live_sync.dart';
 import '../controllers/consultation_controller.dart';
 import '../../domain/models/consultation.dart';
 
@@ -17,20 +19,34 @@ class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
   bool _isLoading = true;
   String? _error;
 
+  StreamSubscription<Set<String>>? _liveSub;
+
   @override
   void initState() {
     super.initState();
     _loadDetails();
+    _liveSub = LiveSync.changes.listen((changed) {
+      if (changed.contains('consultations') || changed.contains('prescriptions')) _loadDetails(silent: true);
+    });
   }
 
-  Future<void> _loadDetails() async {
+  @override
+  void dispose() {
+    _liveSub?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadDetails({bool silent = false}) async {
     try {
       final consultation = await context.read<ConsultationController>().getConsultationDetails(widget.consultationId);
+      if (!mounted) return;
       setState(() {
         _consultation = consultation;
         _isLoading = false;
+        _error = null;
       });
     } catch (e) {
+      if (!mounted || (silent && _consultation != null)) return;
       setState(() {
         _error = e.toString().replaceFirst('Exception: ', '');
         _isLoading = false;

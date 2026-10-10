@@ -19,15 +19,22 @@ class MedicalCertificateController extends ChangeNotifier {
   bool get isLoading => _status == MedicalCertificateStatus.loading;
   bool get isSubmitting => _isSubmitting;
 
-  Future<void> loadCertificates() async {
-    _status = MedicalCertificateStatus.loading;
-    _error = null;
-    notifyListeners();
+  /// [silent] refreshes already-loaded data in the background (live
+  /// sync) without showing a loading state or replacing it with an error.
+  Future<void> loadCertificates({bool silent = false}) async {
+    final background = silent && _status == MedicalCertificateStatus.loaded;
+    if (!background) {
+      _status = MedicalCertificateStatus.loading;
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       _certificates = await _repository.getMyCertificates();
       _status = MedicalCertificateStatus.loaded;
+      _error = null;
     } catch (e) {
+      if (background) return;
       _error = e.toString().replaceFirst('Exception: ', '');
       _status = MedicalCertificateStatus.error;
     }

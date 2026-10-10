@@ -1,6 +1,5 @@
 import 'clinic_schedule.dart';
 import 'staff_schedule.dart';
-import 'clinic_activity_detail.dart';
 
 class ClinicInformation {
   final String name;
@@ -12,7 +11,6 @@ class ClinicInformation {
   final List<String> services;
   final ClinicSchedule? schedule;
   final List<StaffSchedule> staffSchedules;
-  final List<ClinicActivityDetail> activities;
   final String? operatingHours;
 
   ClinicSchedule? get clinicSchedule => schedule;
@@ -27,7 +25,6 @@ class ClinicInformation {
     required this.services,
     this.schedule,
     this.staffSchedules = const [],
-    this.activities = const [],
     this.operatingHours,
   });
 
@@ -90,14 +87,6 @@ class ClinicInformation {
           .toList();
     }
 
-    List<ClinicActivityDetail> parsedActivities = [];
-    if (json['activities'] is List) {
-      parsedActivities = (json['activities'] as List)
-          .whereType<Map<String, dynamic>>()
-          .map((a) => ClinicActivityDetail.fromJson(a))
-          .toList();
-    }
-
     return ClinicInformation(
       name: (json['clinicName'] ?? json['name'] ?? 'TMC Expansion Clinic').toString(),
       description: (json['clinicDescription'] ?? json['description'] ?? 'TMC CareLink Clinic provides medical services to the campus community.').toString(),
@@ -110,7 +99,6 @@ class ClinicInformation {
       services: parsedServices,
       schedule: parsedSchedule,
       staffSchedules: parsedStaff,
-      activities: parsedActivities,
       operatingHours: (json['clinicHours'] ?? json['operatingHours'] ?? '8:00 AM - 5:00 PM').toString(),
     );
   }

@@ -78,9 +78,6 @@ class UpcomingScheduleCard extends StatelessWidget {
       case ScheduleType.appointment:
         icon = Icons.calendar_today_rounded;
         iconColor = AppTheme.primary;
-      case ScheduleType.clinicActivity:
-        icon = Icons.campaign_rounded;
-        iconColor = AppTheme.success;
       case ScheduleType.clinicSchedule:
         icon = Icons.access_time_filled_rounded;
         iconColor = AppTheme.info;

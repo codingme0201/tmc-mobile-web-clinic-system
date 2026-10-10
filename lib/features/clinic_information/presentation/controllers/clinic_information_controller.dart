@@ -17,15 +17,22 @@ class ClinicInformationController extends ChangeNotifier {
   String? get error => _error;
   bool get isLoading => _status == ClinicInfoStatus.loading;
 
-  Future<void> loadClinicInformation() async {
-    _status = ClinicInfoStatus.loading;
-    _error = null;
-    notifyListeners();
+  /// [silent] refreshes already-loaded data in the background (live
+  /// sync) without showing a loading state or replacing it with an error.
+  Future<void> loadClinicInformation({bool silent = false}) async {
+    final background = silent && _status == ClinicInfoStatus.loaded;
+    if (!background) {
+      _status = ClinicInfoStatus.loading;
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       _data = await _repository.getClinicInformation();
       _status = ClinicInfoStatus.loaded;
+      _error = null;
     } catch (e) {
+      if (background) return;
       _error = e.toString().replaceFirst('Exception: ', '');
       _status = ClinicInfoStatus.error;
     }

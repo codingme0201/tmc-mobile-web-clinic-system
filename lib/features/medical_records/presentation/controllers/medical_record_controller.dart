@@ -17,15 +17,22 @@ class MedicalRecordController extends ChangeNotifier {
   String? get error => _error;
   bool get isLoading => _status == MedicalRecordStatus.loading;
 
-  Future<void> loadMedicalRecord() async {
-    _status = MedicalRecordStatus.loading;
-    _error = null;
-    notifyListeners();
+  /// [silent] refreshes already-loaded data in the background (live
+  /// sync) without showing a loading state or replacing it with an error.
+  Future<void> loadMedicalRecord({bool silent = false}) async {
+    final background = silent && _status == MedicalRecordStatus.loaded;
+    if (!background) {
+      _status = MedicalRecordStatus.loading;
+      _error = null;
+      notifyListeners();
+    }
 
     try {
       _medicalRecord = await _repository.getMyMedicalRecord();
       _status = MedicalRecordStatus.loaded;
+      _error = null;
     } catch (e) {
+      if (background) return;
       _error = e.toString().replaceFirst('Exception: ', '');
       _status = MedicalRecordStatus.error;
     }

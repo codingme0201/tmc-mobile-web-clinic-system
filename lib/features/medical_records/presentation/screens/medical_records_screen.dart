@@ -171,7 +171,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${record.age} yrs · ${record.sex}',
+                  record.demographicsLabel,
                   style: const TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600),
                 ),
                 Text(

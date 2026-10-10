@@ -33,6 +33,13 @@ class StaffSchedule {
   final String name;
   final StaffRole role;
   final String specialty;
+  final String position;
+  final String background;
+  final String contactNumber;
+  final String email;
+  final String licenseType;
+  final String credentialStatus;
+  final String otherCredentials;
   final List<StaffScheduleEntry> schedule;
 
   const StaffSchedule({
@@ -41,7 +48,16 @@ class StaffSchedule {
     required this.role,
     required this.specialty,
     required this.schedule,
+    this.position = '',
+    this.background = '',
+    this.contactNumber = '',
+    this.email = '',
+    this.licenseType = '',
+    this.credentialStatus = 'Not Submitted',
+    this.otherCredentials = '',
   });
+
+  bool get isVerified => credentialStatus == 'Verified';
 
   Map<String, dynamic> toJson() {
     return {
@@ -49,6 +65,13 @@ class StaffSchedule {
       'name': name,
       'role': role.name,
       'specialty': specialty,
+      'position': position,
+      'background': background,
+      'contactNumber': contactNumber,
+      'email': email,
+      'licenseType': licenseType,
+      'credentialStatus': credentialStatus,
+      'otherCredentials': otherCredentials,
       'schedule': schedule.map((s) => s.toJson()).toList(),
     };
   }
@@ -67,11 +90,21 @@ class StaffSchedule {
       entries = [StaffScheduleEntry.fromJson(json)];
     }
 
+    String text(String key) => (json[key] ?? '').toString().trim();
+    final credentialStatus = text('credentialStatus');
+
     return StaffSchedule(
       id: json['id']?.toString() ?? '',
       name: (json['name'] ?? json['user']?['name'] ?? 'Medical Staff').toString(),
       role: isNurse ? StaffRole.nurse : StaffRole.doctor,
       specialty: (json['specialty'] ?? (isNurse ? 'Nursing Services' : 'General Medicine')).toString(),
+      position: text('position'),
+      background: text('background'),
+      contactNumber: text('contactNumber'),
+      email: text('email'),
+      licenseType: text('licenseType'),
+      credentialStatus: credentialStatus.isEmpty ? 'Not Submitted' : credentialStatus,
+      otherCredentials: text('otherCredentials'),
       schedule: entries,
     );
   }

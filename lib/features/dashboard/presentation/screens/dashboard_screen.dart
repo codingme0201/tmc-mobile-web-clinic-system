@@ -6,7 +6,6 @@ import '../controllers/dashboard_controller.dart';
 import '../widgets/appointment_summary_card.dart';
 import '../widgets/consultation_summary_card.dart';
 import '../widgets/medical_record_summary_card.dart';
-import '../widgets/clinic_activity_card.dart';
 import '../widgets/upcoming_schedule_card.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -124,13 +123,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             MedicalRecordSummaryCard(
               records: data.medicalRecords,
               onTap: () => Navigator.pushNamed(context, '/medical-records'),
-            ),
-            const SizedBox(height: 24),
-            _buildSectionTitle(context, 'Clinic Activity'),
-            const SizedBox(height: 12),
-            ClinicActivityCard(
-              activities: data.clinicActivities,
-              onTap: () => Navigator.pushNamed(context, '/clinic-information'),
             ),
             const SizedBox(height: 32),
           ],

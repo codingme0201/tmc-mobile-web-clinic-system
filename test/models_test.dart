@@ -217,21 +217,15 @@ void main() {
         'clinicEmail': 'clinic@tmccarelink.com',
         'clinicHours': '8:00 AM - 5:00 PM',
         'services': ['General Consultation', 'First Aid'],
-        'activities': [
-          {
-            'id': 1,
-            'title': 'Blood Donation Drive',
-            'description': 'Annual blood drive with Red Cross',
-            'date': '2026-10-05',
-            'status': 'upcoming',
-          }
-        ],
         'staffSchedules': [
           {
             'id': 1,
             'name': 'Dr. Maria Santos',
             'role': 'doctor',
             'specialty': 'General Medicine',
+            'position': 'Clinic Physician',
+            'background': 'Ten years of campus health practice.',
+            'credentialStatus': 'Verified',
             'schedule': [
               {'day': 'Monday', 'startTime': '8:00 AM', 'endTime': '12:00 PM'}
             ]
@@ -242,10 +236,11 @@ void main() {
       final info = ClinicInformation.fromJson(json);
       expect(info.name, 'TMC CareLink Medical Clinic');
       expect(info.address, 'Health Sciences Building, Room 102');
-      expect(info.activities.length, 1);
-      expect(info.activities.first.title, 'Blood Donation Drive');
       expect(info.staffSchedules.length, 1);
       expect(info.staffSchedules.first.name, 'Dr. Maria Santos');
+      expect(info.staffSchedules.first.position, 'Clinic Physician');
+      expect(info.staffSchedules.first.background, 'Ten years of campus health practice.');
+      expect(info.staffSchedules.first.isVerified, true);
     });
 
     test('StudentInfo and Profile handle Block, Philippine Mobile, and Telephone correctly', () {
@@ -312,6 +307,23 @@ void main() {
       final aptApproved = Appointment.fromJson(approvedJson);
       expect(aptApproved.status, AppointmentStatus.confirmed);
       expect(aptApproved.status.label, 'Confirmed');
+    });
+
+    test('MedicalRecord shows the age the student entered, never "0 yrs"', () {
+      final fromProfile = MedicalRecord.fromJson({
+        'id': 1,
+        'patientId': '24-123456',
+        'name': 'Example Student',
+        'age': null,
+        'sex': 'Unspecified',
+        'studentProfile': {'age': 20},
+      });
+      expect(fromProfile.age, 20);
+      expect(fromProfile.demographicsLabel, '20 yrs');
+
+      final missing = MedicalRecord.fromJson({'id': 2, 'age': 0, 'sex': 'Female'});
+      expect(missing.ageLabel, 'Age not set');
+      expect(missing.demographicsLabel, 'Age not set · Female');
     });
   });
 }

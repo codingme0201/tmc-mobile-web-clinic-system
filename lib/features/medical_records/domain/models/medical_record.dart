@@ -36,13 +36,19 @@ class MedicalRecord {
     required this.medications,
   });
 
+  /// "20 yrs", or a placeholder when the student has not entered an age.
+  String get ageLabel => age > 0 ? '$age yrs' : 'Age not set';
+
+  /// Age and sex for the record header, skipping a sex that was never set.
+  String get demographicsLabel {
+    final hasSex = sex.isNotEmpty && sex != 'Unknown' && sex != 'Unspecified';
+    return hasSex ? '$ageLabel · $sex' : ageLabel;
+  }
+
   factory MedicalRecord.fromJson(Map<String, dynamic> json) {
-    int parsedAge = 0;
-    if (json['age'] is int) {
-      parsedAge = json['age'];
-    } else if (json['age'] != null) {
-      parsedAge = int.tryParse(json['age'].toString()) ?? 0;
-    }
+    final profile = json['studentProfile'] is Map<String, dynamic> ? json['studentProfile'] as Map<String, dynamic> : null;
+    final rawAge = json['age'] ?? profile?['age'];
+    final parsedAge = rawAge is int ? rawAge : int.tryParse('${rawAge ?? ''}') ?? 0;
 
     final historyRaw = json['medicalHistory'] as List? ?? [];
     final conditionsRaw = json['conditions'] as List? ?? [];

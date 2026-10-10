@@ -1,7 +1,6 @@
 import 'dart:convert';
 import '../../../../core/utils/api_client.dart';
 import '../../domain/models/clinic_information.dart';
-import '../../domain/models/clinic_activity_detail.dart';
 import '../../domain/models/staff_schedule.dart';
 
 class ClinicInfoApiDataSource {
@@ -18,7 +17,6 @@ class ClinicInfoApiDataSource {
 
   Future<ClinicInformation> getClinicInformation() async {
     Map<String, dynamic> infoMap = {};
-    List<ClinicActivityDetail> activities = [];
     List<StaffSchedule> staffSchedules = [];
 
     // 1. Fetch clinic information / settings
@@ -32,24 +30,9 @@ class ClinicInfoApiDataSource {
       }
     } catch (_) {}
 
-    // 2. Fetch clinic activities (calendar events)
+    // 2. Doctor/nurse directory: public profile, background and schedule
     try {
-      final actResponse = await _apiClient.get('/me/clinic-activities');
-      if (actResponse.statusCode == 200) {
-        final decoded = jsonDecode(actResponse.body);
-        final list = (decoded is Map && decoded.containsKey('data'))
-            ? decoded['data'] as List
-            : (decoded is List ? decoded : []);
-        activities = list
-            .whereType<Map<String, dynamic>>()
-            .map((a) => ClinicActivityDetail.fromJson(a))
-            .toList();
-      }
-    } catch (_) {}
-
-    // 3. Fetch staff schedules
-    try {
-      final staffResponse = await _apiClient.get('/me/staff-schedules');
+      final staffResponse = await _apiClient.get('/me/clinic-staff');
       if (staffResponse.statusCode == 200) {
         final decoded = jsonDecode(staffResponse.body);
         final list = (decoded is Map && decoded.containsKey('data'))
@@ -62,9 +45,7 @@ class ClinicInfoApiDataSource {
       }
     } catch (_) {}
 
-
     final fullData = Map<String, dynamic>.from(infoMap);
-    fullData['activities'] = activities.map((a) => a.toJson()).toList();
     fullData['staffSchedules'] = staffSchedules.map((s) => s.toJson()).toList();
 
     return ClinicInformation.fromJson(fullData);

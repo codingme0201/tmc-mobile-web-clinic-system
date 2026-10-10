@@ -5,6 +5,7 @@ import '../../app/theme.dart';
 import '../../app/theme_controller.dart';
 import '../../features/auth/presentation/controllers/auth_controller.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../utils/live_sync.dart';
 import 'medical_records_tab.dart';
 import 'search_tab.dart';
 import 'notifications_tab.dart';
@@ -19,6 +20,19 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _currentTabIndex = 0;
+  late final LiveSync _liveSync = LiveSync(context);
+
+  @override
+  void initState() {
+    super.initState();
+    _liveSync.start();
+  }
+
+  @override
+  void dispose() {
+    _liveSync.dispose();
+    super.dispose();
+  }
 
   final List<String> _tabTitles = [
     'Home',

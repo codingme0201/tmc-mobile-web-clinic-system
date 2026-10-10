@@ -84,7 +84,12 @@ class AuthApiRepository implements AuthRepository {
 
   @override
   Future<void> logout() async {
-    await _dataSource.logout();
+    try {
+      await _dataSource.logout();
+    } catch (_) {
+      // The local session is cleared even when the server is unreachable or
+      // the token was already revoked (e.g. the account was deactivated).
+    }
     await clearSession();
   }
 
