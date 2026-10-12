@@ -33,7 +33,7 @@ class ApiClient {
     }
     try {
       if (Platform.isAndroid) {
-        return 'http://192.168.8.56:8000/api';
+        return 'http://192.168.8.62:8000/api';
       }
     } catch (_) {}
     return 'http://127.0.0.1:8000/api';
