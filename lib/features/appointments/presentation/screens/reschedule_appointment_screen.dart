@@ -69,6 +69,8 @@ class _RescheduleAppointmentScreenState
   String? _slotReason(String slot) {
     final isCurrentSlot = _newDate == widget.appointment.date && slot == widget.appointment.time;
     if (isCurrentSlot) return null;
+    final date = _newDate;
+    if (date != null && AppointmentController.isSlotClosed(date, slot)) return 'past';
     return _unavailableSlots[slot.trim().toUpperCase()];
   }
 
@@ -81,7 +83,7 @@ class _RescheduleAppointmentScreenState
       case 'full':
         return 'The clinic is fully booked on this date. Please pick another day.';
       case 'past':
-        return 'The $slot slot has already passed. Please pick a later time.';
+        return 'The $slot slot is no longer available. Same-day appointments can only be booked until ${AppointmentController.bookingCutoff}.';
       default:
         return 'The $slot slot on this date is already booked. Please pick another time.';
     }

@@ -125,6 +125,34 @@ class AppointmentController extends ChangeNotifier {
     return _repository.getAvailableTimeSlots();
   }
 
+  /// Same-day booking closes after 4:30 PM, matching the clinic backend.
+  static const String bookingCutoff = '04:30 PM';
+
+  /// Whether a slot can no longer be booked: past dates, every slot once
+  /// today's cutoff has passed, and today's slots that have already ended.
+  static bool isSlotClosed(DateTime date, String slot, [DateTime? now]) {
+    final current = now ?? DateTime.now();
+    final day = DateTime(date.year, date.month, date.day);
+    final today = DateTime(current.year, current.month, current.day);
+    if (day != today) return day.isBefore(today);
+
+    final minutesNow = current.hour * 60 + current.minute;
+    final start = _slotMinutes(slot);
+    return minutesNow > _slotMinutes(bookingCutoff)! ||
+        (start != null && start + 30 <= minutesNow);
+  }
+
+  static int? _slotMinutes(String slot) {
+    final match = RegExp(r'^(\d{1,2}):(\d{2})\s*([AP]M)?$').firstMatch(slot.trim().toUpperCase());
+    if (match == null) return null;
+    var hours = int.parse(match.group(1)!);
+    final minutes = int.parse(match.group(2)!);
+    final suffix = match.group(3);
+    if (suffix == 'PM' && hours != 12) hours += 12;
+    if (suffix == 'AM' && hours == 12) hours = 0;
+    return hours * 60 + minutes;
+  }
+
   Future<List<Map<String, dynamic>>> getClinicians() {
     return _repository.getClinicians();
   }
