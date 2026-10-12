@@ -127,6 +127,31 @@ class AuthApiDataSource {
     }
   }
 
+  Future<String> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    final response = await _apiClient.post('/reset-password', body: {
+      'email': email,
+      'password': newPassword,
+      'password_confirmation': newPassword,
+    });
+
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return data['message'] ?? 'Your password has been reset.';
+    } else {
+      if (data['errors'] != null && data['errors'] is Map) {
+        final Map errors = data['errors'];
+        final firstError = errors.values.first;
+        if (firstError is List && firstError.isNotEmpty) {
+          throw Exception(firstError.first.toString());
+        }
+      }
+      throw Exception(data['message'] ?? 'Failed to reset password.');
+    }
+  }
+
   Future<bool> logout() async {
     final response = await _apiClient.post('/logout');
     return response.statusCode == 200;

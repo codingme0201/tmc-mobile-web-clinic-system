@@ -70,6 +70,18 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    if (!_dataSource.setPassword(email, newPassword)) {
+      throw Exception('No account found with this email address.');
+    }
+  }
+
+  @override
   Future<void> changePassword({
     required String currentPassword,
     required String newPassword,

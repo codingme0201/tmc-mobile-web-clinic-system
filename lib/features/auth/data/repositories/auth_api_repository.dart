@@ -68,6 +68,18 @@ class AuthApiRepository implements AuthRepository {
   }
 
   @override
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    try {
+      await _dataSource.resetPassword(email: email, newPassword: newPassword);
+    } catch (e) {
+      throw Exception(e.toString().replaceFirst('Exception: ', ''));
+    }
+  }
+
+  @override
   Future<void> changePassword({
     required String currentPassword,
     required String newPassword,

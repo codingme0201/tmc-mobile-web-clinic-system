@@ -68,9 +68,14 @@ class MockAuthDataSource {
   }
 
   bool updatePassword(String email, String currentPassword, String newPassword) {
+    final user = findByEmail(email);
+    if (user == null || user.passwordHash != currentPassword) return false;
+    return setPassword(email, newPassword);
+  }
+
+  bool setPassword(String email, String newPassword) {
     final index = _users.indexWhere((u) => u.email.toLowerCase() == email.toLowerCase());
     if (index == -1) return false;
-    if (_users[index].passwordHash != currentPassword) return false;
     _users[index] = MockUser(
       id: _users[index].id,
       name: _users[index].name,
