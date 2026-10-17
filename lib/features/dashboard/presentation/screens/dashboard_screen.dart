@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/models/appointment.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/dashboard_controller.dart';
 import '../widgets/appointment_summary_card.dart';
@@ -80,10 +81,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildDashboard(BuildContext context, DashboardController dashboard, String userName) {
     final data = dashboard.data!;
     final appointments = data.appointments;
-    final pending = appointments.where((a) => a.status.name == 'pending').length;
-    final confirmed = appointments.where((a) => a.status.name == 'confirmed').length;
-    final completed = appointments.where((a) => a.status.name == 'completed').length;
-    final cancelled = appointments.where((a) => a.status.name == 'cancelled').length;
+    // Awaiting the clinic: pending, under review or rescheduled requests.
+    final pending = appointments.where((a) => a.status.isActive && a.status != AppointmentStatus.confirmed).length;
+    final confirmed = appointments.where((a) => a.status == AppointmentStatus.confirmed).length;
+    final completed = appointments.where((a) => a.status == AppointmentStatus.completed).length;
+    // Closed without a visit: cancelled, rejected by the clinic or no-show.
+    final cancelled = appointments
+        .where((a) => !a.status.isActive && a.status != AppointmentStatus.completed)
+        .length;
     final scheduledConsultations = data.consultations.where((c) => c.status.name == 'scheduled').length;
     final completedConsultations = data.consultations.where((c) => c.status.name == 'completed').length;
 
