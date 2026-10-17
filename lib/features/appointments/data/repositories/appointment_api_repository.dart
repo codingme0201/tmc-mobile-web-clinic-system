@@ -22,7 +22,7 @@ class AppointmentApiRepository extends AppointmentRepository {
     final today = DateTime(now.year, now.month, now.day);
     return all.where((a) {
       final aDate = DateTime(a.date.year, a.date.month, a.date.day);
-      return !aDate.isBefore(today) && a.status != AppointmentStatus.completed && a.status != AppointmentStatus.cancelled;
+      return !aDate.isBefore(today) && a.status.isActive;
     }).toList();
   }
 
@@ -33,7 +33,7 @@ class AppointmentApiRepository extends AppointmentRepository {
     final today = DateTime(now.year, now.month, now.day);
     return all.where((a) {
       final aDate = DateTime(a.date.year, a.date.month, a.date.day);
-      return aDate.isBefore(today) || a.status == AppointmentStatus.completed || a.status == AppointmentStatus.cancelled;
+      return aDate.isBefore(today) || !a.status.isActive;
     }).toList();
   }
 
@@ -55,7 +55,7 @@ class AppointmentApiRepository extends AppointmentRepository {
       counts[key] = (counts[key] ?? 0) + 1;
 
       final aDate = DateTime(a.date.year, a.date.month, a.date.day);
-      if (!aDate.isBefore(today) && a.status != AppointmentStatus.completed && a.status != AppointmentStatus.cancelled) {
+      if (!aDate.isBefore(today) && a.status.isActive) {
         counts['upcoming'] = (counts['upcoming'] ?? 0) + 1;
       }
     }

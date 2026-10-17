@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/utils/phone.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../controllers/profile_controller.dart';
@@ -175,19 +176,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       AppTextField(
                         label: 'Mobile Number (Philippines)',
                         controller: _phoneController,
-                        hintText: '+63 9XX XXX XXXX or 09XXXXXXXXX',
+                        hintText: '09XXXXXXXXX (11 digits)',
                         prefixIcon: Icons.phone_android_rounded,
                         keyboardType: TextInputType.phone,
                         textInputAction: TextInputAction.next,
-                        validator: (v) {
-                          if (v != null && v.trim().isNotEmpty) {
-                            final cleaned = v.replaceAll(RegExp(r'[\s\-]'), '');
-                            if (!RegExp(r'^(\+639\d{9}|09\d{9})$').hasMatch(cleaned)) {
-                              return 'Enter a valid Philippine mobile number (e.g. +63 917 123 4567 or 09171234567).';
-                            }
-                          }
-                          return null;
-                        },
+                        inputFormatters: phoneInputFormatters,
+                        validator: (v) => validatePhone(v),
                       ),
                       const SizedBox(height: 16),
                       AppTextField(

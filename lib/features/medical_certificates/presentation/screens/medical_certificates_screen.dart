@@ -168,7 +168,7 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Purpose *',
+                      'Reason for the Certificate *',
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.getInk(context)),
                     ),
                     const SizedBox(height: 6),
@@ -176,7 +176,7 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                       controller: purposeController,
                       style: TextStyle(fontSize: 14, color: AppTheme.getInk(context)),
                       decoration: InputDecoration(
-                        hintText: 'e.g., Excused Absence, OJT Requirement, PE Clearance',
+                        hintText: 'What will it be used for? e.g. excuse for missed classes, OJT, PE clearance',
                         hintStyle: TextStyle(fontSize: 13, color: AppTheme.getMutedLight(context)),
                         filled: true,
                         fillColor: AppTheme.getSurfaceSubtle(context),
@@ -195,7 +195,7 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
                       ),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) {
-                          return 'Please enter the certificate purpose.';
+                          return 'Please state what the certificate will be used for.';
                         }
                         return null;
                       },
@@ -310,7 +310,7 @@ class _MedicalCertificatesScreenState extends State<MedicalCertificatesScreen> {
               ),
               const SizedBox(height: 16),
               _buildDetailRow(context, 'Patient', cert.patient),
-              _buildDetailRow(context, 'Purpose', cert.purpose),
+              _buildDetailRow(context, 'Reason for Certificate', cert.purpose),
               if (cert.diagnosis.isNotEmpty) _buildDetailRow(context, 'Diagnosis', cert.diagnosis),
               if (cert.recommendation.isNotEmpty) _buildDetailRow(context, 'Recommendation', cert.recommendation),
               _buildDetailRow(context, 'Issue Date', cert.issueDate),
@@ -381,7 +381,7 @@ ${cert.diagnosis.isNotEmpty ? cert.diagnosis : '—'}
 RECOMMENDATIONS / REMARKS:
 ${cert.recommendation.isNotEmpty ? cert.recommendation : '—'}
 ${cert.validUntil != null ? 'Valid Until: ${cert.validUntil}\n' : ''}
-PURPOSE:
+ISSUED FOR:
 ${cert.purpose}
 
 ATTENDING PHYSICIAN:
@@ -588,7 +588,7 @@ TMC Expansion Clinic
                               Row(
                                 children: [
                                   Text(
-                                    'Purpose: ',
+                                    'Issued for: ',
                                     style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: muted),
                                   ),
                                   Text(

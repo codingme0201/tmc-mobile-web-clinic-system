@@ -55,6 +55,15 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
     });
   }
 
+  /// Dental concerns are handled by the Dental department, everything else
+  /// by General Medicine (mirrors the backend ClinicDepartments rule).
+  String get _selectedDepartment => _selectedType == 'Dental concern' ? 'Dental' : 'General Medicine';
+
+  /// Doctors of the selected appointment type's department only.
+  List<Map<String, dynamic>> get _departmentClinicians => _clinicians
+      .where((c) => (c['department'] ?? 'General Medicine').toString() == _selectedDepartment)
+      .toList();
+
   int? get _selectedStaffId {
     final match = _clinicians.where((c) => c['name'] == _selectedDoctor);
     if (match.isEmpty) return null;
@@ -75,6 +84,11 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
       setState(() {
         _clinicians = clinicians;
         _loadingClinicians = false;
+        // A doctor who is no longer assignable (e.g. application rejected)
+        // drops out of the list and the selection.
+        if (!_departmentClinicians.any((c) => c['name'] == _selectedDoctor)) {
+          _selectedDoctor = null;
+        }
       });
     } catch (e) {
       if (!mounted || silent) return;
@@ -518,7 +532,11 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
         onChanged: (value) {
           setState(() {
             _selectedType = value;
+            if (!_departmentClinicians.any((c) => c['name'] == _selectedDoctor)) {
+              _selectedDoctor = null;
+            }
           });
+          _loadAvailability();
         },
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -643,7 +661,7 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
     final normSlot = _normalizeTime(slot);
 
     return controller.appointments.any((a) {
-      if (a.status == AppointmentStatus.cancelled || a.status == AppointmentStatus.noShow) {
+      if (!a.status.isActive) {
         return false;
       }
       final sameDate = a.date.year == _selectedDate!.year &&
@@ -788,6 +806,9 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
     return Container(
       decoration: AppTheme.cardDecoration(context: context, borderRadius: 14),
       child: DropdownButtonFormField<String>(
+        // Rebuilt per department so a doctor from another department never
+        // stays selected after the appointment type changes.
+        key: ValueKey('doctor-$_selectedDepartment-${_selectedDoctor ?? ''}'),
         initialValue: _selectedDoctor,
         dropdownColor: surface,
         style: TextStyle(color: ink, fontSize: 14),
@@ -814,13 +835,13 @@ class _RequestAppointmentScreenState extends State<RequestAppointmentScreen> {
               ? 'Loading doctors...'
               : _cliniciansError != null
                   ? 'Could not load doctors. Tap to retry.'
-                  : _clinicians.isEmpty
-                      ? 'No doctors available right now'
-                      : 'Select a doctor or physician',
+                  : _departmentClinicians.isEmpty
+                      ? 'No $_selectedDepartment doctors available right now'
+                      : 'Select a $_selectedDepartment doctor',
           style: TextStyle(fontSize: 13.5, color: mutedLight),
         ),
         onTap: _cliniciansError != null ? _loadClinicians : null,
-        items: _clinicians.map((clinician) {
+        items: _departmentClinicians.map((clinician) {
           final name = clinician['name'].toString();
           return DropdownMenuItem(
             value: name,

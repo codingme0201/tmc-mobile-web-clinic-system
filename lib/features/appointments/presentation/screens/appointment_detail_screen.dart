@@ -55,15 +55,11 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
       appBar: AppBar(
         title: const Text('Appointment Details'),
         actions: [
-          if (_appointment != null &&
-              (_appointment!.status == AppointmentStatus.pending ||
-                  _appointment!.status == AppointmentStatus.confirmed))
+          if (_appointment != null && _appointment!.status.isActive)
             PopupMenuButton<String>(
               onSelected: (value) => _handleMenuAction(value),
               itemBuilder: (context) => [
-                if (_appointment!.status == AppointmentStatus.pending ||
-                    _appointment!.status == AppointmentStatus.confirmed)
-                  const PopupMenuItem(
+                const PopupMenuItem(
                     value: 'reschedule',
                     child: Row(
                       children: [
@@ -73,9 +69,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                       ],
                     ),
                   ),
-                if (_appointment!.status != AppointmentStatus.completed &&
-                    _appointment!.status != AppointmentStatus.cancelled)
-                  const PopupMenuItem(
+                const PopupMenuItem(
                     value: 'cancel',
                     child: Row(
                       children: [
@@ -183,6 +177,8 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
 
     switch (appointment.status) {
       case AppointmentStatus.pending:
+      case AppointmentStatus.underReview:
+      case AppointmentStatus.rescheduled:
         color = AppTheme.warning;
         icon = Icons.schedule_rounded;
         break;
@@ -195,6 +191,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         icon = Icons.check_circle_rounded;
         break;
       case AppointmentStatus.cancelled:
+      case AppointmentStatus.rejected:
         color = AppTheme.danger;
         icon = Icons.cancel_outlined;
         break;
@@ -367,6 +364,8 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
 
     switch (status) {
       case AppointmentStatus.pending:
+      case AppointmentStatus.underReview:
+      case AppointmentStatus.rescheduled:
         backgroundColor = AppTheme.gold.withAlpha(30);
         textColor = const Color(0xFFB8860B);
         break;
@@ -379,6 +378,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         textColor = AppTheme.success;
         break;
       case AppointmentStatus.cancelled:
+      case AppointmentStatus.rejected:
         backgroundColor = AppTheme.danger.withAlpha(20);
         textColor = AppTheme.danger;
         break;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/utils/api_client.dart';
+import '../../../../core/utils/phone.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/course_dropdown_field.dart';
@@ -379,7 +380,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         hintText: 'e.g. 09123456789',
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
-                        validator: (v) => v == null || v.trim().isEmpty ? 'Phone number is required' : null,
+                        inputFormatters: phoneInputFormatters,
+                        validator: (v) => validatePhone(v, requiredMessage: 'Phone number is required'),
                       ),
                       const SizedBox(height: 14),
                       AppTextField(
@@ -414,7 +416,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         hintText: 'e.g. 09987654321',
                         controller: _emergencyPhoneController,
                         keyboardType: TextInputType.phone,
-                        validator: (v) => v == null || v.trim().isEmpty ? 'Guardian contact number is required' : null,
+                        inputFormatters: phoneInputFormatters,
+                        validator: (v) => validatePhone(v, requiredMessage: 'Guardian contact number is required'),
                       ),
                     ],
                   ),

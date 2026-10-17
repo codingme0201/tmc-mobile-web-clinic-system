@@ -195,6 +195,7 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
     final statuses = [
       {'value': 'all', 'label': 'All Records'},
       {'value': 'completed', 'label': 'Completed'},
+      {'value': 'rejected', 'label': 'Rejected'},
       {'value': 'cancelled', 'label': 'Cancelled'},
       {'value': 'noShow', 'label': 'No-Show'},
     ];
@@ -410,6 +411,8 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
 
     switch (status) {
       case AppointmentStatus.pending:
+      case AppointmentStatus.underReview:
+      case AppointmentStatus.rescheduled:
         color = AppTheme.gold;
         break;
       case AppointmentStatus.confirmed:
@@ -419,6 +422,7 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
         color = AppTheme.success;
         break;
       case AppointmentStatus.cancelled:
+      case AppointmentStatus.rejected:
         color = AppTheme.danger;
         break;
       case AppointmentStatus.noShow:
@@ -461,12 +465,15 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
   Color _getStatusColor(AppointmentStatus status) {
     switch (status) {
       case AppointmentStatus.pending:
+      case AppointmentStatus.underReview:
+      case AppointmentStatus.rescheduled:
         return AppTheme.gold;
       case AppointmentStatus.confirmed:
         return AppTheme.info;
       case AppointmentStatus.completed:
         return AppTheme.success;
       case AppointmentStatus.cancelled:
+      case AppointmentStatus.rejected:
         return AppTheme.danger;
       case AppointmentStatus.noShow:
         return AppTheme.muted;
@@ -476,12 +483,15 @@ class _AppointmentHistoryScreenState extends State<AppointmentHistoryScreen> {
   IconData _getStatusIcon(AppointmentStatus status) {
     switch (status) {
       case AppointmentStatus.pending:
+      case AppointmentStatus.underReview:
+      case AppointmentStatus.rescheduled:
         return Icons.schedule_rounded;
       case AppointmentStatus.confirmed:
         return Icons.check_circle_outline_rounded;
       case AppointmentStatus.completed:
         return Icons.task_alt_rounded;
       case AppointmentStatus.cancelled:
+      case AppointmentStatus.rejected:
         return Icons.cancel_outlined;
       case AppointmentStatus.noShow:
         return Icons.person_off_outlined;

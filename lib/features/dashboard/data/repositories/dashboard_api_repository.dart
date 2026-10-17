@@ -55,8 +55,7 @@ class DashboardApiRepository implements DashboardRepository {
     for (var app in appointments) {
       final aDate = DateTime(app.date.year, app.date.month, app.date.day);
       if (!aDate.isBefore(today) &&
-          app.status != AppointmentStatus.completed &&
-          app.status != AppointmentStatus.cancelled) {
+          app.status.isActive) {
         upcomingSchedule.add(ScheduleItem(
           id: 'app-${app.id}',
           title: '${app.type}: ${app.doctorName}',

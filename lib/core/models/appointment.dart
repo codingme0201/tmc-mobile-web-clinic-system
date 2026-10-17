@@ -1,4 +1,6 @@
-enum AppointmentStatus { pending, confirmed, completed, cancelled, noShow }
+/// Mirrors the backend lifecycle: Pending, Under Review, Approved (shown as
+/// Confirmed), Rescheduled, Rejected, Cancelled, Completed and No-Show.
+enum AppointmentStatus { pending, underReview, confirmed, rescheduled, rejected, completed, cancelled, noShow }
 
 class Appointment {
   final String id;
@@ -87,6 +89,15 @@ class Appointment {
     if (normalized.contains('confirm') || normalized.contains('approved')) {
       return AppointmentStatus.confirmed;
     }
+    if (normalized.contains('reject')) {
+      return AppointmentStatus.rejected;
+    }
+    if (normalized.contains('review')) {
+      return AppointmentStatus.underReview;
+    }
+    if (normalized.contains('reschedul')) {
+      return AppointmentStatus.rescheduled;
+    }
     if (normalized.contains('complete')) {
       return AppointmentStatus.completed;
     }
@@ -123,12 +134,25 @@ class Appointment {
 }
 
 extension AppointmentStatusExtension on AppointmentStatus {
+  /// Still on the clinic schedule (can be rescheduled or cancelled).
+  bool get isActive =>
+      this == AppointmentStatus.pending ||
+      this == AppointmentStatus.underReview ||
+      this == AppointmentStatus.confirmed ||
+      this == AppointmentStatus.rescheduled;
+
   String get label {
     switch (this) {
       case AppointmentStatus.pending:
         return 'Pending';
+      case AppointmentStatus.underReview:
+        return 'Under Review';
       case AppointmentStatus.confirmed:
         return 'Confirmed';
+      case AppointmentStatus.rescheduled:
+        return 'Rescheduled';
+      case AppointmentStatus.rejected:
+        return 'Rejected';
       case AppointmentStatus.completed:
         return 'Completed';
       case AppointmentStatus.cancelled:
@@ -142,8 +166,14 @@ extension AppointmentStatusExtension on AppointmentStatus {
     switch (this) {
       case AppointmentStatus.pending:
         return 'Your appointment request is awaiting confirmation.';
+      case AppointmentStatus.underReview:
+        return 'The clinic is reviewing your appointment request.';
       case AppointmentStatus.confirmed:
         return 'Your appointment has been confirmed.';
+      case AppointmentStatus.rescheduled:
+        return 'Your appointment was moved to a new schedule and is awaiting confirmation.';
+      case AppointmentStatus.rejected:
+        return 'The clinic could not accept this appointment request.';
       case AppointmentStatus.completed:
         return 'Your appointment has been completed.';
       case AppointmentStatus.cancelled:

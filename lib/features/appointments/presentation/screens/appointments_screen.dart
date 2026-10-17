@@ -189,6 +189,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
       {'value': 'all', 'label': 'All'},
       {'value': 'pending', 'label': 'Pending'},
       {'value': 'confirmed', 'label': 'Confirmed'},
+      {'value': 'rejected', 'label': 'Rejected'},
       {'value': 'completed', 'label': 'Completed'},
       {'value': 'cancelled', 'label': 'Cancelled'},
       {'value': 'noShow', 'label': 'No-Show'},
@@ -442,6 +443,8 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
 
     switch (status) {
       case AppointmentStatus.pending:
+      case AppointmentStatus.underReview:
+      case AppointmentStatus.rescheduled:
         color = AppTheme.warning;
         break;
       case AppointmentStatus.confirmed:
@@ -451,6 +454,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen>
         color = AppTheme.success;
         break;
       case AppointmentStatus.cancelled:
+      case AppointmentStatus.rejected:
         color = AppTheme.danger;
         break;
       case AppointmentStatus.noShow:

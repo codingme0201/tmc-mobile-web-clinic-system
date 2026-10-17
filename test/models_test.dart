@@ -309,6 +309,27 @@ void main() {
       expect(aptApproved.status.label, 'Confirmed');
     });
 
+    test('Appointment keeps the status set on the web (Rejected is not shown as Pending)', () {
+      Appointment withStatus(String status) => Appointment.fromJson({
+            'id': 300,
+            'reference': 'APT-2026-0300',
+            'date': '2026-10-20',
+            'time': '09:00 AM',
+            'status': status,
+            'reason': 'Check-up',
+          });
+
+      expect(withStatus('Rejected').status, AppointmentStatus.rejected);
+      expect(withStatus('Rejected').status.label, 'Rejected');
+      expect(withStatus('Rejected').status.isActive, isFalse);
+      expect(withStatus('Under Review').status, AppointmentStatus.underReview);
+      expect(withStatus('Rescheduled').status, AppointmentStatus.rescheduled);
+      expect(withStatus('Rescheduled').status.isActive, isTrue);
+      expect(withStatus('Approved').status, AppointmentStatus.confirmed);
+      expect(withStatus('Pending').status, AppointmentStatus.pending);
+      expect(withStatus('Cancelled').status.isActive, isFalse);
+    });
+
     test('MedicalRecord shows the age the student entered, never "0 yrs"', () {
       final fromProfile = MedicalRecord.fromJson({
         'id': 1,
