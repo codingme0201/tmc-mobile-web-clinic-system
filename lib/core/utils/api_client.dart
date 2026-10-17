@@ -9,14 +9,48 @@ class ApiClient {
   static const Duration requestTimeout = Duration(seconds: 12);
   static String? _configuredBaseUrl;
 
+  static String normalizeUrl(String url) {
+    var trimmed = url.trim();
+    while (trimmed.endsWith('/')) {
+      trimmed = trimmed.substring(0, trimmed.length - 1);
+    }
+    if (!trimmed.endsWith('/api')) {
+      trimmed = '$trimmed/api';
+    }
+    return trimmed;
+  }
+
   static void setBaseUrl(String url) {
-    _configuredBaseUrl = url;
+    _configuredBaseUrl = normalizeUrl(url);
   }
 
   static Future<void> saveBaseUrl(String url) async {
-    _configuredBaseUrl = url;
+    final normalized = normalizeUrl(url);
+    _configuredBaseUrl = normalized;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('api_base_url', url);
+    await prefs.setString('api_base_url', normalized);
+  }
+
+  static Future<void> clearSavedBaseUrl() async {
+    _configuredBaseUrl = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('api_base_url');
+  }
+
+  static Future<bool> testConnection(String url) async {
+    try {
+      final normalized = normalizeUrl(url);
+      final response = await http.get(
+        Uri.parse('$normalized/health'),
+        headers: {
+          'Accept': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      ).timeout(const Duration(seconds: 6));
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
   }
 
   static String get defaultBaseUrl {
@@ -81,6 +115,7 @@ class ApiClient {
   Map<String, String> _buildHeaders(String? token, {bool isJson = false}) {
     final headers = <String, String>{
       'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
     };
     if (isJson) {
       headers['Content-Type'] = 'application/json';

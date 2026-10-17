@@ -5,6 +5,7 @@ import '../../../../app/theme_controller.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/clinic_emblem.dart';
+import '../../../../core/utils/api_client.dart';
 import '../controllers/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -160,6 +161,174 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Future<void> _showServerConfigDialog() async {
+    final apiClient = ApiClient();
+    final currentUrl = await apiClient.getBaseUrl();
+    final urlController = TextEditingController(text: currentUrl);
+    bool testing = false;
+    String? testResult;
+    bool? testSuccess;
+
+    if (!mounted) return;
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (dialogCtx, setDialogState) {
+          final isDark = AppTheme.isDark(dialogCtx);
+          final muted = AppTheme.getMuted(dialogCtx);
+
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(color: AppTheme.getLine(dialogCtx)),
+            ),
+            backgroundColor: AppTheme.getSurface(dialogCtx),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: (isDark ? AppTheme.primaryLight : AppTheme.primary).withAlpha(25),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.cloud_sync_rounded,
+                    color: isDark ? AppTheme.primaryLight : AppTheme.primary,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'Server Connection',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Set backend API URL (e.g. ngrok tunnel URL):',
+                    style: TextStyle(fontSize: 13, color: muted),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: urlController,
+                    style: TextStyle(fontSize: 13.5, color: isDark ? Colors.white : Colors.black87),
+                    decoration: InputDecoration(
+                      labelText: 'API Base URL',
+                      hintText: 'https://xxxx.ngrok-free.dev/api',
+                      prefixIcon: const Icon(Icons.link_rounded, size: 20),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    ),
+                  ),
+                  if (testResult != null) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: (testSuccess == true ? AppTheme.success : AppTheme.danger).withAlpha(20),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: (testSuccess == true ? AppTheme.success : AppTheme.danger).withAlpha(60),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            testSuccess == true ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                            color: testSuccess == true ? AppTheme.success : AppTheme.danger,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              testResult!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: testSuccess == true ? AppTheme.success : AppTheme.danger,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await ApiClient.clearSavedBaseUrl();
+                  final resetUrl = ApiClient.defaultBaseUrl;
+                  urlController.text = resetUrl;
+                  setDialogState(() {
+                    testResult = 'Reset to default: $resetUrl';
+                    testSuccess = true;
+                  });
+                },
+                child: const Text('Reset'),
+              ),
+              TextButton(
+                onPressed: testing
+                    ? null
+                    : () async {
+                        setDialogState(() {
+                          testing = true;
+                          testResult = null;
+                        });
+                        final ok = await ApiClient.testConnection(urlController.text.trim());
+                        setDialogState(() {
+                          testing = false;
+                          testSuccess = ok;
+                          testResult = ok
+                              ? 'Connected successfully! (Backend is online)'
+                              : 'Could not connect. Please check URL or ngrok status.';
+                        });
+                      },
+                child: testing
+                    ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Test Connection'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () async {
+                  final text = urlController.text.trim();
+                  if (text.isNotEmpty) {
+                    await ApiClient.saveBaseUrl(text);
+                  }
+                  if (ctx.mounted) Navigator.pop(ctx);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Server URL set: ${ApiClient.normalizeUrl(text)}'),
+                        backgroundColor: AppTheme.success,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = AppTheme.isDark(context);
@@ -194,6 +363,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppTheme.gold.withAlpha(isDark ? 10 : 8),
+                ),
+              ),
+            ),
+
+            // Top Quick Action (Server Connection / ngrok URL)
+            Positioned(
+              top: 12,
+              left: 16,
+              child: Material(
+                color: isDark ? AppTheme.darkSurfaceSubtle : Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                elevation: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppTheme.getLine(context)),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.cloud_sync_rounded,
+                      color: isDark ? AppTheme.primaryLight : AppTheme.primary,
+                      size: 20,
+                    ),
+                    tooltip: 'Server Connection / ngrok URL',
+                    onPressed: _showServerConfigDialog,
+                  ),
                 ),
               ),
             ),
